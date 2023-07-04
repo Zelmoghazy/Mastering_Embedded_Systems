@@ -10,7 +10,7 @@ void symbol_repeat(char str[], size_t size, char symbol) {
 }
 
 void print_frame(const char *str, const char *title, size_t size, char symbol){
-    char *Label = title;
+    const char *Label = title;
     char *Padding = malloc(sizeof(char)*size+1);
     symbol_repeat(Padding,size,symbol);       
     size_t Length = size - strlen(Label);  
