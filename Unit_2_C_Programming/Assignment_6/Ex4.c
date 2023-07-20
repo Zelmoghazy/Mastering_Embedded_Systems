@@ -3,11 +3,11 @@
 #include <string.h>
 
 #define MAX_SIZE 64
-#define STUDENTS 5
+#define STUDENTS 10
 
-#define get_string(str,MAX) fflush(stdin); \
-                            fgets((str),MAX,stdin);\
-                            (str)[strcspn((str),"\n")]=0;
+#define get_string(str, MAX) scanf(" ");\
+                             fgets((str), (MAX), stdin); \
+                             (str)[strcspn((str), "\n")] = '\0'; \ 
 
 typedef struct Student{
     char name[MAX_SIZE];
@@ -34,7 +34,6 @@ int main()
         printf("Enter name : ");
         get_string(s[i].name,MAX_SIZE);
         /*  
-        fflush(stdin);
         fgets(s[i].name, MAX_SIZE, stdin);
         s[i].name[strcspn(s[i].name,"\n")] = 0;
         */
