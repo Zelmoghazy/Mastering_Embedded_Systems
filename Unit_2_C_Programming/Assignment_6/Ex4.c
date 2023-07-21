@@ -5,9 +5,13 @@
 #define MAX_SIZE 64
 #define STUDENTS 10
 
-#define get_string(str, MAX) scanf(" ");\
-                             fgets((str), (MAX), stdin); \
-                             (str)[strcspn((str), "\n")] = '\0'; \ 
+#define get_string(str, MAX)            \
+    int _ch = fgetc(stdin);             \
+    if (!(_ch == EOF || _ch == '\n')) { \
+        ungetc(_ch, stdin);             \
+    }                                   \
+    fgets((str), (MAX), stdin);         \
+    (str)[strcspn((str), "\n")] = '\0';
 
 typedef struct Student{
     char name[MAX_SIZE];
