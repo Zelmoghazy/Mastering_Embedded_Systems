@@ -17,12 +17,14 @@
 #define MAT_AT(A,i,j) (A)[(i)*COLS+(j)]
 
 #define GET_STRING(str, MAX)            \
+    do{                                 \
     int _ch = fgetc(stdin);             \
     if (!(_ch == EOF || _ch == '\n')) { \
         ungetc(_ch, stdin);             \
     }                                   \
     fgets((str), (MAX), stdin);         \
-    (str)[strcspn((str), "\n")] = '\0';
+    (str)[strcspn((str), "\n")] = '\0'; \
+    }while(0)                           \
 
 #define SET(A, n, v)                               \
     do                                             \
@@ -47,10 +49,10 @@
 #define DEBUG 1
 
 #define DEBUG_PRINT(fmt, ...)                                                               \
-    do                                                                                      \
-    {                                                                                       \
-        if (DEBUG)                                                                          \
+    do{                                                                                     \
+        if (DEBUG){                                                                         \
             fprintf(stderr, "%s:%d:%s(): " fmt, __FILE__, __LINE__, __func__, __VA_ARGS__); \
+        }                                                                                   \
     } while (0)
 
 #define STRINGIZE(...) #__VA_ARGS__
@@ -101,6 +103,11 @@ FUNCTION_FACTORY(Quadruble,4)
         })
 
 #define TEST(condition, ...) ((condition) ? printf("Passed test: %s\n", #condition) : printf(__VA_ARGS__))
+
+#define foo_internal_impl(bar, id) bar##id = bar;
+#define foo_internal_interface(bar, id) foo_internal_impl(bar, id)
+#define foo(bar) foo_internal_interface(bar, __COUNTER__)
+
 
 int main()
 {
