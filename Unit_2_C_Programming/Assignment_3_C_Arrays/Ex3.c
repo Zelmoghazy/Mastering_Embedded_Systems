@@ -1,10 +1,14 @@
+/* C Program to Find Transpose ofa Matrix */
+
 #include <stdio.h>
 #include <stdlib.h>
+
 int main()
 {
     size_t i;
     size_t j;
     size_t rows, columns;
+    
     printf("Enter number of rows and columns of matrix: ");
     scanf("%zu", &rows);
     scanf("%zu", &columns);

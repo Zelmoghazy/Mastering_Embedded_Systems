@@ -1,3 +1,5 @@
+/* C Program to Insert an element in an Array */
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -19,8 +21,10 @@ int main()
         printf("%d  ",A[i]);
     }
     printf("\n");
+
     printf("Enter element to be inserted : ");
     scanf("%d",&value);
+    
     printf("Enter the location : ");
     scanf("%d",&location);
 

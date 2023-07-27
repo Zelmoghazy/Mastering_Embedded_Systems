@@ -1,8 +1,12 @@
+/* C Program to Check Vowel or Consonant */
+
 #include <stdio.h>
 #include <stdlib.h>
+
 int main()
 {
     char ch;
+    
     printf("Enter an alphabet : ");
     scanf(" %c",&ch);
 
