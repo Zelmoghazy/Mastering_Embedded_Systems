@@ -1,1 +1,1 @@
-![](./Project/LED.gif)
+<img src="./Project/LED.gif" width="50%"/>
