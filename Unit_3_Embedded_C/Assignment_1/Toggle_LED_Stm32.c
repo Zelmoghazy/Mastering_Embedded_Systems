@@ -56,7 +56,7 @@ typedef union R_ODR_t {
 
 }R_ODR_t;
 
-volatile R_ODR_t* R_ODR = (volatile R_ODR_t*)(GPIO_A_ODR);
+volatile R_ODR_t* R_ODR = (volatile R_ODR_t*)(PORT_A_BASE + 0x0C);
 
 
 int main(void)
