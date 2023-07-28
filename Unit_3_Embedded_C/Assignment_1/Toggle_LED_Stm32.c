@@ -62,7 +62,7 @@ volatile R_ODR_t* R_ODR = (volatile R_ODR_t*)(PORT_A_BASE + 0x0C);
 int main(void)
 {
     SET(RCC_APB2ENR,2);
-    CLEAR_RANGE(GPIO_A_CRH,20,24);
+    CLEAR_RANGE(GPIO_A_CRH,20,23);
     SET(GPIO_A_CRH,21);
     
     for (;;)
