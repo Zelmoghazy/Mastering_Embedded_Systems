@@ -1,1 +1,1 @@
-<img src="./Project/LED.gif" width="50%"/>
+<p style="text-align:center;"><img src="./Project/LED.gif" width="50%"/></p>
