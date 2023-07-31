@@ -1,4 +1,4 @@
-CC=arm-none-eabi-gcc-12.2.0.exe
+CC=arm-none-eabi-gcc.exe
 AS=arm-none-eabi-as.exe
 LD=arm-none-eabi-ld.exe
 OBJCPY=arm-none-eabi-objcopy.exe
