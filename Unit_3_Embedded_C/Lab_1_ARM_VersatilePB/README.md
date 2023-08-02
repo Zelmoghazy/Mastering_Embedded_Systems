@@ -11,9 +11,9 @@
 * `arm-none-eabi-as`      : Assembler
 * `arm-none-eabi-ld`      : Linker
 * `arm-none-eabi-objcopy` : Format converter
-* `arm-none-eabi-objdump`
-* `arm-none-eabi-readelf`
-* `arm-none-eabi-nm`
+* `arm-none-eabi-objdump` : Display information from object files
+* `arm-none-eabi-readelf` : display information about ELF files
+* `arm-none-eabi-nm`      : list symbols from object files
 
 ## Compiler Flags
 

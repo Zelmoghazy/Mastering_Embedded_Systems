@@ -1,0 +1,4 @@
+00000000 T main
+00000064 D rodata
+00000000 D string_buffer
+         U uart_send_string
