@@ -1,9 +1,9 @@
 CC=arm-none-eabi-gcc.exe
 AS=arm-none-eabi-as.exe
 LD=arm-none-eabi-ld.exe
+MCPU=-mcpu=arm926ej-s
 OBJCPY=arm-none-eabi-objcopy.exe
 QEMU=qemu-system-arm.exe
-MCPU=-mcpu=arm926ej-s
 
 all:
 	@$(CC) -c -I . -g $(MCPU) uart.c -o uart.o

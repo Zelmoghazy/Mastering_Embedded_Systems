@@ -1,0 +1,117 @@
+
+Memory Configuration
+---------------------
+Name             Origin             Length             Attributes
+Mem              0x0000000000000000 0x0000000004000000 xrw
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+----------------------------
+
+                0x0000000000010000                . = 0x10000
+
+.startup        0x0000000000010000       0x10
+ startup.o(.text)
+ .text          0x0000000000010000       0x10 startup.o
+                0x0000000000010000                reset
+
+.text           0x0000000000010010       0x83
+ *(.text)
+ .text          0x0000000000010010       0x1c app.o
+                0x0000000000010010                main
+ .text          0x000000000001002c       0x58 uart.o
+                0x000000000001002c                uart_send_string
+
+ *(.rodata)
+ .rodata        0x0000000000010084        0xf app.o
+
+.glue_7         0x0000000000010094        0x0
+ .glue_7        0x0000000000010094        0x0 linker stubs
+
+.glue_7t        0x0000000000010094        0x0
+ .glue_7t       0x0000000000010094        0x0 linker stubs
+
+.vfp11_veneer   0x0000000000010094        0x0
+ .vfp11_veneer  0x0000000000010094        0x0 linker stubs
+
+.v4_bx          0x0000000000010094        0x0
+ .v4_bx         0x0000000000010094        0x0 linker stubs
+
+.iplt           0x0000000000010094        0x0
+ .iplt          0x0000000000010094        0x0 startup.o
+
+.rel.dyn        0x0000000000010094        0x0
+ .rel.iplt      0x0000000000010094        0x0 startup.o
+
+.data           0x0000000000010094       0x68
+ *(.data)
+ .data          0x0000000000010094        0x0 startup.o
+ .data          0x0000000000010094       0x68 app.o
+                0x0000000000010094                string_buffer
+                0x00000000000100f8                rodata
+ .data          0x00000000000100fc        0x0 uart.o
+
+.igot.plt       0x00000000000100fc        0x0
+ .igot.plt      0x00000000000100fc        0x0 startup.o
+
+.bss            0x00000000000100fc        0x0
+ *(.bss)
+ .bss           0x00000000000100fc        0x0 startup.o
+ .bss           0x00000000000100fc        0x0 app.o
+ .bss           0x00000000000100fc        0x0 uart.o
+ *(COMMON)
+                0x00000000000110fc                . = (. + 0x1000)
+                0x00000000000110fc                stack_top = .
+LOAD startup.o
+LOAD app.o
+LOAD uart.o
+OUTPUT(app.elf elf32-littlearm)
+LOAD linker stubs
+
+.ARM.attributes
+                0x0000000000000000       0x2e
+ .ARM.attributes
+                0x0000000000000000       0x22 startup.o
+ .ARM.attributes
+                0x0000000000000022       0x2c app.o
+ .ARM.attributes
+                0x000000000000004e       0x2c uart.o
+
+.comment        0x0000000000000000       0x12
+ .comment       0x0000000000000000       0x12 app.o
+                                         0x13 (size before relaxing)
+ .comment       0x0000000000000012       0x13 uart.o
+
+.debug_line     0x0000000000000000      0x15b
+ .debug_line    0x0000000000000000       0x3a startup.o
+ .debug_line    0x000000000000003a       0x45 app.o
+ .debug_line    0x000000000000007f       0xdc uart.o
+
+.debug_info     0x0000000000000000      0x197
+ .debug_info    0x0000000000000000       0x26 startup.o
+ .debug_info    0x0000000000000026       0x9c app.o
+ .debug_info    0x00000000000000c2       0xd5 uart.o
+
+.debug_abbrev   0x0000000000000000      0x10d
+ .debug_abbrev  0x0000000000000000       0x14 startup.o
+ .debug_abbrev  0x0000000000000014       0x84 app.o
+ .debug_abbrev  0x0000000000000098       0x75 uart.o
+
+.debug_aranges  0x0000000000000000       0x60
+ .debug_aranges
+                0x0000000000000000       0x20 startup.o
+ .debug_aranges
+                0x0000000000000020       0x20 app.o
+ .debug_aranges
+                0x0000000000000040       0x20 uart.o
+
+.debug_str      0x0000000000000000      0x176
+ .debug_str     0x0000000000000000       0x7c startup.o
+ .debug_str     0x000000000000007c       0x89 app.o
+                                        0x101 (size before relaxing)
+ .debug_str     0x0000000000000105       0x71 uart.o
+                                        0x182 (size before relaxing)
+
+.debug_frame    0x0000000000000000       0x5c
+ .debug_frame   0x0000000000000000       0x2c app.o
+ .debug_frame   0x000000000000002c       0x30 uart.o
