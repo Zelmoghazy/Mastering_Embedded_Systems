@@ -26,7 +26,7 @@
 |`-O<level>`|Optimization Level {0,1,2,3,s,fast,g}|
 |`-g`|Produce debugging information|
 |`-ggdb`|Produce debugging information for use by GDB.|
-|`-gdwarf-2`|Produce debugging information for use by Proteus.|
+|`-gdwarf-2`|Produce debugging information in DWARF format (Proteus).|
 
 ## Compilation Process
 
