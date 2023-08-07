@@ -82,7 +82,7 @@
 #include "uart.h"
 
 unsigned char string_buffer[100] = "Zeyad Ahmed Ibrahim"; // .data
-char *rodata = "read only data"; // .rodata
+char *rodata = "read only data";                          // .rodata
 
 void main(void)
 {
@@ -124,12 +124,38 @@ void main(void)
 <div style="border-radius: 30px; overflow: hidden;">
     <p align="center">
         <img src="Images/ROM-RAM.png"
-             width="100%" 
+             width="75%" 
              style="border-radius: 30px;"/>
     </p>
 </div>
 
 * Section boundary information and sizes need to be exported from a **linker script** to the startup file.
+
+### Functional Attribute
+* In GNU C and C++, you can use function attributes to specify certain function properties that may help the compiler optimize calls or check code more carefully for correctness. 
+* You can also use attributes to control memory placement, code generation options or call/return conventions within the function being annotated.
+* Many of these attributes are target-specific.
+  * However, a considerable number of attributes are supported by most, if not all targets.
+* Function attributes are introduced by the `__attribute__` keyword in the declaration of a function, followed by an attribute specification enclosed in double parentheses.
+
+#### Common Function Attributes
+
+* `section ("section-name")`
+  * Normally, the compiler places the code it generates in the text section. Sometimes, however, you need additional sections, or you need certain particular functions to appear in special sections. 
+  * The section attribute specifies that a function lives in a particular section. 
+* `weak`
+  * The weak attribute causes a declaration of an external symbol to be emitted as a weak symbol rather than a global.
+  * This is primarily useful in defining library functions that can be overridden in user code
+  * The overriding symbol must have the same type as the weak symbol.
+  * In addition, if it designates a variable it must also have the same size and alignment as the weak symbol.
+* `alias ("target")`
+  * The alias attribute causes the declaration to be emitted as an alias for another symbol, which must have been previously declared with the same type, and for variables, also the same size and alignment.
+* `aligned (alignment)`
+  * The aligned attribute specifies a minimum alignment for the first instruction of the function, measured in bytes.
+  * When specified, alignment must be an integer constant power of 2.
+  * Specifying no alignment argument implies the ideal alignment for the target. 
+
+---
 
 ## Linker Script
 
@@ -293,58 +319,143 @@ SECTIONS
 ---
 ## Makefile
 
-* **Target :** things you want to build.
-* **Dependencies :** Things that need to be built before the Target is built.
-* **Rules :** define how you go from a complete list of dependencies to the given target
+### Dependency Graph
 
-* `%` wild card -> any
-* `$*` variable matches whatever `%` was
-* `$@` variable matches the name of the target
-* make with no arguments -> builds first target
+<p align="center">
+  <img src="Images/DependencyGraph.png"
+       width="75%" 
+       style="border-radius: 30px;"/>
+</p>
 
+### Rules
+* **Target :** Files you want to build.
+* **Dependencies :** File that is used as input to create the **Target**.
+* **Recipe :** Definition of how you go from a complete list of **Dependencies** to the given **Target**.
+  * A recipe may have more than one command, either on the same line or each on its own line.
+  * You need to put a tab character at the beginning of every recipe line!
+
+```make
+target … : prerequisites …
+        recipe
+        long-line \
+        continue long line
+        …
+        …
+```
+* you can format your makefiles for readability by adding newlines into the middle of a statement: you do this by escaping the internal newlines with a backslash `\` character.
+* when you give the command `make`:
+  * By default, make starts with the first target
+  * before `make` can fully process this rule, it must process the rules for the files that its target depends on.
+  * Any rule that doesnt depend on the initial target wont run at all unless explicitly called with an argument to `make` command.
+* make does its work in two distinct phases.
+  * During the first phase it reads all the makefiles, included makefiles, etc. and internalizes all the variables and their values and implicit and explicit rules, and builds a dependency graph of all the targets and their prerequisites.
+  * During the second phase, make uses this internalized data to determine which targets need to be updated and run the recipes necessary to update them.
+* A variable is a name defined in a makefile to represent a string of text `foo=value` or `foo:=value`
+    * To substitute a variable’s value, write a dollar sign followed by the name of the variable in parentheses or braces: either `$(foo)` or `${foo}` 
+* A single file name can specify many files using wildcard characters like `*`, `?` and `[…]`
+    * `*` : represent any number of characters 
+    * `?` : represent any single character.
+    * `[]` : specifies a range.
+
+*  Wildcard expansion does not happen when you define a variable.
+   *  you must use the function `wildcard` 
+   *  `objects := $(wildcard *.o)`
+
+* The value of the make variable `VPATH` specifies a list of directories that make should search. Most often, the directories are expected to contain prerequisite files that are not in the current directory; however, make uses `VPATH` as a search list for both prerequisites and targets of rules.
+  * `VPATH = src:../headers` specifies a path containing two directories, `src` and `../headers`
+  * `foo.o : foo.c` is equivalent to `foo.o : src/foo.c`
+* the `vpath` directive (note lower case), which allows you to specify a search path for a particular class of file names: those that match a particular pattern. 
+  * `vpath %.h ../headers` tells make to look for any prerequisite whose name ends in .h in the directory ../headers if the file is not found in the current directory.
+
+* **Pattern rule**
+```
+%.o: %.c
+        $(CC) -c $^ -o $@ 
+```
+* It specifies one target and one dependency, and causes one invocation of `$(CC)` for each target. 
+  * The `%` matches any nonempty string, and the other characters match themselves.
+  * `%.c` as a pattern matches any file name that ends in `.c`
+  * `%` in a prerequisite of a pattern rule stands for the same **stem** that was matched by the `%` in the target.
+
+* **Automatic Variables**
+  * `$@` The file name of the target of the rule.
+  * `$^` list of all the prerequisites of the rule.
+  * `$<` The name of the first prerequisite (for header files).
+* When a line starts with `@`, the echoing of that line is suppressed.
+
+*  the `-j` option tells make to execute many recipes simultaneously.
+   *  If the `-j` option is followed by an integer, this is the number of recipes to execute at once; 
+   *  If a makefile completely and accurately defines the dependency relationships between all of its targets, then make will correctly build the goals regardless of whether parallel execution is enabled or not. 
+
+### Useful functions
+* Functions for String Substitution
+  * `$(subst from,to,text)`
+  * `$(patsubst pattern,replacement,text)`
+  * `$(sort list)`
+
+* We can change the list of C source files into a list of object files by replacing the ‘.c’ suffix with ‘.o’ in the result, like this:
+  * `$(patsubst %.c,%.o,$(wildcard *.c))`
+* `$(addsuffix suffix,names…)` The value of suffix is appended to the end of each individual name and the resulting larger names are concatenated with single spaces between them.
+* `$(addprefix prefix,names…)` The value of prefix is prepended to the front of each individual name and the resulting larger names are concatenated with single spaces between them.
+* `$(join list1,list2)` 
+  * `$(join a b,.c .o)` produces ‘a.c b.o’
+* `$(foreach var,list,text)`  It causes one piece of text to be used repeatedly, each time with a different substitution performed on it.
+
+---
 
 ## GDB
 
-`gdb-multiarch`
+* `gdb-multiarch`
 
-### GDB Flags
 
 ### GDB Commands
 
-* `start` : break at first instruction
-* `run` : Run the program. 
+* `start` : Break at first instruction.
+* `r` : Run the program until a breakpoint. 
 * `n` : Step over next C instruction
 * `s` : Step into next C instruction
-* `l` : print lines of code around where you at
-* `b <l>` : break at a line  
-* `b <function name>` : break at a function first instruction
-* `c` : continue until a break point.
-* `finish` :  Continue running until just after function in the selected stack frame returns.
-* `watch <var>` : break when value of variable changes. 
-* `i+b` : all set breakpoints and watchpoints
-* `delete` : delete all breakpoints and watchpoints
-* `q` : quit
-* `p <var>` : print current value of a variable
-* `display <var>` : for every step print the value of var, `undisplay <id>` 
-* `whatis <var>` : print the data type of the variable and the last value in the value history.
-* `up` / `down` : peak up and down the call stack
-* `bt` : backtrace the entire call stack
-* `disas` : Disassembly of code
-* `shell <command>` : execute commands from terminal (ex `clear`)
-* `python <commands>` : full python interpreter inside gdb
+* `l` : Print lines of code around where you at
+* `b <l>` : Break at a line  
+* `b <function name>` : Break at a function first instruction
+* `b <l/fn> if <condition>` : Break if given condition is met
+  * `<condition>` : any C expression that evaluates to true or false.
+* `c` : Continue until a break point.
+* `f` :  Continue running until just after function in the selected stack frame returns.
+* `watch <var>` : Break when value of variable changes. 
+* `i` + `b` : Info about all set breakpoints and watchpoints
+* `d` : Delete all breakpoints and watchpoints
+* `d <n>` : Delete breakpoint number `<n>`
+* `q` : Quit
+* `p <var>` : Print current value of a variable
+  * `p/x <var>` Print the value in hexadecimal
+* `display <var>` : For every step print the value of var, `undisplay <id>` 
+* `whatis <var>` : Print the data type of the variable and the last value in the value history.
+* `u` / `d` : Peak up and down the call stack
+* `bt` : Backtrace the entire call stack
+* `disas` : Dump disassembly of code
+* `shell <command>` : Execute commands from terminal (ex `clear`)
+* `python <commands>` : Full python interpreter inside gdb
 * **Reverse debugging**
-  * `target record-full` : record everything from this point
-  * `rn` : step back over
-  * `rs` : step back into
-* `set var <name>=<value>` : change the value of variable during debugging.
+  * `target record-full` : Record everything from this point
+  * `r` + `n` : Step back over
+  * `rs` + `n` : Step back into
+* `set var <name>=<value>` : Change the value of variable during debugging.
+* `x/nfu` : Print memory
+  * `n` : how many units to print
+  * `f` : format character
+  * `u` : Unit
+    * `b` : 1 byte
+    * `h` : 2 bytes
+    * `w` : 4 bytes
+    * `g` : 8 bytes
 
 
 ### TUI Mode
 * `Ctrl+X+A` : TUI Mode
 * `Ctrl+X` + `2` : Cycle views (Disassembly, registers, source code)
 * `Ctrl+L` : Refresh Screen
-* `Ctrl+p`: previous command in tui
-* `Ctrl+n` : next command in tui mode
+* `Ctrl+P`: previous command in tui
+* `Ctrl+N` : next command in tui mode
 
 * **Note :** To enable source syntax highlighting
   * `pip install Pygments` 
@@ -354,6 +465,24 @@ SECTIONS
     <p align="center">
         <img src="Images/TUI.png"
              width="75%" 
+             style="border-radius: 30px;"/>
+    </p>
+</div>
+
+### Remote Debugging
+
+* On platforms where gdbserver is supported, it is possible to use this tool to debug your application remotely.
+* This can be useful in situations where the program needs to be run on a target host that is different from the host used for development
+* To simulate it in QEMU use the flags `-s -S`
+  * `-S` : This option instructs QEMU to start the virtual machine but pause execution at its entry point waiting for a debugger to connect to it.
+  * `-s` : open a gdbserver on TCP port 1234.  
+* Once gdbserver has started listening, we can tell the debugger to establish a connection with this gdbserver, and then start the same debugging session as if the program was being debugged on the same host, directly under the control of GDB.
+  * `(gdb) target remote localhost:1234`
+
+<div style="border-radius: 30px; overflow: hidden;">
+    <p align="center">
+        <img src="Images/gdbserver.png"
+             width="100%" 
              style="border-radius: 30px;"/>
     </p>
 </div>

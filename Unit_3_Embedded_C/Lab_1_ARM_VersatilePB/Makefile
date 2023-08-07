@@ -4,7 +4,7 @@ LD=arm-none-eabi-ld.exe
 MCPU=-mcpu=arm926ej-s
 OBJCPY=arm-none-eabi-objcopy.exe
 QEMU=qemu-system-arm.exe
-Q_FLAGS= -M versatilepb -m 128M -nographic -s -S -kernel 
+Q_FLAGS= -M versatilepb -m 128M -nographic -kernel 
 
 all:
 	@$(CC) -c -I . -g $(MCPU) uart.c -o uart.o

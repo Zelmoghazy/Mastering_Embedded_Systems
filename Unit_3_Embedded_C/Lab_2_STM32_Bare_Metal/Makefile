@@ -3,9 +3,9 @@ LD=arm-none-eabi-ld
 AS=arm-none-eabi-as
 OBJCPY=arm-none-eabi-objcopy
 CFLAGS=-mcpu=cortex-m3
-INCS= I .
-SRC= $(wildcard *.c)
-OBJ= $(SRC:.c=.o)
+INCS=I .
+SRC=$(wildcard *.c)
+OBJ=$(SRC:.c=.o)
 LIB=	
 PROJ=STM32
 
@@ -13,7 +13,7 @@ all: $(PROJ).bin
 	@echo "Success"
 
 startup.o: startup.s
-	$(CC) $(CFLAGS) $< -o $@
+	$(AS) $(CFLAGS) $< -o $@
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $(INCS) $< -o $@
