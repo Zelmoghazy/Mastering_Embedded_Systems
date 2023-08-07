@@ -332,7 +332,10 @@ SECTIONS
 * **Dependencies :** File that is used as input to create the **Target**.
 * **Recipe :** Definition of how you go from a complete list of **Dependencies** to the given **Target**.
   * A recipe may have more than one command, either on the same line or each on its own line.
-  * You need to put a tab character at the beginning of every recipe line!
+  * You **must** put a tab character at the beginning of every recipe line!
+
+* You can format your makefiles for readability by adding newlines into the middle of a statement: you do this by escaping the internal newlines with a backslash `\` character.
+
 
 ```make
 target … : prerequisites …
@@ -342,17 +345,25 @@ target … : prerequisites …
         …
         …
 ```
-* you can format your makefiles for readability by adding newlines into the middle of a statement: you do this by escaping the internal newlines with a backslash `\` character.
-* when you give the command `make`:
-  * By default, make starts with the first target
+* when you give the command `make` (with no arguments):
+  * By default, `make` starts with the **first** target.
   * before `make` can fully process this rule, it must process the rules for the files that its target depends on.
   * Any rule that doesnt depend on the initial target wont run at all unless explicitly called with an argument to `make` command.
-* make does its work in two distinct phases.
-  * During the first phase it reads all the makefiles, included makefiles, etc. and internalizes all the variables and their values and implicit and explicit rules, and builds a dependency graph of all the targets and their prerequisites.
-  * During the second phase, make uses this internalized data to determine which targets need to be updated and run the recipes necessary to update them.
-* A variable is a name defined in a makefile to represent a string of text `foo=value` or `foo:=value`
-    * To substitute a variable’s value, write a dollar sign followed by the name of the variable in parentheses or braces: either `$(foo)` or `${foo}` 
-* A single file name can specify many files using wildcard characters like `*`, `?` and `[…]`
+* `make` does its work in two distinct phases.
+  * **First phase :** it reads all the makefiles, included makefiles, etc. and internalizes all the variables and their values and implicit and explicit rules, and builds a dependency graph of all the targets and their prerequisites.
+    * Therefore order of rules is not significant, except for determining the default goal (First rule)
+  * **Second phase :** `make` uses this internalized data to determine which targets need to be updated and run the recipes necessary to update them.
+* **Variables :**
+  * A variable is a name defined in a makefile to represent a string of text ( `foo=value` or `foo:=value` )
+  * To substitute a variable’s value, write a dollar sign followed by the name of the variable in parentheses or braces: either `$(foo)` or `${foo}`
+
+* **Automatic Variables**
+  * `$@` The file name of the target of the rule.
+  * `$^` list of all the prerequisites of the rule.
+  * `$<` The name of the first prerequisite (for header files).
+
+### Wildcards
+* A single file name can specify many files using wildcard characters like (`*`, `?` and `[…]`)
     * `*` : represent any number of characters 
     * `?` : represent any single character.
     * `[]` : specifies a range.
@@ -361,6 +372,7 @@ target … : prerequisites …
    *  you must use the function `wildcard` 
    *  `objects := $(wildcard *.o)`
 
+### VPATH and vpath
 * The value of the make variable `VPATH` specifies a list of directories that make should search. Most often, the directories are expected to contain prerequisite files that are not in the current directory; however, make uses `VPATH` as a search list for both prerequisites and targets of rules.
   * `VPATH = src:../headers` specifies a path containing two directories, `src` and `../headers`
   * `foo.o : foo.c` is equivalent to `foo.o : src/foo.c`
@@ -377,11 +389,12 @@ target … : prerequisites …
   * `%.c` as a pattern matches any file name that ends in `.c`
   * `%` in a prerequisite of a pattern rule stands for the same **stem** that was matched by the `%` in the target.
 
-* **Automatic Variables**
-  * `$@` The file name of the target of the rule.
-  * `$^` list of all the prerequisites of the rule.
-  * `$<` The name of the first prerequisite (for header files).
 * When a line starts with `@`, the echoing of that line is suppressed.
+
+* **Substitution References**
+  * A substitution reference substitutes the value of a variable with alterations that you specify. 
+  * `$(var:a=b)` : its meaning is to take the value of the variable `var`, replace every `a` at the end of a word with `b` in that value, and substitute the resulting string.
+  * `a` must appear either followed by whitespace or at the end of the value in order to be replaced; other occurrences of a in the value are unaltered.
 
 *  the `-j` option tells make to execute many recipes simultaneously.
    *  If the `-j` option is followed by an integer, this is the number of recipes to execute at once; 
@@ -400,12 +413,22 @@ target … : prerequisites …
 * `$(join list1,list2)` 
   * `$(join a b,.c .o)` produces ‘a.c b.o’
 * `$(foreach var,list,text)`  It causes one piece of text to be used repeatedly, each time with a different substitution performed on it.
+* `$(notdir $(filename))` takes away the path from the file name leaving just the file name`
 
 ---
 
 ## GDB
 
 * `gdb-multiarch`
+
+* Use `-g` flag while compiling to include debugging information. 
+
+
+<p align="center">
+  <img src="Images/DNGInfo.png"
+       width="75%" 
+       style="border-radius: 30px;"/>
+</p>
 
 
 ### GDB Commands

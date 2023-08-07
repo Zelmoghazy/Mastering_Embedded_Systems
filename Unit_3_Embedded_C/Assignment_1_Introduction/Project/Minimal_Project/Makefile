@@ -11,11 +11,11 @@ CPU=-mcpu=cortex-m3 -mthumb -mfloat-abi=soft
 CFLAGS=$(CPU) $(DBG) $(INCS) $(OPT) -fdata-sections -ffunction-sections
 ASFLAGS=$(CPU) $(DBG) $(OPT) -fdata-sections -ffunction-sections
 
-SRC=$(foreach D,$(CODEDIRS),$(wildcard $(D)/*.c))
-# SRC=$(wildcard *.c)
-# OBJ=$(patsubst %.c,%.o,$(SRC))
-# OBJ=$(SRC:.c=.o)
-OBJ = $(addprefix $(BUILD_DIR)/,$(notdir $(SRC:.c=.o)))
+SRC=$(foreach DIR,$(CODEDIRS),$(wildcard $(DIR)/*.c))
+ASM=$(foreach DIR,$(CODEDIRS),$(wildcard $(DIR)/*.s))
+OBJ=$(addprefix $(BUILD_DIR)/,$(notdir $(SRC:.c=.o)))
+OBJ+=$(addprefix $(BUILD_DIR)/,$(notdir $(ASM:.s=.o)))
+
 LIB=
 
 BUILD_DIR=build
@@ -33,15 +33,17 @@ HEX =-O ihex
 BIN =-O binary
 
 all: $(BUILD_DIR)/$(PROJ).bin $(BUILD_DIR)/$(PROJ).hex
-	@echo "==============Success!!!=============="
+	@echo "========================================="
+	@echo "              BUILD SUCCESS              "
+	@echo "========================================="
 
-$(BUILD_DIR)/$(STARTUP).o: $(STARTUP).s
+$(BUILD_DIR)/%.o: %.s | $(BUILD_DIR)
 	$(CC) -c $(ASFLAGS) $^ -o $@
 
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) $^ -o $@
 
-$(BUILD_DIR)/$(PROJ).elf: $(OBJ) $(BUILD_DIR)/$(STARTUP).o
+$(BUILD_DIR)/$(PROJ).elf: $(OBJ)
 	$(CC) $^ -o $@ $(CFLAGS) -T $(LS) $(LDFLAGS)
 
 $(BUILD_DIR)/$(PROJ).bin: $(BUILD_DIR)/$(PROJ).elf
