@@ -2,7 +2,7 @@
 
 #define RCC_BASE    0x40021000
 #define PORT_A_BASE 0x40010800
-#define RCC_APB2ENR ((*(vuint32_t *) (RCC_BASE + 0x18)))
+#define RCC_APB2ENR ((*(vuint32_t *) (RCC_BASE    + 0x18)))
 #define GPIO_A_CRH  ((*(vuint32_t *) (PORT_A_BASE + 0x04)))
 #define GPIO_A_ODR  ((*(vuint32_t *) (PORT_A_BASE + 0x0C)))
 
@@ -61,21 +61,21 @@ volatile R_ODR_t* R_ODR = (volatile R_ODR_t*)(PORT_A_BASE + 0x0C);
 
 int main(void)
 {
-    SET(RCC_APB2ENR,2);
+    SET(RCC_APB2ENR,2); // RCC_IOPAEN
     CLEAR_RANGE(GPIO_A_CRH,20,23);
     SET(GPIO_A_CRH,21);
-    
+
     for (;;)
     {
         // SET(GPIO_A_ODR,13);
         R_ODR->pin.pin13 = 1;
         /* Delay */
-	for(int i = 0 ;i < 500 ; i++);
+        for (int i = 0; i < 5000; i++);
         // CLEAR(GPIO_A_ODR,13);
         R_ODR->pin.pin13 = 0;
         /* Delay */
-	for(int i = 0 ;i < 500 ; i++);
+        for (int i = 0; i < 5000; i++);
     }
-    
+
     return 0;
 }

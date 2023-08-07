@@ -6,9 +6,9 @@ OBJCPY=arm-none-eabi-objcopy
 INCS=-I.
 OPT=-Og
 DBG=-gdwarf-2
-CPU=-mcpu=cortex-m3 -mthumb -mfloat-abi=soft
+CPU=-mcpu=cortex-m3
 
-CFLAGS=$(CPU) $(DBG) $(INCS) $(OPT)
+CFLAGS=$(CPU) $(DBG) $(OPT) $(INCS)
 ASFLAGS=$(CPU) $(DBG)
 
 SRC=$(foreach DIR,$(CODEDIRS),$(wildcard $(DIR)/*.c))
@@ -23,11 +23,9 @@ CODEDIRS=.
 
 PROJ=STM32
 
-STARTUP=startup_stm32f103x6
+LS=linker_script.ld
 
-LS=STM32F103C6Tx_FLASH.ld
-
-LDFLAGS=-T $(LS)  --specs=nosys.specs -Wl,-Map="./$(BUILD_DIR)/Map.map" -Wl,--gc-sections -static --specs=nano.specs -Wl,--start-group -lc -lm -Wl,--end-group
+LDFLAGS=-T $(LS)
 
 HEX =-O ihex
 BIN =-O binary
@@ -44,7 +42,7 @@ $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) $^ -o $@
 
 $(BUILD_DIR)/$(PROJ).elf: $(OBJ)
-	$(CC) $^ -o $@ $(LDFLAGS)
+	$(LD) $(LDFLAGS) $^ -o $@ -Map=$(BUILD_DIR)/Map_file.map
 
 $(BUILD_DIR)/$(PROJ).bin: $(BUILD_DIR)/$(PROJ).elf
 	$(OBJCPY) $(BIN) $^ $@

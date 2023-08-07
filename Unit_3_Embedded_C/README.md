@@ -153,7 +153,21 @@ void main(void)
 * `aligned (alignment)`
   * The aligned attribute specifies a minimum alignment for the first instruction of the function, measured in bytes.
   * When specified, alignment must be an integer constant power of 2.
-  * Specifying no alignment argument implies the ideal alignment for the target. 
+  * Specifying no alignment argument implies the ideal alignment for the target.
+
+### Vector Table (STM32 Case Study)
+* The vector table is a section of our flash memory that mostly holds the addresses of various handlers.
+* Starting address of the reset handler (Reset handler is the code executed on reset)
+* Starting addresses of all other exceptions and interrupts including the NMI handler, Hard fault handler and so on.
+
+<p align="center">
+  <img src="Images/STM32MemMap.png"
+       width="100%" 
+       style="border-radius: 30px;"/>
+</p>
+
+* When power is applied to the MCU the Program Counter (PC) value will be 0 which will map to 0x08000000 and will therefore start at address 0x08000000.
+
 
 ---
 
