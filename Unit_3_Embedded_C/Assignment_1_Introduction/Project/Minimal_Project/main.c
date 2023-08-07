@@ -6,9 +6,9 @@
 #define GPIO_A_CRH  ((*(vuint32_t *) (PORT_A_BASE + 0x04)))
 #define GPIO_A_ODR  ((*(vuint32_t *) (PORT_A_BASE + 0x0C)))
 
-#define SET(a,n)    ((a) |=  (1 << (n)))
-#define CLEAR(a,n)  ((a) &= ~(1 << (n)))
-#define TOGGLE(a,n) ((a) ^=  (1 << (n)))
+#define SET(a,n)    ((a) |=  (1U << (n)))
+#define CLEAR(a,n)  ((a) &= ~(1U << (n)))
+#define TOGGLE(a,n) ((a) ^=  (1U << (n)))
 
 #define CLEAR_RANGE(a, s, e)           \
     uint32 mask = ~0;                  \
@@ -53,35 +53,33 @@ typedef union R_ODR_t {
         vuint32_t pin30:1;
         vuint32_t pin31:1;
     }pin;
-
 }R_ODR_t;
 
 volatile R_ODR_t* R_ODR = (volatile R_ODR_t*)(PORT_A_BASE + 0x0C);
 
+int main(void);
 
-int main(void)
+void SystemInit()
 {
     SET(RCC_APB2ENR,2);
     CLEAR_RANGE(GPIO_A_CRH,20,23);
     SET(GPIO_A_CRH,21);
-    
+
+    main();
+}
+
+int main(void)
+{
     for (;;)
     {
         // SET(GPIO_A_ODR,13);
         R_ODR->pin.pin13 = 1;
         /* Delay */
-		for(int i = 0 ;i < 500 ; i++);
+		for(int i = 0; i < 5000; i++);
         // CLEAR(GPIO_A_ODR,13);
         R_ODR->pin.pin13 = 0;
         /* Delay */
-		for(int i = 0 ;i < 500 ; i++);
+		for(int i = 0; i < 5000; i++);
     }
-    
     return 0;
-}
-
-void SystemInit()
-{
-    main();
-
 }

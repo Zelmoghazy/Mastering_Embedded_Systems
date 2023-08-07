@@ -19,9 +19,9 @@
 #define GPIO_A_CRH  ((*(vuint32_t *) (PORT_A_BASE + 0x04)))
 #define GPIO_A_ODR  ((*(vuint32_t *) (PORT_A_BASE + 0x0C)))
 
-#define SET(a,n)    ((a) |=  (1 << (n)))
-#define CLEAR(a,n)  ((a) &= ~(1 << (n)))
-#define TOGGLE(a,n) ((a) ^=  (1 << (n)))
+#define SET(a,n)    ((a) |=  (1U << (n)))
+#define CLEAR(a,n)  ((a) &= ~(1U << (n)))
+#define TOGGLE(a,n) ((a) ^=  (1U << (n)))
 
 #define CLEAR_RANGE(a, s, e)           \
     do{                                \

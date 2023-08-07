@@ -33,22 +33,22 @@ HEX =-O ihex
 BIN =-O binary
 
 all: $(BUILD_DIR)/$(PROJ).bin $(BUILD_DIR)/$(PROJ).hex
-	@echo "Success"
+	@echo "==============Success!!!=============="
 
 $(BUILD_DIR)/$(STARTUP).o: $(STARTUP).s
-	$(CC) -c $(ASFLAGS) $< -o $@
+	$(CC) -c $(ASFLAGS) $^ -o $@
 
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -c $(CFLAGS) $^ -o $@
 
 $(BUILD_DIR)/$(PROJ).elf: $(OBJ) $(BUILD_DIR)/$(STARTUP).o
 	$(CC) $^ -o $@ $(CFLAGS) -T $(LS) $(LDFLAGS)
 
 $(BUILD_DIR)/$(PROJ).bin: $(BUILD_DIR)/$(PROJ).elf
-	$(OBJCPY) $(BIN) $< $@
+	$(OBJCPY) $(BIN) $^ $@
 
 $(BUILD_DIR)/$(PROJ).hex: $(BUILD_DIR)/$(PROJ).elf
-	$(OBJCPY) $(HEX) $< $@
+	$(OBJCPY) $(HEX) $^ $@
 
 $(BUILD_DIR):
 	mkdir $@
