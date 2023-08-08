@@ -57,29 +57,22 @@ typedef union R_ODR_t {
 
 volatile R_ODR_t* R_ODR = (volatile R_ODR_t*)(PORT_A_BASE + 0x0C);
 
-int main(void);
-
-void SystemInit()
+int main(void)
 {
     SET(RCC_APB2ENR,2);
     CLEAR_RANGE(GPIO_A_CRH,20,23);
     SET(GPIO_A_CRH,21);
 
-    main();
-}
-
-int main(void)
-{
     for (;;)
     {
         // SET(GPIO_A_ODR,13);
         R_ODR->pin.pin13 = 1;
         /* Delay */
-		for(int i = 0; i < 5000; i++);
+		for(int i = 0; i < 1000; i++);
         // CLEAR(GPIO_A_ODR,13);
         R_ODR->pin.pin13 = 0;
         /* Delay */
-		for(int i = 0; i < 5000; i++);
+		for(int i = 0; i < 1000; i++);
     }
     return 0;
 }

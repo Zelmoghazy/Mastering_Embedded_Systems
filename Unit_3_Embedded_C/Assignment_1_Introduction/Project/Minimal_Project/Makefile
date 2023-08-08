@@ -6,10 +6,10 @@ OBJCPY=arm-none-eabi-objcopy
 INCS=-I.
 OPT=-Og
 DBG=-gdwarf-2
-CPU=-mcpu=cortex-m3 -mthumb -mfloat-abi=soft
+CPU=-mcpu=cortex-m3
 
-CFLAGS=$(CPU) $(DBG) $(INCS) $(OPT)
-ASFLAGS=$(CPU) $(DBG)
+CFLAGS=$(CPU) $(DBG) $(INCS) $(OPT) -mcpu=cortex-m3 --specs=nano.specs -mfloat-abi=soft -mthumb
+ASFLAGS=$(CPU) $(DBG) -mcpu=cortex-m3 -mfloat-abi=soft -mthumb
 
 SRC=$(foreach DIR,$(CODEDIRS),$(wildcard $(DIR)/*.c))
 ASM=$(foreach DIR,$(CODEDIRS),$(wildcard $(DIR)/*.s))
@@ -27,7 +27,7 @@ STARTUP=startup_stm32f103x6
 
 LS=STM32F103C6Tx_FLASH.ld
 
-LDFLAGS=-T $(LS)  --specs=nosys.specs -Wl,-Map="./$(BUILD_DIR)/Map.map" -Wl,--gc-sections -static --specs=nano.specs -Wl,--start-group -lc -lm -Wl,--end-group
+LDFLAGS=-T $(LS) --specs=nosys.specs -Wl,-Map="./$(BUILD_DIR)/Map.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 
 HEX =-O ihex
 BIN =-O binary
