@@ -1,0 +1,42 @@
+#include "Platform_Types.h"
+
+#define STACK_TOP 0x20001000
+
+extern int main(void);
+
+void Reset_Handler(void)
+{
+    main();
+}
+void NMI_Handler(void)
+{
+    Reset_Handler();
+}
+void Hard_Fault_Handler(void)
+{
+    Reset_Handler();
+}
+
+void Memory_Management_Fault_Handler(void)
+{
+    Reset_Handler();
+}
+void Bus_Fault_Handler(void)
+{
+    Reset_Handler();
+}
+void Usage_Fault_Handler(void)
+{
+    Reset_Handler();
+}
+
+uint32 vectors[] __attribute__((section(".vectors"))) = {
+    STACK_TOP,
+    (uint32) &Reset_Handler,
+    (uint32) &NMI_Handler,
+    (uint32) &Hard_Fault_Handler,
+    (uint32) &Memory_Management_Fault_Handler,
+    (uint32) &Memory_Management_Fault_Handler,
+    (uint32) &Bus_Fault_Handler,
+    (uint32) &Usage_Fault_Handler,
+};

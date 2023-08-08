@@ -1,0 +1,10 @@
+08000090 W Bus_Fault_Handler
+08000090 T Default_Handler
+08000090 W Hard_Fault_Handler
+08000020 T main
+08000090 W Memory_Management_Fault_Handler
+08000090 W NMI_Handler
+08000098 D R_ODR
+08000088 T Reset_Handler
+08000090 W Usage_Fault_Handler
+08000000 T vectors

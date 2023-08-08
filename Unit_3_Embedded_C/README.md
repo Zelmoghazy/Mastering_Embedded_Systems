@@ -52,11 +52,11 @@
     </p>
 </div>
 
-* `.text`: The machine code of the compiled program.
-* `.rodata`: Read-only data 
-* `.data`: Initialized global C variables.
+* `.text` : The machine code of the compiled program.
+* `.rodata` : Read-only data 
+* `.data` : Initialized global C variables.
   * Local C variables are maintained at run time on the stack, and do not appear in either the `.data` or `.bss` sections.
-* `.bss:` Uninitialized global C variables.
+* `.bss` : Uninitialized global C variables.
   * This section occupies no actual space in the object file; it is merely a place holder.
   * Object file formats distinguish between initialized and uninitialized variables for space efficiency
   * uninitialized variables do not have to occupy any actual disk space in the object file.
@@ -166,7 +166,150 @@ void main(void)
        style="border-radius: 30px;"/>
 </p>
 
-* When power is applied to the MCU the Program Counter (PC) value will be 0 which will map to 0x08000000 and will therefore start at address 0x08000000.
+* On many STM32 families, the boot address in the internal flash is 0x0800_0000. This address is remapped to address 0x0000_0000 by boot mode mechanism. 
+* **Boot Sequence :**
+  * Take the initial value of the Main stack pointer from the address 0x0000 (0x0800_0000) so we store in this location the SRAM address
+  * Take the value of the program counter from the address 0x0004 (Reset_Handler).
+  * Continue execution from the address corresponding to this value. 
+
+```ARM
+.section .vectors
+
+.word   0x20001000    /* Stack top (SRAM) */
+.word   _RESET        
+.word   _NMI         
+.word   _HARD_FAULT   
+.word   _MEM_MGMT_FAULT     
+.word   _BUS_FAULT    
+.word   _USAGE_FAULT  
+.word   _RESERVED
+.word   _RESERVED
+.word   _RESERVED
+.word   _RESERVED
+.word   _SVCALL
+.word   _RESERVED_DBG
+.word   _RESERVED
+.word   _PENDSV
+.word   _SYSTICK
+.word   _IRQ_0
+.word   _IRQ_1
+/* ....................... */
+.word   _IRQ_
+```
+
+* **Startup in C**
+  * As (CortexM3) can intalize the stack pointer with the first 4 bytes, so we can write startup in C code.
+
+<table>
+<tr>
+<th> Basic </th>
+<th> Using Weak and Alias Attributes </th>
+</tr>
+<tr>
+<td>
+
+```c
+#define STACK_TOP 0x20001000
+
+extern int main(void);
+
+void Reset_Handler(void)
+{
+    main();
+}
+
+void NMI_Handler(void)
+{
+    Reset_Handler();
+}
+void Hard_Fault_Handler(void)
+{
+    Reset_Handler();
+}
+
+uint32 vectors[] __attribute__((section(".vectors"))) = {
+    STACK_TOP,
+    (uint32) &Reset_Handler,
+    (uint32) &NMI_Handler,
+    (uint32) &Hard_Fault_Handler
+};
+```
+
+</td>
+<td>
+
+```c
+#define STACK_TOP 0x20001000
+
+extern int main(void);
+
+void Reset_Handler(void);
+
+void Default_Handler()
+{
+    Reset_Handler();
+}
+
+void NMI_Handler(void) __attribute__ ((weak,alias("Default_Handler")));
+void Hard_Fault_Handler(void) __attribute__ ((weak,alias("Default_Handler")));
+
+uint32 vectors[] __attribute__((section(".vectors"))) = {
+    STACK_TOP,
+    (uint32) &Reset_Handler,
+    (uint32) &NMI_Handler,
+    (uint32) &Hard_Fault_Handler,
+};
+
+void Reset_Handler(void)
+{
+    main();
+}
+```
+
+</td>
+</tr>
+</table>
+
+
+<p align="center">
+  <img src="Images/WeakSymbols.png"
+       width="100%" 
+       style="border-radius: 30px;"/>
+</p>
+
+## Initialize Memory
+
+```c
+void Mem_Init(void)
+{
+    extern uint32 _S_DATA;
+    extern uint32 _E_DATA;
+    extern uint32 _S_BSS;
+    extern uint32 _E_BSS;
+    extern uint32 _E_TEXT;
+
+    byte *src = (byte *)(&_E_TEXT);
+    byte *dst = (byte *)(&_S_DATA);
+
+    /* Copy data section */
+    while(dst < (byte*)(&_E_DATA))
+        *dst++ = *src++;
+
+    /* Zero bss */
+    for (dst = (byte*)(&_S_BSS);
+         dst < (byte*)(&_E_BSS);
+         dst++)
+    {
+        *dst = 0;
+    }
+}
+```
+
+<p align="center">
+  <img src="Images/Objdump_STM32.png"
+       width="75%" 
+       style="border-radius: 30px;"/>
+</p>
 
 
 ---
@@ -330,8 +473,55 @@ SECTIONS
     </p>
 </div>
 
+## Case Study (STM32)
+
+```ld
+MEMORY
+{
+    FLASH(RX) : ORIGIN = 0x08000000, LENGTH = 128k
+    SRAM(RWX) : ORIGIN = 0x20000000, LENGTH = 20k
+}
+
+SECTIONS
+{
+    .text : 
+    {
+        *(.vectors*)
+        *(.text*)
+        *(.rodata)
+        _E_TEXT = . ;
+    } > FLASH
+
+    .data :
+    {
+        _S_DATA = . ;
+        *(.data)
+        _E_DATA = . ;
+    }>SRAM AT> FLASH
+
+    .bss :
+    {
+        _S_BSS = . ;
+        *(.bss)
+        . = ALIGN(4);
+        _E_BSS = . ;
+
+        . = ALIGN(4);
+        . = . + 0x1000 ;
+        _STACK_TOP = . ;
+    }>SRAM
+}
+```
+
+<p align="center">
+  <img src="Images/ALIGN.png"
+       width="100%" 
+       style="border-radius: 30px;"/>
+</p>
+
+
 ---
-## Makefile
+# Makefile
 
 ### Dependency Graph
 
@@ -447,37 +637,38 @@ target … : prerequisites …
 
 ### GDB Commands
 
-* `start` : Break at first instruction.
-* `r` : Run the program until a breakpoint. 
-* `n` : Step over next C instruction
-* `s` : Step into next C instruction
-* `l` : Print lines of code around where you at
-* `b <l>` : Break at a line  
-* `b <function name>` : Break at a function first instruction
-* `b <l/fn> if <condition>` : Break if given condition is met
-  * `<condition>` : any C expression that evaluates to true or false.
-* `c` : Continue until a break point.
-* `f` :  Continue running until just after function in the selected stack frame returns.
-* `watch <var>` : Break when value of variable changes. 
-* `i` + `b` : Info about all set breakpoints and watchpoints
-* `d` : Delete all breakpoints and watchpoints
-* `d <n>` : Delete breakpoint number `<n>`
-* `q` : Quit
-* `p <var>` : Print current value of a variable
-  * `p/x <var>` Print the value in hexadecimal
-* `display <var>` : For every step print the value of var, `undisplay <id>` 
-* `whatis <var>` : Print the data type of the variable and the last value in the value history.
-* `u` / `d` : Peak up and down the call stack
-* `bt` : Backtrace the entire call stack
-* `disas` : Dump disassembly of code
-* `shell <command>` : Execute commands from terminal (ex `clear`)
-* `python <commands>` : Full python interpreter inside gdb
-* **Reverse debugging**
+|          Command         |            Meaning         |
+|:------------------------:|:--------------------------:|
+|`start`                   | Break at first instruction.|
+|`r`                       | Run the program until a breakpoint. |
+|`n`                       | Step over next C instruction|
+|`s`                       | Step into next C instruction|
+|`l`                       | Print lines of code around where you at|
+|`b <l>`                   | Break at a line  |
+|`b <function name>`       | Break at a function first instruction|
+|`b <l/fn> if <condition>` | Break if given condition is met, `<condition>` is any C expression that evaluates to true or false.|
+|`c`                       | Continue until a break point.|
+|`f`                       | Continue running until just after function in the selected stack frame returns.|
+|`watch <var>`             | Break when value of variable changes. |
+|`i` + `b`                 | Info about all set breakpoints and watchpoints|
+|`d`                       | Delete all breakpoints and watchpoints|
+|`d <n>`                   | Delete breakpoint number `<n>`|
+|`q`                       | Quit|
+|`p <var>`                 | Print current value of a variable, `p/x <var>` Print the value in hexadecimal|
+|`display <var>`           | For every step print the value of var, `undisplay <id>` |
+|`whatis <var>`            | Print the data type of the variable and the last value in the value history.|
+|`u` / `d`                 | Peak up and down the call stack|
+|`bt`                      | Backtrace the entire call stack|
+|`disas`                   | Dump disassembly of code|
+|`shell <command>`         | Execute commands from terminal (ex `clear`)|
+|`python <commands>`       | Full python interpreter inside gdb|
+|`set var <name> = <value>`  | Change the value of variable during debugging.|
+
+* **Reverse debugging :**
   * `target record-full` : Record everything from this point
   * `r` + `n` : Step back over
   * `rs` + `n` : Step back into
-* `set var <name>=<value>` : Change the value of variable during debugging.
-* `x/nfu` : Print memory
+* **Print memory :** `x/nfu` 
   * `n` : how many units to print
   * `f` : format character
   * `u` : Unit
