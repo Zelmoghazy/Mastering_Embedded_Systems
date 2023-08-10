@@ -28,10 +28,5 @@ SECTIONS
         *(.bss)
         . = ALIGN(4);
         _E_BSS = . ;
-
-        . = ALIGN(4);
-        . = . + 0x1000 ;
-        _STACK_TOP = . ;
-        
     }>SRAM
 }

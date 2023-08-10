@@ -13,15 +13,15 @@ int main()
 
     SYSCTL_RCGC2_R = 0x20;
 
-    for(delay_count = 0; delay count < 200; delay_count++);
-    SET(GPIO_PORTF_DIR_R,3);
-    SET(GPIO_PORTF_DEN_R,3);
+    for(delay_count = 0; delay_count < 200; delay_count++);
+    SET(GPIO_PORT_F_DIR_R,3);
+    SET(GPIO_PORT_F_DEN_R,3);
     for(;;)
     {
-        SET(GPIO_PORTF_DATA_R,3);
-        for(delay_count = 0; delay count < 200000; delay_count++);
-        CLEAR(GPIO_PORTF_DATA_R,3);
-        for(delay_count = 0; delay count < 200000; delay_count++);
+        SET(GPIO_PORT_F_DATA_R,3);
+        for(delay_count = 0; delay_count < 200000; delay_count++);
+        CLEAR(GPIO_PORT_F_DATA_R,3);
+        for(delay_count = 0; delay_count < 200000; delay_count++);
     }
     return 0;    
 }

@@ -8,7 +8,9 @@ OPT=-Og
 DBG=-gdwarf-2 -g
 CPU=-mcpu=cortex-m4
 
-CFLAGS=$(CPU) $(DBG) $(OPT) $(INCS)
+WARNINGS=-Wall -Wextra -Wsign-conversion -Wconversion
+
+CFLAGS=$(CPU) $(DBG) $(OPT) $(INCS) $(WARNINGS)
 ASFLAGS=$(CPU) $(DBG)
 
 SRC=$(foreach DIR,$(CODEDIRS),$(wildcard $(DIR)/*.c))
