@@ -27,6 +27,9 @@
 |`-g`|Produce debugging information|
 |`-ggdb`|Produce debugging information for use by GDB.|
 |`-gdwarf-2`|Produce debugging information in DWARF format (Proteus).|
+|`-l library`|Search the library named `library` when linking.|
+|`-nostartfiles`|Do not use the standard system startup files when linking.|
+|`-nostdlib`|Do not use the standard system startup files or libraries when linking.|
 
 ## Compilation Process
 
@@ -518,6 +521,39 @@ SECTIONS
        width="100%" 
        style="border-radius: 30px;"/>
 </p>
+
+## Integrating C Standard Library
+
+* **Newlib** is a C standard library implementation intended for use on embedded systems.
+  * Newlib is included in the GNU Arm toolchain, **nano** is a smaller implementation optimized for "small" embedded applications it focuses on code and data size reduction through optimization and removal of non-MCU features.
+
+<p align="center">
+  <img src="Images/newlib.png"
+       width="40%" 
+       style="border-radius: 30px;"/>
+</p>
+
+* Newlib implements the hardware independent parts of the C library and rely on a few low-level system calls that must be implemented with the target hardware in mind
+  * when using newlib you must implement the system calls appropriately to support devices, file-systems, and memory management.
+
+* **Complete List :**
+```
+_exit, _close, environ, execve, fork, fstat, getpid, isatty, kill, link, lseek, open, read, _sbrk, stat, times, unlink, wait, write
+```
+* several of the syscalls relate to filesystem operation or process control.
+  *  These do not make much sense in a firmware context, so we’ll often simply provide a stub that returns an error code.
+
+* **Most Important syscalls :**
+
+|System Call|Meaning|
+|:---:|:---:|
+|`sbrk_`|Increase program data space,` malloc` and related functions depend on this|
+|`write_`|Write to a file. libc subroutines will use this system routine for output to all files, including stdout|
+|`read_`|Read from a file.|
+
+* In GCC, you can create a spec file -using the `-specs=` option- containing compiler options and settings.
+  *  This option allows you to encapsulate a set of compiler and linker options in a single file, which can make it more convenient to manage complex build configurations.
+* We will use `--specs=nano.specs`.
 
 
 ---
