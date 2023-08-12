@@ -164,20 +164,24 @@ int _execve(char *name, char **argv, char **env)
  * As malloc and related functions depend on this, it is useful to have a working implementation.
  * The following suffices for a standalone system; it exploits the symbol _end automatically defined by the GNU linker. 
  */
-void *_sbrk(int incr) 
+void *_sbrk(int incr)
 {
-  extern char _end;		/* Defined by the linker */
-  static char *heap_end;
-  char *prev_heap_end;
- 
-  if (heap_end == 0) {
-    heap_end = &_end;
-  }
-  prev_heap_end = heap_end;
-  if (heap_end + incr > stack_ptr) {
-  }
-  heap_end += incr;
-  return (caddr_t) prev_heap_end;
+	extern char _end; /* Defined by the linker */
+	static char *heap_end;
+	char *prev_heap_end;
+
+	if (heap_end == 0)
+	{
+		heap_end = &_end;
+	}
+	prev_heap_end = heap_end;
+	if (heap_end + incr > stack_ptr)
+	{
+		errno = ENOMEM;
+		return (void *)-1;
+	}
+	heap_end += incr;
+	return (void *)prev_heap_end;
 }
 
 __attribute__((weak)) int _read(int file, char *ptr, int len)
