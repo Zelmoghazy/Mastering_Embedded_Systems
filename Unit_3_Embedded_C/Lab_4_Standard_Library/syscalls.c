@@ -8,7 +8,7 @@
 #include <sys/times.h>
 #include "Platform_Types.h"
 
-
+/* Overriden by user */
 extern int __io_putchar(int ch) __attribute__((weak));
 extern int __io_getchar(void) __attribute__((weak));
 

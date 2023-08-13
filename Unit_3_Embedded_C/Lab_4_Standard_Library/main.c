@@ -71,9 +71,8 @@ byte const Uninitialized_Global[7];
 
 int main(void)
 {
-    int *p = malloc(4);
-
-    /* No compilation error but implementation is still required */
+    byte *p = malloc(64);
+    /* Calls __io_putchar */
     printf("hello");
 
     SET(RCC_APB2ENR,2); // RCC_IOPAEN
@@ -82,6 +81,9 @@ int main(void)
 
     for (;;)
     {
+        /* so compiler wont optimize */
+        p[5] = 0;
+        
         // SET(GPIO_A_ODR,13);
         R_ODR->pin.pin13 = 1;
         /* Delay */
@@ -93,6 +95,11 @@ int main(void)
     }
 
     free(p);
+    return 0;
+}
 
+int __io_putchar(int ch)
+{
+    //TODO : Write on UART
     return 0;
 }
