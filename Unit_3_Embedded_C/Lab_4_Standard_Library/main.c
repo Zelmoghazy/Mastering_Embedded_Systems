@@ -1,5 +1,6 @@
+#include <stdlib.h>
+#include <stdio.h>
 #include "Platform_Types.h"
-#include "stdlib.h"
 
 #define RCC_BASE    0x40021000
 #define PORT_A_BASE 0x40010800
@@ -70,7 +71,11 @@ byte const Uninitialized_Global[7];
 
 int main(void)
 {
-    int *p = malloc(512);
+    int *p = malloc(4);
+
+    /* No compilation error but implementation is still required */
+    printf("hello");
+
     SET(RCC_APB2ENR,2); // RCC_IOPAEN
     CLEAR_RANGE(GPIO_A_CRH,20,23);
     SET(GPIO_A_CRH,21);
@@ -86,6 +91,8 @@ int main(void)
         /* Delay */
         for (int i = 0; i < 5000; i++);
     }
+
+    free(p);
 
     return 0;
 }

@@ -163,20 +163,28 @@ int _execve(char *name, char **argv, char **env)
  * As malloc and related functions depend on this, it is useful to have a working implementation.
  * The following suffices for a standalone system; it exploits the symbol _end automatically defined by the GNU linker. 
  */
+
+
 void *_sbrk(int incr)
 {
-	extern byte _end;          /* Defined by the linker */
-	extern byte _STACK_TOP;    /* Defined by the linker */
+	extern byte _end;          		/* Defined by the linker */
+	extern byte _estack;       		/* Defined by the linker */
+	extern uint32 _Min_Stack_Size;  /* Defined by the linker */
+
+	const uint32 stack_limit = (uint32)&_estack - (uint32)&_Min_Stack_Size;
 	static byte *heap_end;
 	byte *prev_heap_end;
-	uint32 stack_limit = 512;
 
+	/* First Initialization  */
 	if (heap_end == 0)
 	{
 		heap_end = &_end;
 	}
+
 	prev_heap_end = heap_end;
-	if (heap_end + incr > _STACK_TOP + stack_limit)
+
+	/* Protect Stack */
+	if (heap_end + incr > stack_limit)
 	{
 		errno = ENOMEM;
 		return (void *)-1;

@@ -27,9 +27,12 @@
 |`-g`|Produce debugging information|
 |`-ggdb`|Produce debugging information for use by GDB.|
 |`-gdwarf-2`|Produce debugging information in DWARF format (Proteus).|
+|`-I dir`| Add the directory `dir` to the head of the list of directories to be searched for header files.|
 |`-l library`|Search the library named `library` when linking.|
+|`-L dir`|Add directory `dir` to the list of directories to be searched for `-l`|
 |`-nostartfiles`|Do not use the standard system startup files when linking.|
 |`-nostdlib`|Do not use the standard system startup files or libraries when linking.|
+|`-Wl,option`| Pass `option` as an option to the linker.
 
 ## Compilation Process
 
@@ -291,19 +294,25 @@ void Mem_Init(void)
     extern uint32 _E_BSS;
     extern uint32 _E_TEXT;
 
-    byte *src = (byte *)(&_E_TEXT);
-    byte *dst = (byte *)(&_S_DATA);
+    /********* Copy from FLASH to SRAM *********/
 
-    /* Copy data section */
-    while(dst < (byte*)(&_E_DATA))
+    uint32 size_data = (uint32)&_E_DATA - (uint32)&_S_DATA;
+
+    byte *dst = (byte *)(&_S_DATA); // SRAM
+    byte *src = (byte *)(&_E_TEXT); // FLASH
+
+    for(uint32 i = 0; i < size_data; i++){
         *dst++ = *src++;
+    }
+    
+    /**************** Zero BSS ****************/
 
-    /* Zero bss */
-    for (dst = (byte*)(&_S_BSS);
-         dst < (byte*)(&_E_BSS);
-         dst++)
-    {
-        *dst = 0;
+    uint32 size_bss = (uint32)&_E_BSS - (uint32)&_S_BSS;
+
+    dst = (byte *)&_S_BSS;
+
+    for(uint32 i = 0; i<size_bss; i++){
+        *dst++ = (byte)0;
     }
 }
 ```
@@ -394,8 +403,10 @@ SECTIONS {
 }
 ```
 
-* `AT ( ldadr )` The expression `ldadr` that follows the `AT` keyword specifies the load address of the section. 
+* `AT (ldadr)` The expression `ldadr` that follows the `AT` keyword specifies the load address of the section. 
 * `>region` Assign this section to a previously defined region of memory. 
+* `LOADADDR(section)` Return the absolute load address of the named section.
+* `SIZEOF(section)` Return the size in bytes of the named section, if that section has been allocated.
 
 * **Location Counter :** The special linker variable dot `.` always contains the current output location counter. 
   * it must always appear in an expression within a `SECTIONS` command. 
@@ -403,6 +414,10 @@ SECTIONS {
     * This may be used to create holes in the output section.
   * The location counter **cannot** moved backwards.
   * You can use this symbol inside the linker script to track and define boundaries of various sections.
+
+
+* `ALIGN(exp)` Return the result of the current location counter `.` aligned to the next `exp` boundary.
+  *  `exp` must be an expression whose value is a power of two. 
 
 ```
 SECTIONS
@@ -698,7 +713,7 @@ target … : prerequisites …
 |`disas`                   | Dump disassembly of code|
 |`shell <command>`         | Execute commands from terminal (ex `clear`)|
 |`python <commands>`       | Full python interpreter inside gdb|
-|`set var <name> = <value>`  | Change the value of variable during debugging.|
+|`set var <name> = <value>`| Change the value of variable during debugging.|
 
 * **Reverse debugging :**
   * `target record-full` : Record everything from this point
@@ -746,7 +761,7 @@ target … : prerequisites …
 <div style="border-radius: 30px; overflow: hidden;">
     <p align="center">
         <img src="Images/gdbserver.png"
-             width="100%" 
+             width="75%" 
              style="border-radius: 30px;"/>
     </p>
 </div>

@@ -28,7 +28,7 @@ PROJ=STM32
 
 LS=linker_script.ld
 
-LDFLAGS=-T $(LS) --specs=nano.specs $(CPU) -Wl,-Map=$(BUILD_DIR)/Map_file.map
+LDFLAGS=$(CPU) --specs=nano.specs -T $(LS)  -Wl,-Map=$(BUILD_DIR)/Map_file.map 
 
 HEX =-O ihex
 BIN =-O binary
