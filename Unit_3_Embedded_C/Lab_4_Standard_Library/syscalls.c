@@ -6,12 +6,11 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/times.h>
+#include "Platform_Types.h"
 
 
 extern int __io_putchar(int ch) __attribute__((weak));
 extern int __io_getchar(void) __attribute__((weak));
-
-extern int _end;
 
 /** environ_
  *    A pointer to a list of environment variables and their values.
@@ -166,16 +165,18 @@ int _execve(char *name, char **argv, char **env)
  */
 void *_sbrk(int incr)
 {
-	extern char _end; /* Defined by the linker */
-	static char *heap_end;
-	char *prev_heap_end;
+	extern byte _end;          /* Defined by the linker */
+	extern byte _STACK_TOP;    /* Defined by the linker */
+	static byte *heap_end;
+	byte *prev_heap_end;
+	uint32 stack_limit = 512;
 
 	if (heap_end == 0)
 	{
 		heap_end = &_end;
 	}
 	prev_heap_end = heap_end;
-	if (heap_end + incr > stack_ptr)
+	if (heap_end + incr > _STACK_TOP + stack_limit)
 	{
 		errno = ENOMEM;
 		return (void *)-1;
@@ -192,8 +193,7 @@ __attribute__((weak)) int _read(int file, char *ptr, int len)
 	{
 		*ptr++ = __io_getchar();
 	}
-
-return len;
+	return len;
 }
 
 __attribute__((weak)) int _write(int file, char *ptr, int len)

@@ -8,7 +8,9 @@ OPT=-Og
 DBG=-gdwarf-2
 CPU=-mcpu=cortex-m3 -mthumb -mfloat-abi=soft
 
-CFLAGS=$(CPU) $(DBG) $(OPT) $(INCS)
+WARNINGS=-Wall -Wextra -Wsign-conversion -Wconversion
+
+CFLAGS=$(CPU) $(DBG) $(OPT) $(INCS) $(WARNINGS)
 ASFLAGS=$(CPU) $(DBG)
 
 SRC=$(foreach DIR,$(CODEDIRS),$(wildcard $(DIR)/*.c))
@@ -26,7 +28,7 @@ PROJ=STM32
 
 LS=linker_script.ld
 
-LDFLAGS=-T $(LS) --specs=nano.specs $(CPU)
+LDFLAGS=-T $(LS) --specs=nano.specs $(CPU) -Wl,-Map=$(BUILD_DIR)/Map_file.map
 
 HEX =-O ihex
 BIN =-O binary
@@ -43,7 +45,7 @@ $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) $^ -o $@
 
 $(BUILD_DIR)/$(PROJ).elf: $(OBJ)
-	$(LD) $(LDFLAGS) $^ -o $@ -Map=$(BUILD_DIR)/Map_file.map
+	$(CC) $(LDFLAGS) $^ -o $@ 
 
 $(BUILD_DIR)/$(PROJ).bin: $(BUILD_DIR)/$(PROJ).elf
 	$(OBJCPY) $(BIN) $^ $@

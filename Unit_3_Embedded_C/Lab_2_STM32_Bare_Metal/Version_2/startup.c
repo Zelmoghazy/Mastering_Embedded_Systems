@@ -54,7 +54,7 @@ void Mem_Init(void)
 
     dst = (byte *)&_S_BSS;
 
-    for(uint32 i = 0; i<size_data; i++){
+    for(uint32 i = 0; i<size_bss; i++){
         *dst++ = (byte)0;
     }
 

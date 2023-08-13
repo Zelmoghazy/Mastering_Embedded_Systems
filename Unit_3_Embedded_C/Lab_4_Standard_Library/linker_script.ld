@@ -35,8 +35,8 @@ SECTIONS
 
         . = ALIGN(4);
         end = . ;
+        _end = end ;
         . = . + 0x1000 ;
         _STACK_TOP = . ;
-        
     }>SRAM
 }

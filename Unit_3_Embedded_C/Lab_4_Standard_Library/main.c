@@ -1,4 +1,5 @@
 #include "Platform_Types.h"
+#include "stdlib.h"
 
 #define RCC_BASE    0x40021000
 #define PORT_A_BASE 0x40010800
@@ -69,6 +70,7 @@ byte const Uninitialized_Global[7];
 
 int main(void)
 {
+    int *p = malloc(512);
     SET(RCC_APB2ENR,2); // RCC_IOPAEN
     CLEAR_RANGE(GPIO_A_CRH,20,23);
     SET(GPIO_A_CRH,21);

@@ -4,7 +4,7 @@
 extern uint32 _STACK_TOP;
 
 extern int main(void);
-void __libc_init_array(void);
+// void __libc_init_array(void);
 
 void Reset_Handler(void);
 
@@ -56,7 +56,7 @@ void Mem_Init(void)
 
     dst = (byte *)&_S_BSS;
 
-    for(uint32 i = 0; i<size_data; i++){
+    for(uint32 i = 0; i<size_bss; i++){
         *dst++ = (byte)0;
     }
 
@@ -65,6 +65,6 @@ void Mem_Init(void)
 void Reset_Handler(void)
 {
     Mem_Init();
-    __libc_init_array();
+    // __libc_init_array();
     main();
 }
