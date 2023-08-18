@@ -3,7 +3,6 @@
 
 int main(void)
 {
-    
     student_database *db = s_db_new();
 
     int id;
@@ -11,18 +10,10 @@ int main(void)
     char name[NAME_SIZE];
 
     char choice;
-    char *MessageBox = 
-"*******************************************************\n\
-    Choose one of the following Options :               \n\
-        1: Add a student                                \n\
-        2: Delete a student                             \n\
-        3: View a student                               \n\
-        4: Delete all                                   \n\
-********************************************************\n";
 
     for(;;)
     {
-        printf("%s\n",MessageBox);
+        printf("%s\n",MESSAGE_BOX);
         printf("Enter a choice :");
         scanf(" %c",&choice);
         switch(choice){
@@ -39,6 +30,12 @@ int main(void)
                 s_db_pushfront(db,id,height,name);
 
                 break;
+            case '2':
+                printf("Enter Student id : ");
+                scanf("%d",&id);
+
+                s_db_removeid(db,id);
+                break;
 
             case '3':
                 printf("Enter Student id : ");
@@ -47,8 +44,15 @@ int main(void)
                 if(s == NULL){
                     printf("ID not found in database\n");
                 }else{
-                    s_db_print(db);
+                    s_db_formatstudent(s,true);
                 }
+                break;
+
+            case '4':
+                s_db_deleteall(student_database *DB);
+                break;
+
+            default: printf("Illegal choice\n");
         }
 
     }

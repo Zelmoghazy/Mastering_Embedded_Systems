@@ -12,27 +12,36 @@ student_database *s_db_new()
     return DB;
 }
 
-void format_student(student *s, byte spaces)
+void s_db_printheader()
 {
-    printf("%-*d ",spaces,s->data.ID);
-    printf("%-*s ",spaces,s->data.name);
-    printf("%-*f ",spaces,s->data.height);
+    printf("%-*s ",SPACES,"ID");
+    printf("%-*s ",SPACES,"Name");
+    printf("%-*s ",SPACES,"Height");
+    printf("\n");
+    for (size_t i = 0; i < SPACES*3; i++)
+        printf("-");
+    printf("\n");
+}
+
+void s_db_formatstudent(student *s, bool single)
+{
+    if(single){
+        s_db_printheader();
+    }
+    printf("%-*d ",SPACES,s->data.ID);
+    printf("%-*s ",SPACES,s->data.name);
+    printf("%-*f ",SPACES,s->data.height);
     printf("\n");
 }
 void s_db_print(student_database *DB)
 {
-    byte spaces = 20;
-    printf("%-*s ",spaces,"ID");
-    printf("%-*s ",spaces,"Name");
-    printf("%-*s ",spaces,"Height");
-    printf("\n");
-
+    s_db_printheader();
     student *current = DB->first;
     while (current->next != NULL){
-        format_student(current, spaces);
+        s_db_formatstudent(current,false);
         current = current->next;
     }
-    format_student(current, spaces);
+    s_db_formatstudent(current,false);
 }
 
 bool s_db_isempty(student_database *DB)
@@ -163,6 +172,31 @@ void s_db_removeat(student_database *DB, int index)
     prev_student->next = deleted_student->next; 
     free(deleted_student);
 }
+void s_db_removeid(student_database *DB, int id)
+{
+    if (s_db_isempty(DB)){
+        return;
+    }
+    if (DB->first->next == NULL &&
+        DB->first->data.ID == id){
+        free(DB->first);
+        DB->first = NULL;
+        return;
+    }else{
+        printf("Student not found\n");
+    }
+    student *iterator = DB->first;
+    while (iterator != NULL){
+        if (iterator->data.ID == id){
+            student *deleted_student = iterator->next; 
+            iterator->next = deleted_student->next; 
+            free(deleted_student);
+            return;
+        }
+        iterator = iterator->next;
+    }
+    printf("Student Not found\n");
+}
 
 void s_db_reverse(student_database *DB)
 {
@@ -181,8 +215,6 @@ void s_db_reverse(student_database *DB)
     DB->first = prev;
 }
 
-
-
 student* s_db_search(student_database *DB, int id)
 {
     student *iterator = DB->first;
@@ -195,11 +227,16 @@ student* s_db_search(student_database *DB, int id)
     return NULL;
 }
 
-void s_db_free(student_database *DB)
+void s_db_deleteall(student_database *DB)
 {
     while (!s_db_isempty(DB)){
         s_db_popfront(DB);
     }
+}
+
+void s_db_free(student_database *DB)
+{
+    s_db_deleteall(DB);
     free(DB);
 }
 
@@ -252,14 +289,12 @@ void MergeSortLinkedList(student_database *L)
     MergeSortLinkedListNode(&(L->first));
 }
 
-
-
-bool hasCycle (student_database *L){
-    if(L->first == NULL || L->first->next == NULL){
+bool hasCycle (student_database *DB){
+    if(DB->first == NULL || DB->first->next == NULL){
         return false;
     }
-    student *slow = L->first;
-    student *fast = L->first->next;
+    student *slow = DB->first;
+    student *fast = DB->first->next;
     while(fast!= NULL && fast->next != NULL){
         slow = slow->next;
         fast = fast->next->next;
