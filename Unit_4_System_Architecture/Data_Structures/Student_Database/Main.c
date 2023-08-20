@@ -1,6 +1,15 @@
 #include "LinkedList.h"
 #include "Utilities.h"
 
+char choice;
+
+void User_choice(void)
+{
+    printf("%s\n",MESSAGE_BOX);
+    printf("Enter a choice : ");
+    scanf(" %c",&choice);
+}
+
 int main(void)
 {
     student_database *db = s_db_new();
@@ -9,13 +18,10 @@ int main(void)
     float height;
     char name[NAME_SIZE];
 
-    char choice;
-
     for(;;)
     {
-        printf("%s\n",MESSAGE_BOX);
-        printf("Enter a choice :");
-        scanf(" %c",&choice);
+        print_frame("Student database",50,'=',User_choice);
+        
         switch(choice){
             case '1':
                 printf("Enter Student id : ");
@@ -49,7 +55,7 @@ int main(void)
                 break;
 
             case '4':
-                s_db_deleteall(student_database *DB);
+                s_db_deleteall(db);
                 break;
 
             default: printf("Illegal choice\n");

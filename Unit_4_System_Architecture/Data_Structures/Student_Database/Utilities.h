@@ -16,12 +16,13 @@ void symbol_repeat(char str[], size_t size, char symbol) {
     str[size]='\0';
 }
 
-void print_frame(const char *str, const char *title, size_t size, char symbol){
+void print_frame(const char *title, size_t size, char symbol,void(*func)(void)){
+    printf("\n");
     const char *Label = title;
     char Padding[size+1];
     symbol_repeat(Padding,size,symbol);       
     size_t Length = size - strlen(Label);  
     printf("%*.*s%s%*.*s\n", Length / 2, Length / 2, Padding, Label, (Length + 1) / 2, (Length + 1) / 2, Padding);
-    printf("%s\n",str);
+    func();
     printf("%s\n",Padding);
 }

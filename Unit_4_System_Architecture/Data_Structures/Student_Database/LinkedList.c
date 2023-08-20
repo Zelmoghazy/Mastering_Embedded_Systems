@@ -14,12 +14,18 @@ student_database *s_db_new()
 
 void s_db_printheader()
 {
-    printf("%-*s ",SPACES,"ID");
-    printf("%-*s ",SPACES,"Name");
+    printf("\n");
+    for (size_t i = 0; i < SPACES*3; i++)
+        printf("*");
+    printf("\n");
+    printf("%-*s ",SPACES/2,"ID");
+    printf("%-*s ",SPACES/2,"*");
+    printf("%-*s ",SPACES/2,"Name");
+    printf("%-*s ",SPACES/2,"*");
     printf("%-*s ",SPACES,"Height");
     printf("\n");
     for (size_t i = 0; i < SPACES*3; i++)
-        printf("-");
+        printf("*");
     printf("\n");
 }
 
@@ -28,8 +34,10 @@ void s_db_formatstudent(student *s, bool single)
     if(single){
         s_db_printheader();
     }
-    printf("%-*d ",SPACES,s->data.ID);
-    printf("%-*s ",SPACES,s->data.name);
+    printf("%-*d ",SPACES/2,s->data.ID);
+    printf("%-*s ",SPACES/2,"*");
+    printf("%-*s ",SPACES/2,s->data.name);
+    printf("%-*s ",SPACES/2,"*");
     printf("%-*f ",SPACES,s->data.height);
     printf("\n");
 }
@@ -232,6 +240,7 @@ void s_db_deleteall(student_database *DB)
     while (!s_db_isempty(DB)){
         s_db_popfront(DB);
     }
+    DB->first = NULL;
 }
 
 void s_db_free(student_database *DB)
