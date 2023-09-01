@@ -9,8 +9,12 @@
 
 #define STATE_DEFINE(statefun) void ST_##statefun()
 #define STATE(statefun) ST_##statefun
-#define QUOTE(seq) "\""#seq"\""
+#define QUOTE_MARK(seq) "\""#seq"\""
+#define QUOTE(seq) #seq
 #define EXPAND_QUOTE(s) QUOTE(s)
 
+
+void US_get_distance(int *distance);
+void DC_set_speed(int speed);
 
 #endif /* STATE_H_ */

@@ -10,14 +10,10 @@ enum CA_STATE {
 };
 
 extern enum CA_STATE CA_state_id;
-
-STATE_DEFINE(CA_Waiting);
-
-STATE_DEFINE(CA_Driving);
-
 /* State Pointer */
 extern void (*CA_state_ptr)(void);
 
-int CA_get_random_distance(int start, int end);
+STATE_DEFINE(CA_Waiting);
+STATE_DEFINE(CA_Driving);
 
 #endif /* CA_H_ */

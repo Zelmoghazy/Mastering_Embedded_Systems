@@ -22,8 +22,9 @@ STATE_DEFINE(CA_Waiting)
 
     /* State Action */
     CA_speed = 0;
+    DC_set_speed(CA_speed);
 
-    CA_distance = CA_get_random_distance(45,55);
+    US_get_distance(&CA_distance);
     /* Event Check */
     if(CA_distance <= CA_threshold){
         CA_state_ptr = STATE(CA_Waiting);
@@ -40,8 +41,9 @@ STATE_DEFINE(CA_Driving)
 
     /* State Action */
     CA_speed = 30;
+    DC_set_speed(CA_speed);
 
-    CA_distance = CA_get_random_distance(45,55);
+    US_get_distance(&CA_distance);
     /* Event Check */
     if(CA_distance <= CA_threshold){
         CA_state_ptr = STATE(CA_Waiting);
@@ -49,16 +51,4 @@ STATE_DEFINE(CA_Driving)
         CA_state_ptr = STATE(CA_Driving);
     }
     CA_print_state(EXPAND_QUOTE(STATE(CA_Driving)));
-}
-
-
-int CA_get_random_distance(int start, int end)
-{
-    if (end + 1 - start != 0){
-        srand(time(NULL));
-        int r = rand() % (end + 1 - start) + start;
-        return r;
-    }else{
-        return -1;
-    }
 }
