@@ -21,7 +21,7 @@
 |`-time`|Time the execution of each subprocess.|
 |`-std=<standard>`|Assume that the input sources are for `<standard>`.|
 |`-march=<arch name>`|Specify the name of the target architecture.|
-|`-mcpu=<cpu name>`|Specify the name of the target CPU., architecture is derived|
+|`-mcpu=<cpu name>`|Specify the name of the target CPU, architecture is derived|
 |`-mtune=`|Tune code for the given processor.|
 |`-O<level>`|Optimization Level {0,1,2,3,s,fast,g}|
 |`-g`|Produce debugging information|
@@ -676,9 +676,9 @@ target … : prerequisites …
 
 |Flag|Meaning|
 |:---:|:---:|
-|`-M`|Instead of outputting the result of preprocessing, output a rule suitable for `make` describing the dependencies of the main source file. The preprocessor outputs one make rule containing the object file name for that source file, a colon, and the names of all the included files|
+|`-M`|Instead of outputting the result of preprocessing, output a rule suitable for `make` describing the dependencies of the main source file.<br/> The preprocessor outputs one make rule containing the object file name for that source file, a colon, and the names of all the included files|
 |`-MF <file>`|specifies a `file` to write the dependencies to.|
-|`-MD`|equivalent to `-M -MF file`. The driver determines file based on whether an `-o` option is given. If it is, the driver uses its argument but with a suffix of `.d`, otherwise it takes the name of the input file, removes any directory components and suffix, and applies a `.d` suffix.|
+|`-MD`|equivalent to `-M -MF file`. The driver determines file based on whether an `-o` option is given.<br/> If it is, the driver uses its argument but with a suffix of `.d`, otherwise it takes the name of the input file, removes any directory components and suffix, and applies a `.d` suffix.|
 |`-MP`|Construct dummy rules that work around errors `make` gives if you remove header files without updating the Makefile to match.|
 
 ```make
