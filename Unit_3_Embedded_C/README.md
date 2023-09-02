@@ -670,6 +670,28 @@ target … : prerequisites …
 * `$(foreach var,list,text)`  It causes one piece of text to be used repeatedly, each time with a different substitution performed on it.
 * `$(notdir $(filename))` takes away the path from the file name leaving just the file name`
 
+## Tracking Header files 
+
+* Compiler Options Controlling the Preprocessor
+
+|Flag|Meaning|
+|:---:|:---:|
+|`-M`|Instead of outputting the result of preprocessing, output a rule suitable for `make` describing the dependencies of the main source file. The preprocessor outputs one make rule containing the object file name for that source file, a colon, and the names of all the included files|
+|`-MF <file>`|specifies a `file` to write the dependencies to.|
+|`-MD`|equivalent to `-M -MF file`. The driver determines file based on whether an `-o` option is given. If it is, the driver uses its argument but with a suffix of `.d`, otherwise it takes the name of the input file, removes any directory components and suffix, and applies a `.d` suffix.|
+|`-MP`|Construct dummy rules that work around errors `make` gives if you remove header files without updating the Makefile to match.|
+
+```make
+# Dependencies flags sent to the compiler.
+DEPFLAGS=-MP -MD
+# a dependecy file is created for each source file
+DEP=$(addprefix $(BUILD_DIR)/,$(notdir $(SRC:.c=.d)))
+-include $(DEP)
+```
+
+* The `include` directive tells `make` to suspend reading the current makefile and read one or more other makefiles before continuing.
+  * When you want to generate prerequisites from source files automatically; the prerequisites can be put in a file that is included by the main makefile.
+  * If you want `make` to simply ignore a makefile which does not exist or cannot be remade, with no error message, use the `-include` directive instead of `include` it acts like `include` in every way except that there is no error (not even a warning) if any of the filenames (or any prerequisites of any of the filenames) do not exist or cannot be remade.
 ---
 
 ## GDB
