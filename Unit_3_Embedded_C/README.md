@@ -27,12 +27,12 @@
 |`-g`|Produce debugging information|
 |`-ggdb`|Produce debugging information for use by GDB.|
 |`-gdwarf-2`|Produce debugging information in DWARF format (Proteus).|
-|`-I dir`| Add the directory `dir` to the head of the list of directories to be searched for header files.|
-|`-l library`|Search the library named `library` when linking.|
-|`-L dir`|Add directory `dir` to the list of directories to be searched for `-l`|
+|`-I <dir>`| Add the directory `dir` to the head of the list of directories to be searched for header files.|
+|`-L <dir>`|Add directory `dir` to the list of directories to be searched for `-l`|
+|`-l<library>`|Search the library named `library` when linking.|
 |`-nostartfiles`|Do not use the standard system startup files when linking.|
 |`-nostdlib`|Do not use the standard system startup files or libraries when linking.|
-|`-Wl,option`| Pass `option` as an option to the linker.
+|`-Wl,<option>`| Pass `option` as an option to the linker.|
 
 ## Compilation Process
 
