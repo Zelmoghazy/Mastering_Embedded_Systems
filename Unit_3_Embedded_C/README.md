@@ -566,9 +566,15 @@ _exit, _close, environ, execve, fork, fstat, getpid, isatty, kill, link, lseek, 
 |`write_`|Write to a file. libc subroutines will use this system routine for output to all files, including stdout|
 |`read_`|Read from a file.|
 
-* In GCC, you can create a spec file -using the `-specs=` option- containing compiler options and settings.
+* `brk` and `sbrk` are basic memory management system calls used in Unix and Unix-like operating systems to control the amount of memory allocated to the data segment of the process.
+  * The `brk` and `sbrk` calls dynamically change the amount of space allocated for the **data** segment of the calling process.
+  *  The change is made by resetting the **program break** (brk) of the process, which determines the maximum space that can be allocated.
+  *  The **program break** is the address of the first location beyond the current end of the data region.
+  * `sbrk(intptr_t increment)` increments the program's data space by `increment` bytes.
+  *  These functions are typically called from a higher-level memory management library function such as `malloc`.
+* In GCC, you can create a spec file *-using the `-specs=` option-* containing compiler options and settings.
   *  This option allows you to encapsulate a set of compiler and linker options in a single file, which can make it more convenient to manage complex build configurations.
-* We will use `--specs=nano.specs`.
+  * We will use `--specs=nano.specs` to configure linking the newlib nano library.
 
 
 ---
