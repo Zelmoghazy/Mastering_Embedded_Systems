@@ -11,12 +11,12 @@ void setup()
             * HAL (Sensors , Motors)
             * Block
      */
-    /* Set States Pointers */
     srand(time(NULL));
     US_init();
     DC_init();
 
-    CA_state_ptr = STATE(CA_Waiting);
+    /* Set States Pointers */
+    CA_state_ptr = STATE(CA_Event_Check);
     US_state_ptr = STATE(US_Busy);
     DC_state_ptr = STATE(DC_Idle);
 }
@@ -25,8 +25,8 @@ void loop()
 {
     for(;;)
     {
-        CA_state_ptr();
         US_state_ptr();
+        CA_state_ptr();
         DC_state_ptr();
 
         getchar();

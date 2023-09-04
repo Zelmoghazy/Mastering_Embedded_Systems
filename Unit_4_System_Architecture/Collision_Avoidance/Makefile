@@ -17,17 +17,18 @@ LIB=
 BUILD_DIR=build
 CODEDIRS=.
 
-PROJ=Main
+EXEC=Main.exe
 
-all: $(BUILD_DIR)/$(PROJ).exe
+all: $(BUILD_DIR)/$(EXEC)
 	@echo "========================================="
 	@echo "              BUILD SUCCESS              "
 	@echo "========================================="
+	@# @cd ./$(BUILD_DIR) && ./$(EXEC) && cd ..
 
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) $^ -o $@
 
-$(BUILD_DIR)/$(PROJ).exe: $(OBJ)
+$(BUILD_DIR)/$(EXEC): $(OBJ)
 	$(CC) $(CFLAGS) $^ -o $@ 
 
 $(BUILD_DIR):
