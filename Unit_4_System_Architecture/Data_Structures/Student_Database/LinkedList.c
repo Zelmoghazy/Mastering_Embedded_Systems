@@ -397,3 +397,26 @@ void s_db_sort(student_database *L)
 {
     s_db_sort_node(&(L->first));
 }
+
+void s_db_load_students(student_database *DB,char *path)
+{
+    FILE *file = fopen(path, "r");
+    if (!file){
+        fprintf(stderr, "Couldnt load file");
+        return false;
+    }
+    fseek(file, 0, SEEK_END);
+    int size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    char *source = malloc(sizeof(char) * size + 1);
+    fread(source, 1, size, file);
+    fclose(file);
+    source[size] = '\0';
+    char* ptr = source;
+    while(ptr){
+        while(*ptr != '\n'){
+            ptr++;
+        }
+    }
+
+}
