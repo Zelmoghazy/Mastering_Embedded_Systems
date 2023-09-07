@@ -33,14 +33,14 @@ int main(void)
                 printf("Enter Student height : ");
                 scanf("%f",&height);
 
-                s_db_pushfront(db,id,height,name);
+                s_db_push_front(db,id,height,name);
 
                 break;
             case '2':
                 printf("Enter Student id : ");
                 scanf("%d",&id);
 
-                s_db_removeid(db,id);
+                s_db_remove_id(db,id);
                 break;
 
             case '3':
@@ -50,12 +50,12 @@ int main(void)
                 if(s == NULL){
                     printf("ID not found in database\n");
                 }else{
-                    s_db_formatstudent(s,true);
+                    s_db_format_student(s,true);
                 }
                 break;
 
             case '4':
-                s_db_deleteall(db);
+                s_db_delete_all(db);
                 break;
 
             default: printf("Illegal choice\n");

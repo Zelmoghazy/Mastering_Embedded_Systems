@@ -12,7 +12,7 @@ student_database *s_db_new()
     return DB;
 }
 
-void s_db_printheader()
+void s_db_print_header()
 {
     printf("\n");
     for (size_t i = 0; i < SPACES*3; i++)
@@ -29,10 +29,10 @@ void s_db_printheader()
     printf("\n");
 }
 
-void s_db_formatstudent(student *s, bool single)
+void s_db_format_student(student *s, bool single)
 {
     if(single){
-        s_db_printheader();
+        s_db_print_header();
     }
     printf("%-*d ",SPACES/2,s->data.ID);
     printf("%-*s ",SPACES/2,"*");
@@ -43,68 +43,68 @@ void s_db_formatstudent(student *s, bool single)
 }
 void s_db_print(student_database *DB)
 {
-    s_db_printheader();
+    s_db_print_header();
     student *current = DB->first;
     while (current->next != NULL){
-        s_db_formatstudent(current,false);
+        s_db_format_student(current,false);
         current = current->next;
     }
-    s_db_formatstudent(current,false);
+    s_db_format_student(current,false);
 }
 
-bool s_db_isempty(student_database *DB)
+bool s_db_is_empty(student_database *DB)
 {
     return (DB->first == NULL);
 }
 
-void s_db_setdata(student *s, int id, float height, char *name)
+void s_db_set_data(student *s, int id, float height, char *name)
 {
     s->data.ID = id;  
     s->data.height = height;
     strcpy(s->data.name,name);  
 }
 
-void s_db_pushfront(student_database *DB, int id, float height, char *name)
+void s_db_push_front(student_database *DB, int id, float height, char *name)
 {
     student *new_student = malloc(sizeof(student));
     if(new_student == NULL){
         printf("PushFront Failed to allocate memory");
         exit(EXIT_FAILURE);
     }
-    s_db_setdata(new_student,id,height,name);
+    s_db_set_data(new_student,id,height,name);
     new_student->next = DB->first;
     DB->first = new_student;
     DB->size++;
 }
 
-void s_db_pushback(student_database *DB, int id,float height,char *name)
+void s_db_push_back(student_database *DB, int id,float height,char *name)
 {
-    if (s_db_isempty(DB)){
-        s_db_pushfront(DB, id,height,name);
+    if (s_db_is_empty(DB)){
+        s_db_push_front(DB, id,height,name);
     }else{
         student *last_student = DB->first;
         while (last_student->next != NULL){
             last_student = last_student->next;
         }
         student *new_student = malloc(sizeof(student));
-        s_db_setdata(new_student,id,height,name);
+        s_db_set_data(new_student,id,height,name);
         new_student->next = NULL;
         last_student->next = new_student;
         DB->size++;
     }
 }
 
-void s_db_insertat(student_database *DB,int index, int id,float height,char *name)
+void s_db_insert_at(student_database *DB,int index, int id,float height,char *name)
 {
-    if (s_db_isempty(DB)){
-        s_db_pushfront(DB, id,height,name);
+    if (s_db_is_empty(DB)){
+        s_db_push_front(DB, id,height,name);
     }
     if (index == 1){ // insert at first position
-        s_db_pushfront(DB, id,height,name);
+        s_db_push_front(DB, id,height,name);
         return;
     }
     else if (index > DB->size){
-        s_db_pushback(DB, id,height,name);
+        s_db_push_back(DB, id,height,name);
         return;
     }
 
@@ -114,15 +114,15 @@ void s_db_insertat(student_database *DB,int index, int id,float height,char *nam
         req_student = req_student->next;
     }
     student *new_student = malloc(sizeof(student));
-    s_db_setdata(new_student,id,height,name);
+    s_db_set_data(new_student,id,height,name);
     new_student->next = req_student->next;
     req_student->next = new_student;
     DB->size++;
 }
 
-void s_db_popfront(student_database *DB)
+void s_db_pop_front(student_database *DB)
 {
-    if (s_db_isempty(DB)){
+    if (s_db_is_empty(DB)){
         return;
     }
     student *first_student = DB->first;
@@ -131,9 +131,9 @@ void s_db_popfront(student_database *DB)
     DB->size--;
 }
 
-void s_db_popback(student_database *DB)
+void s_db_pop_back(student_database *DB)
 {
-    if (s_db_isempty(DB)){
+    if (s_db_is_empty(DB)){
         return;
     }
     if (DB->first->next == NULL){
@@ -154,9 +154,9 @@ void s_db_popback(student_database *DB)
     DB->size--;
 }
 
-void s_db_removeat(student_database *DB, int index)
+void s_db_remove_at(student_database *DB, int index)
 {
-    if (s_db_isempty(DB)){
+    if (s_db_is_empty(DB)){
         return;
     }
     if (DB->first->next == NULL){
@@ -165,11 +165,11 @@ void s_db_removeat(student_database *DB, int index)
         return;
     }
     if (index == 1){
-        s_db_popfront(DB);
+        s_db_pop_front(DB);
         return;
     }
     else if (index >= DB->size){
-        s_db_popback(DB);
+        s_db_pop_back(DB);
         return;
     }
     student *prev_student = DB->first;
@@ -179,10 +179,11 @@ void s_db_removeat(student_database *DB, int index)
     student *deleted_student = prev_student->next; 
     prev_student->next = deleted_student->next; 
     free(deleted_student);
+    DB->size--;
 }
-void s_db_removeid(student_database *DB, int id)
+void s_db_remove_id(student_database *DB, int id)
 {
-    if (s_db_isempty(DB)){
+    if (s_db_is_empty(DB)){
         return;
     }
     if (DB->first->next == NULL &&
@@ -199,6 +200,7 @@ void s_db_removeid(student_database *DB, int id)
             student *deleted_student = iterator->next; 
             iterator->next = deleted_student->next; 
             free(deleted_student);
+            DB->size--;
             return;
         }
         iterator = iterator->next;
@@ -225,6 +227,10 @@ void s_db_reverse(student_database *DB)
 
 student* s_db_search(student_database *DB, int id)
 {
+    if(DB->first == NULL)
+    {
+        return NULL;
+    }
     student *iterator = DB->first;
     while (iterator != NULL){
         if (iterator->data.ID == id){
@@ -235,21 +241,115 @@ student* s_db_search(student_database *DB, int id)
     return NULL;
 }
 
-void s_db_deleteall(student_database *DB)
+student* s_db_search_index(student_database *DB, int index)
 {
-    while (!s_db_isempty(DB)){
-        s_db_popfront(DB);
+    if(DB->first == NULL)
+    {
+        return NULL;
+    }
+    if(index > DB->size){
+        printf("Index Exceed database size\n");
+        return NULL;
+    }
+    student *iterator = DB->first;
+    for (size_t i = 0; i < index-1; i++)
+    {
+        iterator = iterator->next;
+    }    
+    return iterator;
+}
+student* s_db_search_index_end(student_database *DB, int index)
+{
+    if(DB->first == NULL)
+    {
+        return NULL;
+    }
+    student *iterator = DB->first;
+    student *reference = DB->first;
+    for (size_t i = 0; i < index-1; i++)
+    {
+        reference = reference->next;
+    }
+    while(reference != NULL)
+    {
+        reference = reference->next;
+        iterator = iterator->next;
+    }    
+    return iterator;
+}
+student* s_db_search_middle(student_database *DB)
+{
+    if(DB->first == NULL)
+    {
+        return NULL;
+    }
+    student *iterator = DB->first;
+    student *reference = DB->first;
+    while(refere!=NULL && reference->next != NULL)
+    {
+        reference = reference->next->next;
+        iterator = iterator->next;
+    }    
+    return iterator;
+}
+
+int s_db_count(student_database *DB)
+{
+    if(DB->first == NULL)
+    {
+        return 0;
+    }
+    int count = 0;
+    student *iterator = DB->first;
+    while (iterator != NULL){
+        iterator = iterator->next;
+        count++;
+    }
+    assert(count == DB->size);
+    return count;
+}
+
+void s_db_update(student_database *DB,int index, int id,float height,char *name)
+{
+    student *s = s_db_search(DB,id);
+    assert(s);
+    s->data.height = height;
+    strcpy(s->data.name,name);  
+}
+
+
+void s_db_delete_all(student_database *DB)
+{
+    while (!s_db_is_empty(DB)){
+        s_db_pop_front(DB);
     }
     DB->first = NULL;
+    DB->size = 0;
 }
 
 void s_db_free(student_database *DB)
 {
-    s_db_deleteall(DB);
+    s_db_delete_all(DB);
     free(DB);
 }
 
-static student *MergeLinkedListNodes(student *first, student *second)
+bool s_db_has_loop (student_database *DB)
+{
+    if(DB->first == NULL || DB->first->next == NULL){
+        return false;
+    }
+    student *slow = DB->first;
+    student *fast = DB->first->next;
+    while(fast!= NULL && fast->next != NULL){
+        slow = slow->next;
+        fast = fast->next->next;
+        if(fast == slow){
+            return true;
+        }
+    }
+    return false;
+}
+static student *s_db_merge_nodes(student *first, student *second)
 {
     student *result = NULL;
     if (first == NULL){
@@ -261,15 +361,15 @@ static student *MergeLinkedListNodes(student *first, student *second)
 
     if (first->data.ID <= second->data.ID){
         result = first;
-        result->next = MergeLinkedListNodes(first->next, second);
+        result->next = s_db_merge_nodes(first->next, second);
     }else{
         result = second;
-        result->next = MergeLinkedListNodes(first, second->next);
+        result->next = s_db_merge_nodes(first, second->next);
     }
     return result;
 }
 
-static void MergeSortLinkedListNode(student **head)
+static void s_db_sort_node(student **head)
 {
     if ((*head) == NULL || (*head)->next == NULL){
         return;
@@ -288,28 +388,12 @@ static void MergeSortLinkedListNode(student **head)
     student *l1 = curr;
     student *l2 = slow->next;
     slow->next = NULL;
-    MergeSortLinkedListNode(&l1);
-    MergeSortLinkedListNode(&l2);
-    *head = MergeLinkedListNodes(l1, l2);
+    s_db_sort_node(&l1);
+    s_db_sort_node(&l2);
+    *head = s_db_merge_nodes(l1, l2);
 }
 
-void MergeSortLinkedList(student_database *L)
+void s_db_sort(student_database *L)
 {
-    MergeSortLinkedListNode(&(L->first));
-}
-
-bool hasCycle (student_database *DB){
-    if(DB->first == NULL || DB->first->next == NULL){
-        return false;
-    }
-    student *slow = DB->first;
-    student *fast = DB->first->next;
-    while(fast!= NULL && fast->next != NULL){
-        slow = slow->next;
-        fast = fast->next->next;
-        if(fast == slow){
-            return true;
-        }
-    }
-    return false;
+    s_db_sort_node(&(L->first));
 }
