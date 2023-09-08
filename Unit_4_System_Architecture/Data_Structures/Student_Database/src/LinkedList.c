@@ -16,16 +16,16 @@ void s_db_print_header()
 {
     printf("\n");
     for (size_t i = 0; i < SPACES*3; i++)
-        printf("*");
+        printf(TABLE_SYM);
     printf("\n");
     printf("%-*s ",SPACES/2,"ID");
-    printf("%-*s ",SPACES/2,"*");
+    printf("%-*s ",SPACES/2,TABLE_SYM);
     printf("%-*s ",SPACES/2,"Name");
-    printf("%-*s ",SPACES/2,"*");
+    printf("%-*s ",SPACES/2,TABLE_SYM);
     printf("%-*s ",SPACES,"Height");
     printf("\n");
     for (size_t i = 0; i < SPACES*3; i++)
-        printf("*");
+        printf(TABLE_SYM);
     printf("\n");
 }
 
@@ -35,9 +35,9 @@ void s_db_format_student(student *s, bool single)
         s_db_print_header();
     }
     printf("%-*d ",SPACES/2,s->data.ID);
-    printf("%-*s ",SPACES/2,"*");
+    printf("%-*s ",SPACES/2,TABLE_SYM);
     printf("%-*s ",SPACES/2,s->data.name);
-    printf("%-*s ",SPACES/2,"*");
+    printf("%-*s ",SPACES/2,TABLE_SYM);
     printf("%-*f ",SPACES,s->data.height);
     printf("\n");
 }
@@ -51,7 +51,7 @@ void s_db_print(student_database *DB)
     }
     s_db_format_student(current,false);
     for (size_t i = 0; i < SPACES*3; i++)
-        printf("*");
+        printf(TABLE_SYM);
     printf("\n");
 }
 

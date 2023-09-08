@@ -20,7 +20,7 @@ int main(void)
 
     for(;;)
     {
-        print_frame("Student database",50,'=',User_choice);
+        print_frame("Student database",50,FRAME_SYM,User_choice);
         
         switch(choice){
             case '1':

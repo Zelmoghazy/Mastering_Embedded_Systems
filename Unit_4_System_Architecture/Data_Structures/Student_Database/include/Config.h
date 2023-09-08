@@ -10,3 +10,5 @@
         4: Delete all                                   \n"
 
 #define DELIMITER ','
+#define FRAME_SYM '='
+#define TABLE_SYM "#"
