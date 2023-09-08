@@ -59,7 +59,7 @@ int main(void)
                 break;
 
             case '5':
-                if(s_db_load_students(db,"./students.csv")){
+                if(s_db_load_students(db,"./data/students.csv")){
                     printf("Students Loaded Sucessfully\n");
                 }else{
                     printf("Error Couldnt Load Students !!\n");
@@ -68,6 +68,10 @@ int main(void)
             
             case '6':
                 s_db_print(db);
+                break;
+
+            case '7':
+                exit(EXIT_SUCCESS);
                 break;
 
             default: printf("Illegal choice\n");

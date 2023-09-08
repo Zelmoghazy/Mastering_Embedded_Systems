@@ -428,35 +428,67 @@ static char * s_db_read_file(char* path)
     return source;
 }
 
+bool s_db_validate(char *str,int line,char choice)
+{
+    switch (choice)
+    {
+    case 'i':
+        if(!is_integer(str)){
+            printf("Invalid Integer : %s at line : %d\n",str,line);
+            return false;
+        }else{
+            return true;
+        }
+    case 'f':
+        if(!is_float(str)){
+            printf("Invalid Float : %s at line : %d\n",str,line);
+            return false;
+        }else{
+            return true;
+        }
+    default:
+        printf("Invalid Choice !\n");
+        return false;
+    }
+
+}
+
 bool s_db_load_students(student_database *DB,char *path)
 {
+    int line = 1;
+
     int id;
     float height;
     char name[NAME_SIZE];
 
     char *source = s_db_read_file(path);
-    if(source == NULL)
-    {
+    if(source == NULL){
         return false;
     }
 
     int buf_i=0;
-    char buffer[40];
+    char buffer[NAME_SIZE];
 
     char* ptr = source;
 
     while(*ptr != '\0'){
-        while(*ptr != '\n' && *ptr != '\0'){
+        while(*ptr != '\n' && *ptr != '\0')
+        {
+            /* ID */
             while(*ptr != DELIMITER)
             {
                 buffer[buf_i++]= *ptr;
                 ptr++;
             }
             buffer[buf_i] = '\0';
+            if(!s_db_validate(buffer,line,'i')){
+                return false;
+            };
             id = atoi(buffer);
             buf_i = 0;
             ptr++;
 
+            /* Name */
             while(*ptr != DELIMITER)
             {
                 buffer[buf_i++]= *ptr;
@@ -466,20 +498,25 @@ bool s_db_load_students(student_database *DB,char *path)
             strcpy(name,buffer);
             buf_i = 0;
             ptr++;
-
+            
+            /* Height */
             while(*ptr != DELIMITER)
             {
                 buffer[buf_i++]= *ptr;
                 ptr++;
             }
             buffer[buf_i] = '\0';
+            if(!s_db_validate(buffer,line,'f')){
+                return false;
+            };
             height = atof(buffer);
             buf_i = 0;
             ptr++;
         }
         s_db_push_front(DB,id,height,name);
         if(*ptr == '\0') {break;}
-        ptr++;            
+        ptr++;
+        line++;            
     }
     free(source);
     return true;

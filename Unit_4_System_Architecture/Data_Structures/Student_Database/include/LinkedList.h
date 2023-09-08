@@ -8,7 +8,7 @@
 #include <assert.h>
 #include "Platform_Types.h"
 #include "Config.h"
-
+#include "Utilities.h"
 
 typedef struct student_data
 {
@@ -69,6 +69,7 @@ void s_db_sort(student_database *L);
 
 bool s_db_has_loop (student_database *DB);
 static char * s_db_read_file(char* path);
+bool s_db_validate(char *str,int line,char choice);
 bool s_db_load_students(student_database *DB,char *path);
 
 
