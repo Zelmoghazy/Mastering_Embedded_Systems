@@ -3,6 +3,7 @@
 
 int singleNumber(int *a, int n) {
     int xored = 0;
+    int i;
     for(i = 0; i < n ; i++){
         xored ^= a[i];
     }
