@@ -1,4 +1,4 @@
-#define SPACES 20
+#define SPACES 40
 
 #define NAME_SIZE 40
 
@@ -8,3 +8,5 @@
         2: Delete a student                             \n\
         3: View a student                               \n\
         4: Delete all                                   \n"
+
+#define DELIMITER ','

@@ -50,6 +50,9 @@ void s_db_print(student_database *DB)
         current = current->next;
     }
     s_db_format_student(current,false);
+    for (size_t i = 0; i < SPACES*3; i++)
+        printf("*");
+    printf("\n");
 }
 
 bool s_db_is_empty(student_database *DB)
@@ -285,7 +288,7 @@ student* s_db_search_middle(student_database *DB)
     }
     student *iterator = DB->first;
     student *reference = DB->first;
-    while(refere!=NULL && reference->next != NULL)
+    while(reference!=NULL && reference->next != NULL)
     {
         reference = reference->next->next;
         iterator = iterator->next;
@@ -398,25 +401,86 @@ void s_db_sort(student_database *L)
     s_db_sort_node(&(L->first));
 }
 
-void s_db_load_students(student_database *DB,char *path)
+static char * s_db_read_file(char* path)
 {
+    int ch;
+    int n = 0;
+
     FILE *file = fopen(path, "r");
     if (!file){
         fprintf(stderr, "Couldnt load file");
-        return false;
-    }
-    fseek(file, 0, SEEK_END);
-    int size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    char *source = malloc(sizeof(char) * size + 1);
-    fread(source, 1, size, file);
-    fclose(file);
-    source[size] = '\0';
-    char* ptr = source;
-    while(ptr){
-        while(*ptr != '\n'){
-            ptr++;
-        }
+        return NULL;
     }
 
+    fseek(file, 0, SEEK_END);
+    size_t size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    char *source = malloc(sizeof(char) * size + 1);
+
+
+    while ((ch = fgetc(file)) != EOF) {
+        source[n++] = (char)ch;
+    }
+
+    source[n] = '\0';
+
+    fclose(file);
+    return source;
+}
+
+bool s_db_load_students(student_database *DB,char *path)
+{
+    int id;
+    float height;
+    char name[NAME_SIZE];
+
+    char *source = s_db_read_file(path);
+    if(source == NULL)
+    {
+        return false;
+    }
+
+    int buf_i=0;
+    char buffer[40];
+
+    char* ptr = source;
+
+    while(*ptr != '\0'){
+        while(*ptr != '\n' && *ptr != '\0'){
+            while(*ptr != DELIMITER)
+            {
+                buffer[buf_i++]= *ptr;
+                ptr++;
+            }
+            buffer[buf_i] = '\0';
+            id = atoi(buffer);
+            buf_i = 0;
+            ptr++;
+
+            while(*ptr != DELIMITER)
+            {
+                buffer[buf_i++]= *ptr;
+                ptr++;
+            }
+            buffer[buf_i] = '\0';
+            strcpy(name,buffer);
+            buf_i = 0;
+            ptr++;
+
+            while(*ptr != DELIMITER)
+            {
+                buffer[buf_i++]= *ptr;
+                ptr++;
+            }
+            buffer[buf_i] = '\0';
+            height = atof(buffer);
+            buf_i = 0;
+            ptr++;
+        }
+        s_db_push_front(DB,id,height,name);
+        if(*ptr == '\0') {break;}
+        ptr++;            
+    }
+    free(source);
+    return true;
 }

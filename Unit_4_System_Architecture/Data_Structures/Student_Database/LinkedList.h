@@ -68,7 +68,8 @@ void s_db_sort(student_database *L);
 
 
 bool s_db_has_loop (student_database *DB);
-void s_db_load_students(student_database *DB,char *path);
+static char * s_db_read_file(char* path);
+bool s_db_load_students(student_database *DB,char *path);
 
 
 #endif /* LINKED_LIST_H */

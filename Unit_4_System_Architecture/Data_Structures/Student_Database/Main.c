@@ -58,9 +58,19 @@ int main(void)
                 s_db_delete_all(db);
                 break;
 
+            case '5':
+                if(s_db_load_students(db,"./students.csv")){
+                    printf("Students Loaded Sucessfully\n");
+                }else{
+                    printf("Error Couldnt Load Students !!\n");
+                }
+                break;
+            
+            case '6':
+                s_db_print(db);
+                break;
+
             default: printf("Illegal choice\n");
         }
-
     }
-
 }
