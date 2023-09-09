@@ -15,17 +15,19 @@ student_database *s_db_new()
 void s_db_print_header()
 {
     printf("\n");
-    for (size_t i = 0; i < SPACES*3; i++)
-        printf(TABLE_SYM);
+    SEPERATOR(SPACES*3-3);
     printf("\n");
+
+    printf("%-*s ",SPACES/4,TABLE_SYM);
     printf("%-*s ",SPACES/2,"ID");
-    printf("%-*s ",SPACES/2,TABLE_SYM);
-    printf("%-*s ",SPACES/2,"Name");
-    printf("%-*s ",SPACES/2,TABLE_SYM);
-    printf("%-*s ",SPACES,"Height");
+    printf("%-*s ",SPACES/4,TABLE_SYM);
+    printf("%-*s ",SPACES,"Name");
+    printf("%-*s ",SPACES/4,TABLE_SYM);
+    printf("%-*s ",SPACES/2,"Height");
+    printf("%-*s ",SPACES/4,TABLE_SYM);
+
     printf("\n");
-    for (size_t i = 0; i < SPACES*3; i++)
-        printf(TABLE_SYM);
+    SEPERATOR(SPACES*3-3);
     printf("\n");
 }
 
@@ -34,11 +36,17 @@ void s_db_format_student(student *s, bool single)
     if(single){
         s_db_print_header();
     }
+    
+    printf("%-*s ",SPACES/4,TABLE_SYM);
     printf("%-*d ",SPACES/2,s->data.ID);
-    printf("%-*s ",SPACES/2,TABLE_SYM);
-    printf("%-*s ",SPACES/2,s->data.name);
-    printf("%-*s ",SPACES/2,TABLE_SYM);
-    printf("%-*f ",SPACES,s->data.height);
+    printf("%-*s ",SPACES/4,TABLE_SYM);
+    printf("%-*s ",SPACES,s->data.name);
+    printf("%-*s ",SPACES/4,TABLE_SYM);
+    printf("%-*f ",SPACES/2,s->data.height);
+    printf("%-*s ",SPACES/4,TABLE_SYM);
+
+    printf("\n");
+    SEPERATOR(SPACES*3-3);
     printf("\n");
 }
 void s_db_print(student_database *DB)
@@ -50,8 +58,6 @@ void s_db_print(student_database *DB)
         current = current->next;
     }
     s_db_format_student(current,false);
-    for (size_t i = 0; i < SPACES*3; i++)
-        printf(TABLE_SYM);
     printf("\n");
 }
 
@@ -520,17 +526,13 @@ bool s_db_save_file(student_database *DB,char *path)
         return false;
     }
     student *current = DB->first;
-    while (current->next != NULL){
+    while (current != NULL){
         fprintf(file,"%d,",current->data.ID);
         fprintf(file,"%s,",current->data.name);
         fprintf(file,"%f,",current->data.height);
         fprintf(file,"\n");
         current = current->next;
     }
-    fprintf(file,"%d,",current->data.ID);
-    fprintf(file,"%s,",current->data.name);
-    fprintf(file,"%f,",current->data.height);
-
     fclose(file);
     return true;
 }
