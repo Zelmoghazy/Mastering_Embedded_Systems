@@ -59,7 +59,7 @@ int main(void)
                 break;
 
             case '5':
-                if(s_db_load_students(db,"./data/students.csv")){
+                if(s_db_load_file(db,"./data/students.csv")){
                     printf("Students Loaded Sucessfully\n");
                 }else{
                     printf("Error Couldnt Load Students !!\n");
@@ -71,6 +71,14 @@ int main(void)
                 break;
 
             case '7':
+                if(s_db_save_file(db,"./data/out.csv")){
+                    printf("Students saved Sucessfully\n");
+                }else{
+                    printf("Error Couldnt Save Students !!\n");
+                }
+                break;
+
+            case '8':
                 exit(EXIT_SUCCESS);
                 break;
 

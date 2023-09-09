@@ -401,33 +401,6 @@ void s_db_sort(student_database *L)
     s_db_sort_node(&(L->first));
 }
 
-static char * s_db_read_file(char* path)
-{
-    int ch;
-    int n = 0;
-
-    FILE *file = fopen(path, "r");
-    if (!file){
-        fprintf(stderr, "Couldnt load file");
-        return NULL;
-    }
-
-    fseek(file, 0, SEEK_END);
-    size_t size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    char *source = malloc(sizeof(char) * size + 1);
-
-
-    while ((ch = fgetc(file)) != EOF) {
-        source[n++] = (char)ch;
-    }
-
-    source[n] = '\0';
-
-    fclose(file);
-    return source;
-}
-
 bool s_db_validate(char *str,int line,char choice)
 {
     switch (choice)
@@ -453,32 +426,39 @@ bool s_db_validate(char *str,int line,char choice)
 
 }
 
-bool s_db_load_students(student_database *DB,char *path)
+bool s_db_load_file(student_database *DB,char *path)
 {
     int line = 1;
+    int ch;
 
     int id;
     float height;
     char name[NAME_SIZE];
 
-    char *source = s_db_read_file(path);
-    if(source == NULL){
-        return false;
+    FILE *file = fopen(path, "r");
+    if (!file){
+        fprintf(stderr, "Couldnt load file");
+        return NULL;
     }
 
-    int buf_i=0;
     char buffer[NAME_SIZE];
+    int buf_i=0;
 
-    char* ptr = source;
+    ch = fgetc(file);
 
-    while(*ptr != '\0'){
-        while(*ptr != '\n' && *ptr != '\0')
+    while (ch != EOF)
+    {
+        while((char)ch != '\n' && ch != EOF)
         {
             /* ID */
-            while(*ptr != DELIMITER)
+            while((char)ch != DELIMITER)
             {
-                buffer[buf_i++]= *ptr;
-                ptr++;
+                if(ch == EOF || (char)ch == '\n'){
+                    printf("Error in Line : %d \n",line);
+                    return false;
+                }
+                buffer[buf_i++]= (char)ch;
+                ch = fgetc(file);
             }
             buffer[buf_i] = '\0';
             if(!s_db_validate(buffer,line,'i')){
@@ -486,24 +466,33 @@ bool s_db_load_students(student_database *DB,char *path)
             };
             id = atoi(buffer);
             buf_i = 0;
-            ptr++;
+            ch = fgetc(file);
 
+            
             /* Name */
-            while(*ptr != DELIMITER)
+            while((char)ch != DELIMITER)
             {
-                buffer[buf_i++]= *ptr;
-                ptr++;
+                if(ch == EOF || (char)ch == '\n'){
+                    printf("Error in Line : %d \n",line);
+                    return false;
+                }
+                buffer[buf_i++]= (char)ch;
+                ch=fgetc(file);
             }
             buffer[buf_i] = '\0';
             strcpy(name,buffer);
             buf_i = 0;
-            ptr++;
-            
+            ch=fgetc(file);
+
             /* Height */
-            while(*ptr != DELIMITER)
+            while((char)ch != DELIMITER)
             {
-                buffer[buf_i++]= *ptr;
-                ptr++;
+                if(ch == EOF || (char)ch == '\n'){
+                    printf("Error in Line : %d \n",line);
+                    return false;
+                }
+                buffer[buf_i++]= (char)ch;
+                ch = fgetc(file);
             }
             buffer[buf_i] = '\0';
             if(!s_db_validate(buffer,line,'f')){
@@ -511,13 +500,37 @@ bool s_db_load_students(student_database *DB,char *path)
             };
             height = atof(buffer);
             buf_i = 0;
-            ptr++;
+            ch = fgetc(file);
         }
         s_db_push_front(DB,id,height,name);
-        if(*ptr == '\0') {break;}
-        ptr++;
-        line++;            
+        if(ch == EOF) {break;}
+        ch=fgetc(file);
+        line++;  
     }
-    free(source);
+    fclose(file);
+    return true;
+}
+
+bool s_db_save_file(student_database *DB,char *path)
+{
+    FILE *file = fopen(path, "w");
+    if (!file)
+    {
+        fprintf(stderr, "Cannot open file to write");
+        return false;
+    }
+    student *current = DB->first;
+    while (current->next != NULL){
+        fprintf(file,"%d,",current->data.ID);
+        fprintf(file,"%s,",current->data.name);
+        fprintf(file,"%f,",current->data.height);
+        fprintf(file,"\n");
+        current = current->next;
+    }
+    fprintf(file,"%d,",current->data.ID);
+    fprintf(file,"%s,",current->data.name);
+    fprintf(file,"%f,",current->data.height);
+
+    fclose(file);
     return true;
 }
