@@ -1,1 +1,0 @@
-@make && cd .\build && .\Main.exe && cd ..
