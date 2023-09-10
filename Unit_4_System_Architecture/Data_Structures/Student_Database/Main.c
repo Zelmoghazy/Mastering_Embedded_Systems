@@ -59,10 +59,15 @@ int main(void)
                 break;
 
             case '5':
+                bool contains = s_db_save_file(db,"./data/saved.csv");
                 if(s_db_load_file(db,"./data/students.csv")){
                     printf("Students Loaded Sucessfully\n");
                 }else{
                     printf("Error Couldnt Load Students !!\n");
+                    s_db_delete_all(db);
+                    if(contains){
+                        s_db_load_file(db,"./data/saved.csv");
+                    }
                 }
                 break;
             

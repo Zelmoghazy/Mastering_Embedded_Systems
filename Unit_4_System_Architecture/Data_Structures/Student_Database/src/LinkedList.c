@@ -53,11 +53,10 @@ void s_db_print(student_database *DB)
 {
     s_db_print_header();
     student *current = DB->first;
-    while (current->next != NULL){
+    while (current != NULL){
         s_db_format_student(current,false);
         current = current->next;
     }
-    s_db_format_student(current,false);
     printf("\n");
 }
 
@@ -452,6 +451,7 @@ bool s_db_load_file(student_database *DB,char *path)
 
     ch = fgetc(file);
 
+    /* Parse File Contents */
     while (ch != EOF)
     {
         while((char)ch != '\n' && ch != EOF)
@@ -519,13 +519,17 @@ bool s_db_load_file(student_database *DB,char *path)
 
 bool s_db_save_file(student_database *DB,char *path)
 {
+    student *current = DB->first;
+    if(current == NULL){
+        printf("Database is empty\n");
+        return false;
+    }
     FILE *file = fopen(path, "w");
     if (!file)
     {
         fprintf(stderr, "Cannot open file to write");
         return false;
     }
-    student *current = DB->first;
     while (current != NULL){
         fprintf(file,"%d,",current->data.ID);
         fprintf(file,"%s,",current->data.name);
