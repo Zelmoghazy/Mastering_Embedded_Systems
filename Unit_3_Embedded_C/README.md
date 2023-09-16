@@ -697,7 +697,21 @@ DEP=$(addprefix $(BUILD_DIR)/,$(notdir $(SRC:.c=.d)))
 
 * The `include` directive tells `make` to suspend reading the current makefile and read one or more other makefiles before continuing.
   * When you want to generate prerequisites from source files automatically; the prerequisites can be put in a file that is included by the main makefile.
-  * If you want `make` to simply ignore a makefile which does not exist or cannot be remade, with no error message, use the `-include` directive instead of `include` it acts like `include` in every way except that there is no error (not even a warning) if any of the filenames (or any prerequisites of any of the filenames) do not exist or cannot be remade.
+  * If you want `make` to simply ignore a makefile which does not exist or cannot be remade, with no error message, use the `-include` directive instead of `include`.
+    * it acts like `include` in every way except that there is no error (not even a warning) if any of the filenames (or any prerequisites of any of the filenames) do not exist or cannot be remade.
+  
+## Common Shell Operators
+
+|Operator|Meaning|
+|:---:|:---:|
+|`&`|separates commands on a line.|
+|`&&`| executes this command only if previous command succeeded.|
+|`\|\|`| executes this command only if previous command failed.|
+|`>`| output to a file|
+|`>>`| append output to a file|
+|`<`| input from a file|
+|`\|`| output of one command into the input of another command|
+
 ---
 
 ## GDB
