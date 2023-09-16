@@ -8,3 +8,11 @@
        width="100%" 
        style="border-radius: 30px;"/>
 </p>
+
+# MCU Clocks
+
+<p align="center">
+  <img src="./Images/Quartz.svg"
+       width="100%" 
+       style="border-radius: 30px;"/>
+</p>
