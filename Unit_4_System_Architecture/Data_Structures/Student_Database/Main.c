@@ -13,6 +13,7 @@ void User_choice(void)
 int main(void)
 {
     student_database *db = s_db_new();
+    s_db_load_file(db,"./data/saved.csv");
 
     int id;
     float height;
@@ -84,6 +85,16 @@ int main(void)
                 break;
 
             case '8':
+                char save;
+                printf("Do you want to save current state of the database ? y/n : ");
+                scanf(" %c",&save);
+                if(save == 'y'){
+                    if(s_db_save_file(db,"./data/saved.csv")){
+                        printf("Students saved Sucessfully\n");
+                    }else{
+                        printf("Error Couldnt Save Students !!\n");
+                    }
+                }
                 exit(EXIT_SUCCESS);
                 break;
 
