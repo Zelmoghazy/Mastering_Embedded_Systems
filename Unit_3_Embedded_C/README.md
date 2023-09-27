@@ -572,6 +572,13 @@ _exit, _close, environ, execve, fork, fstat, getpid, isatty, kill, link, lseek, 
   *  The **program break** is the address of the first location beyond the current end of the data region.
   * `sbrk(intptr_t increment)` increments the program's data space by `increment` bytes.
   *  These functions are typically called from a higher-level memory management library function such as `malloc`.
+
+<p align="center">
+  <img src="./Images/Heap.svg"
+       width="100%" 
+       style="border-radius: 30px;"/>
+</p>
+
 * In GCC, you can create a spec file *-using the `-specs=` option-* containing compiler options and settings.
   *  This option allows you to encapsulate a set of compiler and linker options in a single file, which can make it more convenient to manage complex build configurations.
   * We will use `--specs=nano.specs` to configure linking the newlib nano library.

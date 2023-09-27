@@ -172,25 +172,25 @@ void *_sbrk(int incr)
 	extern uint32 _Min_Stack_Size;  /* Defined by the linker */
 
 	const uint32 stack_limit = (uint32)&_estack - (uint32)&_Min_Stack_Size;
-	static byte *heap_end;
-	byte *prev_heap_end;
+	static byte *brk = NULL;
+	byte *prev_brk;
 
 	/* First Initialization  */
-	if (heap_end == 0)
+	if (brk == 0)
 	{
-		heap_end = &_end;
+		brk = &_end;
 	}
 
-	prev_heap_end = heap_end;
+	prev_brk = brk;
 
 	/* Protect Stack */
-	if (heap_end + incr > stack_limit)
+	if (brk + incr > stack_limit)
 	{
 		errno = ENOMEM;
 		return (void *)-1;
 	}
-	heap_end += incr;
-	return (void *)prev_heap_end;
+	brk += incr;
+	return (void *)prev_brk;
 }
 
 __attribute__((weak)) int _read(int file, char *ptr, int len)
