@@ -172,10 +172,19 @@ void main(void)
        style="border-radius: 30px;"/>
 </p>
 
-* On many STM32 families, the boot address in the internal flash is 0x0800_0000. This address is remapped to address 0x0000_0000 by boot mode mechanism. 
+* On many STM32 families, the boot address in the internal flash is `0x0800_0000`.
+  *  This address is remapped to address `0x0000_0000` by boot mode mechanism. 
+
+<p align="center">
+  <img src="./Images/vectors.png"
+       width="100%" 
+       style="border-radius: 30px;"/>
+</p>
+
+
 * **Boot Sequence :**
-  * Take the initial value of the Main stack pointer from the address 0x0000 (0x0800_0000) so we store in this location the SRAM address
-  * Take the value of the program counter from the address 0x0004 (Reset_Handler).
+  * Take the initial value of the Main stack pointer from the address `0x0000` (`0x0800_0000`) so we store in this location the SRAM address
+  * Take the value of the program counter from the address `0x0004` (Reset_Handler).
   * Continue execution from the address corresponding to this value. 
 
 ```ARM
