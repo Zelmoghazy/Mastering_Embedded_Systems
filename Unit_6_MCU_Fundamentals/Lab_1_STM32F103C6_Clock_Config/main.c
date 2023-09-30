@@ -1,4 +1,5 @@
 #include "Platform_Types.h"
+#include "Macros.h"
 
 #define RCC_BASE    0x40021000
 #define RCC_APB2ENR ((*(vuint32_t *) (RCC_BASE + 0x18)))
@@ -9,16 +10,6 @@
 #define GPIO_A_CRH  ((*(vuint32_t *) (PORT_A_BASE + 0x04)))
 #define GPIO_A_ODR  ((*(vuint32_t *) (PORT_A_BASE + 0x0C)))
 
-#define SET(a,n)    ((a) |=  (1U << (n)))
-#define CLEAR(a,n)  ((a) &= ~(1U << (n)))
-#define TOGGLE(a,n) ((a) ^=  (1U << (n)))
-
-#define CLEAR_RANGE(a, s, e)           \
-    uint32 mask = ~0;                  \
-    mask = mask >> (32 - (e - s + 1)); \
-    mask = mask << s;                  \
-    mask = ~mask;                      \
-    a &= mask
 
 typedef union R_ODR_t {
     vuint32_t all_fields;
@@ -63,7 +54,7 @@ volatile R_ODR_t* R_ODR = (volatile R_ODR_t*)(PORT_A_BASE + 0x0C);
 
 void init_clock()
 {
-/*
+    /*
     - Bits 10:8 PPRE1[2:0]: APB Low-speed prescaler (APB1)
         - Set and cleared by software to control the division factor of the APB Low speed clock (PCLK1).
             - 0xx: HCLK not divided
@@ -71,10 +62,10 @@ void init_clock()
             - 101: HCLK divided by 4
             - 110: HCLK divided by 8
             - 111: HCLK divided by 16 
-*/
-    RCC_CFGR |= (0b100 << 8);
+   */
+    SET_MASK(RCC_CFGR,0b100,8);
 
-/*
+    /*
     - Bits 13:11 PPRE2[2:0]: APB high-speed prescaler (APB2)
         - Set and cleared by software to control the division factor of the APB High speed clock (PCLK2).
             - 0xx: HCLK not divided
@@ -82,19 +73,21 @@ void init_clock()
             - 101: HCLK divided by 4
             - 110: HCLK divided by 8
             - 111: HCLK divided by 16
-*/
-    RCC_CFGR |= (0b100 << 11);
+   */
+    SET_MASK(RCC_CFGR,0b100,11);
 
-/*
+
+    /*
     - Bits 7:4 HPRE[3:0]: AHB prescaler
         - Set and cleared by software to control AHB clock division factor.
             - 0xxx: SYSCLK not divided
             - 1000: SYSCLK divided by 2
             - 1001: SYSCLK divided by 4 
-*/
-    RCC_CFGR |= (0b1000 << 4);
+   */
+    SET_MASK(RCC_CFGR,0b1000,4);
 
-/*
+
+    /*
     - Bits 21:18 PLLMUL[3:0]: PLL multiplication factor
         - These bits are written by software to define the PLL multiplication factor. They can be written only when PLL is disabled.
             - 000x: Reserved
@@ -103,10 +96,9 @@ void init_clock()
             - 0100: PLL input clock x 6
             - 0101: PLL input clock x 7
             - 0110: PLL input clock x 8
-*/
-    RCC_CFGR |= (0b0110 << 18);
-
-/*
+   */
+    SET_MASK(RCC_CFGR,0b0110,18);
+    /*
     - Bits 1:0 SW[1:0]: System clock Switch
         - Set and cleared by software to select SYSCLK source.
         - Set by hardware to force HSI selection when leaving Stop and Standby mode or in case of failure of the HSE oscillator used directly or indirectly as system clock (if the Clock Security System is enabled).        
@@ -114,10 +106,11 @@ void init_clock()
             - 01: HSE selected as system clock
             - 10: PLL selected as system clock
             - 11: Not allowed 
-*/
-    RCC_CFGR |= (0b10 << 0);
+   */
+    SET_MASK(RCC_CFGR,0b10,0);
 
-/*
+
+    /*
     - Bit 24 PLLON: PLL enable
         - Set and cleared by software to enable PLL.
         - Cleared by hardware when entering Stop or Standby mode.
@@ -125,9 +118,17 @@ void init_clock()
         - Software must disable the USB OTG FS clock before clearing this bit.
             - 0: PLL OFF
             - 1: PLL ON
- */
-    RCC_CR |= (1 << 24);
+    */
+    SET(RCC_CR,24);
+}
 
+void init_GPIO() 
+{
+    // Enable GPIO_A Clock
+    SET(RCC_APB2ENR,2);
+    // Set pin 13 port A as Output
+    CLEAR_RANGE(GPIO_A_CRH,20,23);
+    SET(GPIO_A_CRH,21);
 }
 
 int main(void)
@@ -143,9 +144,7 @@ int main(void)
 
     init_clock();
     
-    SET(RCC_APB2ENR,2);
-    CLEAR_RANGE(GPIO_A_CRH,20,23);
-    SET(GPIO_A_CRH,21);
+    init_GPIO();
 
     for (;;)
     {
