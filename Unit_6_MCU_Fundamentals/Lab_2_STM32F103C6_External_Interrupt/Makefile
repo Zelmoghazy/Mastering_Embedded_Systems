@@ -72,4 +72,7 @@ clean:
 debug:
 	uv4 -d .\Keil\STM32.uvprojx
 
-.PHONY: all clean debug
+simulate:
+	start .\Proteus\stm32.pdsprj
+
+.PHONY: all clean debug simulate
