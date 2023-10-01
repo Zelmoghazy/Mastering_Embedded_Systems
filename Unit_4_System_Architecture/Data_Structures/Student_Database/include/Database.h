@@ -68,8 +68,8 @@ void s_db_sort(student_database *L);
 
 
 bool s_db_has_loop (student_database *DB);
-bool s_db_load_file(student_database *DB,char *path);
-bool s_db_save_file(student_database *DB,char *path);
+bool s_db_load_file(student_database *DB,char *path,char flag);
+bool s_db_save_file(student_database *DB,char *path,char flag);
 
 
 bool s_db_validate(char *str,int line,char choice);

@@ -431,7 +431,7 @@ bool s_db_validate(char *str,int line,char choice)
 
 }
 
-bool s_db_load_file(student_database *DB,char *path)
+bool s_db_load_file(student_database *DB,char *path,char flag)
 {
     int line = 1;
     int ch;
@@ -441,9 +441,19 @@ bool s_db_load_file(student_database *DB,char *path)
     char name[NAME_SIZE];
 
     FILE *file = fopen(path, "r");
-    if (!file){
-        fprintf(stderr, "Couldnt load file");
-        return NULL;
+    if (!file)
+    {
+        switch (flag)
+        {
+        case 's':
+            return false;
+            break;
+        default:
+            fprintf(stderr, "Couldnt load file");
+            return false;
+            break;
+        }
+        return false;
     }
 
     char buffer[NAME_SIZE];
@@ -517,11 +527,20 @@ bool s_db_load_file(student_database *DB,char *path)
     return true;
 }
 
-bool s_db_save_file(student_database *DB,char *path)
+bool s_db_save_file(student_database *DB,char *path,char flag)
 {
     student *current = DB->first;
     if(current == NULL){
-        printf("Database is empty\n");
+        switch (flag)
+        {
+        case 's':
+            return false;
+            break;
+        default:
+            fprintf(stderr, "Database is empty");
+            return false;
+            break;
+        }
         return false;
     }
     FILE *file = fopen(path, "w");
