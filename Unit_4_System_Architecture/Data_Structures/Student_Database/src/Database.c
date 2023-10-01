@@ -192,6 +192,7 @@ void s_db_remove_at(student_database *DB, int index)
 void s_db_remove_id(student_database *DB, int id)
 {
     if (s_db_is_empty(DB)){
+        printf("Database is empty!");
         return;
     }
     if (DB->first->next == NULL &&
@@ -199,16 +200,15 @@ void s_db_remove_id(student_database *DB, int id)
         free(DB->first);
         DB->first = NULL;
         return;
-    }else{
-        printf("Student not found\n");
     }
     student *iterator = DB->first;
     while (iterator != NULL){
-        if (iterator->data.ID == id){
+        if (iterator->next->data.ID == id){
             student *deleted_student = iterator->next; 
             iterator->next = deleted_student->next; 
             free(deleted_student);
             DB->size--;
+            printf("\nStudent Deleted Successfully\n");
             return;
         }
         iterator = iterator->next;
