@@ -64,15 +64,15 @@ typedef union R_ODR_t {
 volatile R_ODR_t* R_ODR = (volatile R_ODR_t*)(PORT_A_BASE + 0x0C);
 
 
-void init_clock()
-{
-    SET_MASK(RCC_CFGR,0b100,8);
-    SET_MASK(RCC_CFGR,0b100,11);
-    SET_MASK(RCC_CFGR,0b1000,4);
-    SET_MASK(RCC_CFGR,0b0110,18);
-    SET_MASK(RCC_CFGR,0b10,0);
-    SET(RCC_CR,24);
-}
+// void init_clock()
+// {
+//     SET_MASK(RCC_CFGR,0b100,8);
+//     SET_MASK(RCC_CFGR,0b100,11);
+//     SET_MASK(RCC_CFGR,0b1000,4);
+//     SET_MASK(RCC_CFGR,0b0110,18);
+//     SET_MASK(RCC_CFGR,0b10,0);
+//     SET(RCC_CR,24);
+// }
 
 void init_GPIO() 
 {
@@ -104,7 +104,7 @@ void init_EXTI()
 
 int main(void)
 {
-    init_clock();
+    // init_clock();
     init_GPIO();
     init_EXTI();
 
