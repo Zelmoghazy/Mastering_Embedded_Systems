@@ -320,7 +320,11 @@ int s_db_count(student_database *DB)
 void s_db_update(student_database *DB,int index, int id,float height,char *name)
 {
     student *s = s_db_search(DB,id);
-    assert(s);
+    if(s==NULL)
+    {
+        printf("ID not found in database\n");
+        return;
+    }
     s->data.height = height;
     strcpy(s->data.name,name);  
 }
