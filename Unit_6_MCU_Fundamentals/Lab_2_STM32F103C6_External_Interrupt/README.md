@@ -1,5 +1,11 @@
 # External Interrupt
 
+<p align="center">
+  <img src="./Images/EXTINT.svg"
+       width="100%" 
+       style="border-radius: 30px;"/>
+</p>
+
 ## Simulation
 
 <p align="center">
