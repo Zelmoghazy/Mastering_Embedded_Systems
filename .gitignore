@@ -3,5 +3,5 @@
 *.o
 *.out
 *.so
-.build
 .vscode
+build
