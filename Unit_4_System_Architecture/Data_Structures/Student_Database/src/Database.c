@@ -74,6 +74,10 @@ void s_db_set_data(student *s, int id, float height, char *name)
 
 void s_db_push_front(student_database *DB, int id, float height, char *name)
 {
+    if(s_db_search(DB,id)){
+        printf("User id = %d is already registered in current database.\n",id);
+        return;
+    }
     student *new_student = malloc(sizeof(student));
     if(new_student == NULL){
         printf("PushFront Failed to allocate memory");
@@ -189,6 +193,7 @@ void s_db_remove_at(student_database *DB, int index)
     free(deleted_student);
     DB->size--;
 }
+
 void s_db_remove_id(student_database *DB, int id)
 {
     if (s_db_is_empty(DB)){
@@ -266,6 +271,7 @@ student* s_db_search_index(student_database *DB, int index)
     }    
     return iterator;
 }
+
 student* s_db_search_index_end(student_database *DB, int index)
 {
     if(DB->first == NULL)
@@ -285,6 +291,7 @@ student* s_db_search_index_end(student_database *DB, int index)
     }    
     return iterator;
 }
+
 student* s_db_search_middle(student_database *DB)
 {
     if(DB->first == NULL)
@@ -329,7 +336,6 @@ void s_db_update(student_database *DB,int index, int id,float height,char *name)
     strcpy(s->data.name,name);  
 }
 
-
 void s_db_delete_all(student_database *DB)
 {
     while (!s_db_is_empty(DB)){
@@ -361,6 +367,7 @@ bool s_db_has_loop (student_database *DB)
     }
     return false;
 }
+
 static student *s_db_merge_nodes(student *first, student *second)
 {
     student *result = NULL;
@@ -470,7 +477,7 @@ bool s_db_load_file(student_database *DB,char *path,char flag)
     {
         while((char)ch != '\n' && ch != EOF)
         {
-            /* ID */
+            /*---------- ID ----------*/
             while((char)ch != DELIMITER)
             {
                 if(ch == EOF || (char)ch == '\n'){
@@ -489,7 +496,7 @@ bool s_db_load_file(student_database *DB,char *path,char flag)
             ch = fgetc(file);
 
             
-            /* Name */
+            /*---------- Name ----------*/
             while((char)ch != DELIMITER)
             {
                 if(ch == EOF || (char)ch == '\n'){
@@ -504,7 +511,7 @@ bool s_db_load_file(student_database *DB,char *path,char flag)
             buf_i = 0;
             ch=fgetc(file);
 
-            /* Height */
+            /*---------- Height ----------*/
             while((char)ch != DELIMITER)
             {
                 if(ch == EOF || (char)ch == '\n'){
