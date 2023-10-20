@@ -7,10 +7,10 @@
 #define READBIT(byte, index) (((byte) >> (index)) & 1)
 
 #define CLEAR_RANGE(a, s, e)           \
-    {                                  \
+    do{                                \
     uint32 mask = ~0;                  \
     mask = mask >> (32 - (e - s + 1)); \
     mask = mask << s;                  \
     mask = ~mask;                      \
     a &= mask;                         \
-    }
+    }while(0)
