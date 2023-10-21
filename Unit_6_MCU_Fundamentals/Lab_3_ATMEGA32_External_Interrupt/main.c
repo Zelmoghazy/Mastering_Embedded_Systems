@@ -5,11 +5,11 @@
 #include "Macros.h"
 
 #define IO_BASE    0x20
-#define IO_PORT_D  ((*(vuint32_t *) (IO_BASE  + 0x12)))
-#define IO_DDRD    ((*(vuint32_t *) (IO_BASE  + 0x11)))
-#define INT_MCUCR  ((*(vuint32_t *) (IO_BASE  + 0x35)))  // MCU Control Register
-#define INT_MCUCSR ((*(vuint32_t *) (IO_BASE  + 0x34)))  // MCU Control and Status Register
-#define INT_GICR   ((*(vuint32_t *) (IO_BASE  + 0x3B)))  // General interrupt Control Register
+#define IO_PORT_D  ((*(vuint8_t *) (IO_BASE  + 0x12)))
+#define IO_DDRD    ((*(vuint8_t *) (IO_BASE  + 0x11)))
+#define INT_MCUCR  ((*(vuint8_t *) (IO_BASE  + 0x35)))  // MCU Control Register
+#define INT_MCUCSR ((*(vuint8_t *) (IO_BASE  + 0x34)))  // MCU Control and Status Register
+#define INT_GICR   ((*(vuint8_t *) (IO_BASE  + 0x3B)))  // General interrupt Control Register
 
 int main(void)
 {
