@@ -13,6 +13,7 @@
         7: Save Database to a file                      \n\
         8: Exit                                         \n"
 
-#define DELIMITER ','
-#define FRAME_SYM '='
-#define TABLE_SYM "#"
+#define DELIMITER  ','
+#define FRAME_SYM  '='
+#define TABLE_SYM  "-"
+#define TABLE_SYM2 "|"

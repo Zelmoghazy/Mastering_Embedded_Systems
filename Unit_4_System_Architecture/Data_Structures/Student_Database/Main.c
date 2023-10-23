@@ -1,28 +1,23 @@
 #include "Database.h"
 #include "Utilities.h"
 
-char choice;
-
-void User_choice(void)
-{
-    printf("%s\n",MESSAGE_BOX);
-    printf("Enter a choice : ");
-    scanf(" %c",&choice);
-}
-
 int main(void)
 {
-    student_database *db = s_db_new();
-    /* Load Previously Saved database state */
-    s_db_load_file(db,"./data/saved.csv",'s');
-
+    char choice;
     int id;
     float height;
     char name[NAME_SIZE];
 
+    /* Create a new Student Database */
+    student_database *db = s_db_new();
+
+    /* Load Previously Saved Database State */
+    s_db_load_file(db,"./data/saved.csv",'s');
+
     for(;;)
     {
-        print_frame("Student database",50,FRAME_SYM,User_choice);
+        /* User Choice Dialog Box */
+        print_frame("Student database",50,FRAME_SYM,&choice);
         
         switch(choice)
         {

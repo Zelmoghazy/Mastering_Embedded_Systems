@@ -19,7 +19,7 @@
         printf(TABLE_SYM);                \
 
 void symbol_repeat(char str[], size_t size, char symbol);
-void print_frame(const char *title, size_t size, char symbol,void(*func)(void));
+void print_frame(const char *title, size_t size, char symbol,char *choice);
 bool is_integer(const char *str); 
 bool is_float(const char *str);
 

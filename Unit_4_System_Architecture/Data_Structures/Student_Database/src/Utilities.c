@@ -1,5 +1,6 @@
+#include <stdio.h>
 #include "Utilities.h"
-
+#include "Config.h"
 
 void symbol_repeat(char str[], size_t size, char symbol) 
 {
@@ -9,7 +10,7 @@ void symbol_repeat(char str[], size_t size, char symbol)
     str[size]='\0';
 }
 
-void print_frame(const char *title, size_t size, char symbol,void(*func)(void))
+void print_frame(const char *title, size_t size, char symbol,char *choice)
 {
     printf("\n");
     const char *Label = title;
@@ -17,7 +18,11 @@ void print_frame(const char *title, size_t size, char symbol,void(*func)(void))
     symbol_repeat(Padding,size,symbol);       
     size_t Length = size - strlen(Label);  
     printf("%*.*s%s%*.*s\n", Length / 2, Length / 2, Padding, Label, (Length + 1) / 2, (Length + 1) / 2, Padding);
-    func();
+
+    printf("%s\n",MESSAGE_BOX);
+    printf("Enter a choice : ");
+    scanf(" %c",choice);
+
     printf("%s\n",Padding);
 }
 

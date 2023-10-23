@@ -18,13 +18,13 @@ void s_db_print_header()
     SEPERATOR(SPACES*3-3);
     printf("\n");
 
-    printf("%-*s ",SPACES/4,TABLE_SYM);
+    printf("%-*s ",SPACES/4,TABLE_SYM2);
     printf("%-*s ",SPACES/2,"ID");
-    printf("%-*s ",SPACES/4,TABLE_SYM);
+    printf("%-*s ",SPACES/4,TABLE_SYM2);
     printf("%-*s ",SPACES,"Name");
-    printf("%-*s ",SPACES/4,TABLE_SYM);
+    printf("%-*s ",SPACES/4,TABLE_SYM2);
     printf("%-*s ",SPACES/2,"Height");
-    printf("%-*s ",SPACES/4,TABLE_SYM);
+    printf("%-*s ",SPACES/4,TABLE_SYM2);
 
     printf("\n");
     SEPERATOR(SPACES*3-3);
@@ -37,13 +37,13 @@ void s_db_format_student(student *s, bool single)
         s_db_print_header();
     }
     
-    printf("%-*s ",SPACES/4,TABLE_SYM);
+    printf("%-*s ",SPACES/4,TABLE_SYM2);
     printf("%-*d ",SPACES/2,s->data.ID);
-    printf("%-*s ",SPACES/4,TABLE_SYM);
+    printf("%-*s ",SPACES/4,TABLE_SYM2);
     printf("%-*s ",SPACES,s->data.name);
-    printf("%-*s ",SPACES/4,TABLE_SYM);
+    printf("%-*s ",SPACES/4,TABLE_SYM2);
     printf("%-*f ",SPACES/2,s->data.height);
-    printf("%-*s ",SPACES/4,TABLE_SYM);
+    printf("%-*s ",SPACES/4,TABLE_SYM2);
 
     printf("\n");
     SEPERATOR(SPACES*3-3);
