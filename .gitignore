@@ -4,4 +4,5 @@
 *.out
 *.so
 .vscode
+.cache
 build
