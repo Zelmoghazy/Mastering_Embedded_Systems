@@ -7,6 +7,11 @@
 * `arm-none-eabi-readelf` : Display information about ELF files
 * `arm-none-eabi-nm`      : List symbols from object files
 
+* **Note :**
+    * `arm` : Architecture
+    * `none` : No OS
+    * `eabi` : Embedded Application Binary Interface
+
 ## Compiler Flags
 
 |Flag|Meaning|
@@ -49,6 +54,22 @@
 * **ELF** : Executable and Linkable Format
   * ELF is a standard file format for object files and executable files in GCC
 * A file format standard describes a way of organizing various elements (data, read-only data, code, uninitialized data,etc.) of a program in different sections.
+
+* **ELF provides two interfaces to binary files :**
+    * a **linkable interface** that is used at static link time to combine multiple files when
+compiling and building a program.
+    * an **executable interface** that is utilized at runtime to create a process image in
+memory when a program is loaded into memory and then executed.
+
+* **The executable interface provides two separate logic views :** 
+    * the **load view** classifies the input sections into two regions: read-write section and read-only section.
+        * The load view also defines the base memory address of these regions so that the processor knows where it should load them into the memory.
+    * The **execution view** informs the processor how to load the executable at runtime. A binary machine program includes four critical sections, including:
+        * a *text segment* that consists of binary machine instructions,
+        * a *read-only data segment* that defines the value of variables unalterable at runtime.
+        * a *read-write data segment* that sets the initial values of statically allocated and modifiable variables
+        * a *zero-initialized data segment* that holds all uninitialized variables declared in the program.
+
 
 <div style="border-radius: 30px; overflow: hidden;">
     <p align="center">
@@ -161,16 +182,22 @@ void main(void)
   * When specified, alignment must be an integer constant power of 2.
   * Specifying no alignment argument implies the ideal alignment for the target.
 
-### Vector Table (STM32 Case Study)
+### Vector Table (ARM Cortex-M Case Study)
 * The vector table is a section of our flash memory that mostly holds the addresses of various handlers.
-* Starting address of the reset handler (Reset handler is the code executed on reset)
-* Starting addresses of all other exceptions and interrupts including the NMI handler, Hard fault handler and so on.
+    * Starting address of the **reset handler** (Reset handler is the code executed on reset)
+    * Starting addresses of all other exceptions and interrupts including the NMI handler, Hard fault handler and so on.
 
 <p align="center">
   <img src="Images/STM32MemMap.png"
        width="100%" 
        style="border-radius: 30px;"/>
 </p>
+
+* Memory map of the 4GB memory space in a Cortex-M3 microprocessor, Within this 4GB linear memory space, the address range of instruction memory, data memory, internal and external peripheral devices, and external RAM has no overlap with each other.
+    * The on-chip flash memory, used for the instruction memory, has 4 KB, and its address starts at `0x08000000`.
+    * The on-chip SRAM, used for the data memory, has 256 KB, and its memory address begins at `0x20000000`.
+    * The external RAM allows the processor to expand the data memory capacity.
+
 
 * On many STM32 families, the boot address in the internal flash is `0x0800_0000`.
   *  This address is remapped to address `0x0000_0000` by boot mode mechanism. 
@@ -186,6 +213,12 @@ void main(void)
   * Take the initial value of the Main stack pointer from the address `0x0000` (`0x0800_0000`) so we store in this location the SRAM address
   * Take the value of the program counter from the address `0x0004` (Reset_Handler).
   * Continue execution from the address corresponding to this value. 
+
+<p align="center">
+  <img src="Images/TCMMapping.png"
+       width="85%" 
+       style="border-radius: 30px;"/>
+</p>
 
 ```ARM
 .section .vectors
@@ -291,6 +324,7 @@ void Reset_Handler(void)
        width="100%" 
        style="border-radius: 30px;"/>
 </p>
+
 
 ## Initialize Memory
 
