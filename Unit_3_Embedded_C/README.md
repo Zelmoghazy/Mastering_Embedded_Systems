@@ -198,6 +198,9 @@ void main(void)
     * The on-chip SRAM, used for the data memory, has 256 KB, and its memory address begins at `0x20000000`.
     * The external RAM allows the processor to expand the data memory capacity.
 
+*  The interrupt vector table is relocatable. 
+	*  While the interrupt vector table is located at the memory address `0x00000004`, this low memory address can be physically re-mapped to different regions, such as on-chip flash memory, on-chip RAM memory, or on-chip ROM memory.
+	*   This allows the processor to boot from various memory regions.
 
 * On many STM32 families, the boot address in the internal flash is `0x0800_0000`.
   *  This address is remapped to address `0x0000_0000` by boot mode mechanism. 
@@ -840,6 +843,8 @@ DEP=$(addprefix $(BUILD_DIR)/,$(notdir $(SRC:.c=.d)))
     </p>
 </div>
 
+* you can also run gdb in tui mode directly using `--tui` flag
+    * `gdb --tui <executable>`
 ### Remote Debugging
 
 * On platforms where gdbserver is supported, it is possible to use this tool to debug your application remotely.
@@ -849,6 +854,8 @@ DEP=$(addprefix $(BUILD_DIR)/,$(notdir $(SRC:.c=.d)))
   * `-s` : open a gdbserver on TCP port 1234.  
 * Once gdbserver has started listening, we can tell the debugger to establish a connection with this gdbserver, and then start the same debugging session as if the program was being debugged on the same host, directly under the control of GDB.
   * `(gdb) target remote localhost:1234`
+* you can execute a command directly using `-ex` command
+    * `gdb -ex "target remote localhost:1234" <executable>`
 
 <div style="border-radius: 30px; overflow: hidden;">
     <p align="center">
