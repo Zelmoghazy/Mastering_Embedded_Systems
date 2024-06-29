@@ -864,3 +864,26 @@ DEP=$(addprefix $(BUILD_DIR)/,$(notdir $(SRC:.c=.d)))
              style="border-radius: 30px;"/>
     </p>
 </div>
+
+---
+## OpenOCD
+
+<div style="border-radius: 30px; overflow: hidden;">
+    <p align="center">
+        <img src="Images/OpenOCD.png"
+             width="100%" 
+             style="border-radius: 30px;"/>
+    </p>
+</div>
+
+* Many development boards, such as STM32 discovery kits, integrate a hardware debugger. The hardware debugger, such as ST-Link, uses a serial communication interface to interact with the JTAG (Joint Test Action Group) or SW
+(Serial Wire) debug port of ARM Cortex-M processors.
+
+* OpenOCD (Open On-Chip Debugger) is an open-source software that is widely used for debugging and downloading executables to microprocessors. OpenOCD runs as a server (also known as a daemon) on a host computer and serves two purposes:
+1. It receives commands from either Telnet or gdb via a TCP/IP connection.
+2. It translates commands received to JT AG/SW commands, and sends them to the
+target ARM Cortex-M processor via the hardware debugger.
+
+```
+openocd -f target/stm32f1x.cfg -f interface/stlink-v2.cfg
+```
