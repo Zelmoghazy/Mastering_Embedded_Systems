@@ -13,6 +13,12 @@
 </p>
 
 <p align="center">
+  <img src="./Images/MUX.gif"
+       width="100%" 
+       style="border-radius: 30px;"/>
+</p>
+
+<p align="center">
   <img src="./Images/pdr.gif"
        width="100%" 
        style="border-radius: 30px;"/>

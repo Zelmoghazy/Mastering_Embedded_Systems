@@ -149,6 +149,37 @@ static uint8_t SegmentLetter[] = {
 //     return 0;
 // }
 
+/*  Multiplexing Multiple 7-segment Displays */
+
+// void displayDigit(int digit, int position) 
+// {
+//     IO_PORT_A = SegmentNumber[digit];
+//     SET(IO_PORT_B, position);
+//     _delay_ms(5); // Brief delay to ensure visibility
+//     CLEAR(IO_PORT_B, position);
+// }
+
+
+// int main(void)
+// {
+//     // Set all Port A pins as output
+//     SET_MASK(IO_DDR_A,0xFF, 0);
+//     // Set all Port B pins as output
+//     SET_MASK(IO_DDR_B,0xFF, 0);
+
+//     for(;;)
+//     {
+//         for (int number = 0; number < 100; number++) {
+//             int tensDigit = number / 10;
+//             int onesDigit = number % 10;
+//             for (int i = 0; i < 10; i++) { // Refresh display 
+//                 displayDigit(tensDigit, 0);
+//                 displayDigit(onesDigit, 1);
+//             }
+//         }
+//     }
+//     return 0;
+// }
 
 /*****************************************************************/
 
