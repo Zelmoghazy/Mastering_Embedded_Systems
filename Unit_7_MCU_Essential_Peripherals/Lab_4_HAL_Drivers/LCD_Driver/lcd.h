@@ -36,6 +36,7 @@
 #define GPIO_C                     ((gpio_t *)GPIO_C_BASE)
 #define GPIO_D                     ((gpio_t *)GPIO_D_BASE)
 
+#pragma pack(1)
 typedef struct gpio_t
 {
     vuint8_t PIN;  // Port Input Pins
