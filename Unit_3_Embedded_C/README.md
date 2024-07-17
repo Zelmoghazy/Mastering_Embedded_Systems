@@ -52,7 +52,7 @@
 ## ELF Format
 
 * **ELF** : Executable and Linkable Format
-  * ELF is a standard file format for object files and executable files in GCC
+  * ELF is a standard file format for object and executable files.
 * A file format standard describes a way of organizing various elements (data, read-only data, code, uninitialized data,etc.) of a program in different sections.
 
 * **ELF provides two interfaces to binary files :**

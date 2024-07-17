@@ -52,3 +52,17 @@
        width="100%" 
        style="border-radius: 30px;"/>
 </p>
+
+---
+
+## Case Study : STM32
+
+<p align="center">
+  <img src="./Images/stm32_input.png"
+       width="100%" "/>
+</p>
+
+<p align="center">
+  <img src="./Images/stm32_output.png"
+       width="100%" "/>
+</p>
