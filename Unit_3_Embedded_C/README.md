@@ -56,15 +56,13 @@
 * A file format standard describes a way of organizing various elements (data, read-only data, code, uninitialized data,etc.) of a program in different sections.
 
 * **ELF provides two interfaces to binary files :**
-    * a **linkable interface** that is used at static link time to combine multiple files when
-compiling and building a program.
-    * an **executable interface** that is utilized at runtime to create a process image in
-memory when a program is loaded into memory and then executed.
+    * **Linkable Interface :** is used at static link time to combine multiple files when compiling and building a program.
+    * **Executable Interface :** is utilized at runtime to create a process image in memory when a program is loaded into memory and then executed.
 
-* **The executable interface provides two separate logic views :** 
-    * the **load view** classifies the input sections into two regions: read-write section and read-only section.
+* **The Executable Interface Provides Two Separate Logic Views :** 
+    * **Load view :** classifies the input sections into two regions: read-write section and read-only section.
         * The load view also defines the base memory address of these regions so that the processor knows where it should load them into the memory.
-    * The **execution view** informs the processor how to load the executable at runtime. A binary machine program includes four critical sections, including:
+    * **Execution view :** informs the processor how to load the executable at runtime. A binary machine program includes four critical sections, including:
         * a *text segment* that consists of binary machine instructions,
         * a *read-only data segment* that defines the value of variables unalterable at runtime.
         * a *read-write data segment* that sets the initial values of statically allocated and modifiable variables
@@ -74,7 +72,7 @@ memory when a program is loaded into memory and then executed.
 <div style="border-radius: 30px; overflow: hidden;">
     <p align="center">
         <img src="Images/ELF.png"
-             width="50%" 
+             width="75%" 
              style="border-radius: 30px;"/>
     </p>
 </div>
