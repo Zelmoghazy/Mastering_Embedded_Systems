@@ -31,7 +31,7 @@ void exti_gpio_reset(void)
 
 void exti_gpio_update(exti_pin_config_t *exti_cfg)
 {
-	// configure GPIO to be Alternative Function
+	// // configure GPIO to be Alternative Function
 	gpio_config_t cfg = {
 		.pin = exti_cfg->exti_pin.gpio_pin,
 		.mode = GPIO_MODE_IN_AF,
@@ -80,10 +80,10 @@ void exti_gpio_update(exti_pin_config_t *exti_cfg)
 	// Enable/Disable IRQ
 	if(exti_cfg->irq_en == EXTI_IRQ_ENABLE){
 		EXTI->IMR |= (1<<exti_cfg->exti_pin.exti_line);
-		Enable_NVIC(exti_cfg->exti_pin.irq_n);
+		Enable_NVIC(exti_cfg->exti_pin.exti_line);
 	}else{
 		EXTI->IMR &= ~(1<<exti_cfg->exti_pin.exti_line);
-		Disable_NVIC(exti_cfg->exti_pin.irq_n);
+		Disable_NVIC(exti_cfg->exti_pin.exti_line);
 	}
 }
 

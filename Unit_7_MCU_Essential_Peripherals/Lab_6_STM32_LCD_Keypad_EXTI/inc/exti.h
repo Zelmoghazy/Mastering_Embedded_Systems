@@ -95,8 +95,8 @@ typedef struct exti_pin_config_t{
 	callback_t			irq_callback;
 }exti_pin_config_t;
 
-
+void exti_gpio_init(exti_pin_config_t *exti_config);
 void exti_gpio_update(exti_pin_config_t *exti_cfg);
-
+void exti_gpio_reset(void);
 
 #endif

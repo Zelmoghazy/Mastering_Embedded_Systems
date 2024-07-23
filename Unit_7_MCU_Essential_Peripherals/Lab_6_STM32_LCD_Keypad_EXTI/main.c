@@ -2,6 +2,12 @@
 #include "lcd.h"
 #include "rcc.h"
 #include "keypad.h"
+#include "exti.h"
+#include <stdint.h>
+
+
+lcd_handle_t lcd;
+uint8_t irq_flag = 0;
 
 void gpio_setup(void)
 {
@@ -31,12 +37,18 @@ void gpio_setup(void)
     gpio_init(GPIO_B, &bi);
 }
 
+void interrupt_handler(void)
+{
+    lcd_clear(&lcd);
+    lcd_string(&lcd, "IRQ  EXTI0 !");
+    irq_flag = 1;
+}
 
 int main(void) 
 {
     gpio_setup();
 
-    lcd_handle_t lcd = lcd_create
+    lcd = lcd_create
     (
         (LCD_PORT[4]){GPIO_A, GPIO_A, GPIO_A, GPIO_A},
         (LCD_PIN[4]) {GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_2, GPIO_PIN_3},
@@ -46,11 +58,25 @@ int main(void)
                       LCD_4_BIT_MODE
     );
 
+    exti_pin_config_t exti_cgf ={
+        .exti_pin = EXTI_P(B,0),
+        .trigger = EXTI_TRIGGER_RISING,
+        .irq_callback =  interrupt_handler,
+        .irq_en = EXTI_IRQ_ENABLE,
+    };
+
+    exti_gpio_init(&exti_cgf);
+
     while (1) 
     {
         char ch = keypad_getchar();
         if (ch){
             lcd_write_data(&lcd, ch);
+        }
+        if(irq_flag){
+            _delay_ms(1000);
+            lcd_clear(&lcd);
+            irq_flag = 0;
         }
     }
 

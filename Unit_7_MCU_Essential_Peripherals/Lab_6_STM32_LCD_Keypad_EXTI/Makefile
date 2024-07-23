@@ -2,6 +2,7 @@ CC=arm-none-eabi-gcc
 LD=arm-none-eabi-ld
 AS=arm-none-eabi-as
 OBJCPY=arm-none-eabi-objcopy
+SZ=arm-none-eabi-size
 
 OPT=-O0
 DBG=-gdwarf-2
@@ -43,6 +44,8 @@ all: $(BUILD_DIR)/$(PROJ).bin $(BUILD_DIR)/$(PROJ).hex $(BUILD_DIR)/$(PROJ).axf
 	@echo "========================================="
 	@echo "              BUILD SUCCESS              "
 	@echo "========================================="
+	@$(SZ) $(BUILD_DIR)/$(PROJ).elf
+	
 
 $(BUILD_DIR)/%.o: %.s | $(BUILD_DIR)
 	$(AS) $(ASFLAGS) $^ -o $@
