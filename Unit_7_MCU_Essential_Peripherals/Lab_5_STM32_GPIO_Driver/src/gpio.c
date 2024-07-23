@@ -33,12 +33,12 @@ void gpio_init(gpio_t *gpio, gpio_config_t  *config)
             }
 
             if(config->pull == GPIO_PULL_UP){
-                gpio->ODR |= ioposition;
-                // or  gpio->BSRR = ioposition;
+                // gpio->ODR |= ioposition;
+                gpio->BSRR = ioposition;
             }
             else if(config->pull == GPIO_PULL_DOWN){
-                gpio->ODR &= ~ioposition;
-                // or  gpio->BRR = ioposition;
+                // gpio->ODR &= ~ioposition;
+                gpio->BRR = ioposition;
             }
         }
         position++;
@@ -62,7 +62,17 @@ void gpio_reset(const gpio_t *gpio)
 
 uint8_t gpio_read_pin(const gpio_t *gpio, uint16_t pin)
 {
-    return (uint8_t)READ_PIN(gpio->IDR, pin);
+    uint8_t bitstatus;
+    
+    if ((gpio->IDR & pin) != (uint32_t)GPIO_LEVEL_LOW)
+    {
+        bitstatus = GPIO_LEVEL_HIGH;
+    }
+    else
+    {
+        bitstatus = GPIO_LEVEL_LOW;
+    }
+    return bitstatus;
 }
 
 uint16_t gpio_read_port(gpio_t *gpio)
@@ -75,7 +85,7 @@ void gpio_write_pin(gpio_t *gpio, uint16_t pin, uint8_t level)
     // For atomic bit set/reset, the ODR bits can be individually set and cleared by writing to the GPIOx_BSRR register
     // set corresponding ODR bit    : 0->15
     // reset corresponding ODR bit  : 16->31
-    if(level){
+    if(level != GPIO_LEVEL_LOW){
         gpio->BSRR = (uint32_t)pin;        
     }else{
         gpio->BRR  = (uint32_t)pin;        

@@ -16,6 +16,6 @@ typedef struct afio_t{
     vuint32_t MAPR2;          // AF remap and debug I/O configuration register2
 }afio_t;
 
-#define AFIO  ((exti_t *)(AFIO_BASE))
+#define AFIO  ((afio_t *)(AFIO_BASE))
 
 #endif
