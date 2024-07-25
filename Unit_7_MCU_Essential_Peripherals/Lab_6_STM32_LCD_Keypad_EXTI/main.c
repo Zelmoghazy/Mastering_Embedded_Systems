@@ -3,15 +3,23 @@
 #include "rcc.h"
 #include "keypad.h"
 #include "exti.h"
-#include <stdint.h>
 
+
+#define FLASH_SIZE      *((vuint16_t*) (0x1FFFF7E0))
+
+#define LCD_CFG         (LCD_PORT[4]){GPIO_A, GPIO_A, GPIO_A, GPIO_A},                     \
+                        (LCD_PIN[4]) {GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_2, GPIO_PIN_3},     \
+                        GPIO_A, GPIO_PIN_4,                                                \
+                        GPIO_A, GPIO_PIN_4,                                                \
+                        GPIO_A, GPIO_PIN_5,                                                \
+                        LCD_4_BIT_MODE                                                     
 
 lcd_handle_t lcd;
 uint8_t irq_flag = 0;
 
 void gpio_setup(void)
 {
-    // Enable GPIO_A Clock
+    // Enable GPIO_A and GPIO_B Clocks
     RCC_GPIO_CLK_EN(RCC_IOP_A_EN);
     RCC_GPIO_CLK_EN(RCC_IOP_B_EN);
 
@@ -48,21 +56,15 @@ int main(void)
 {
     gpio_setup();
 
-    lcd = lcd_create
-    (
-        (LCD_PORT[4]){GPIO_A, GPIO_A, GPIO_A, GPIO_A},
-        (LCD_PIN[4]) {GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_2, GPIO_PIN_3},
-                      GPIO_A, GPIO_PIN_4,    // rs
-                      GPIO_A, GPIO_PIN_4,    // r/w    
-                      GPIO_A, GPIO_PIN_5,    // e
-                      LCD_4_BIT_MODE
-    );
+    uint16_t flsh_size = FLASH_SIZE;
+
+    lcd = lcd_create(LCD_CFG);
 
     exti_pin_config_t exti_cgf ={
-        .exti_pin = EXTI_P(B,0),
-        .trigger = EXTI_TRIGGER_RISING,
-        .irq_callback =  interrupt_handler,
-        .irq_en = EXTI_IRQ_ENABLE,
+        .exti_pin       = EXTI_P(B,0),
+        .trigger        = EXTI_TRIGGER_RISING,
+        .irq_callback   = interrupt_handler,
+        .irq_en         = EXTI_IRQ_ENABLE,
     };
 
     exti_gpio_init(&exti_cgf);

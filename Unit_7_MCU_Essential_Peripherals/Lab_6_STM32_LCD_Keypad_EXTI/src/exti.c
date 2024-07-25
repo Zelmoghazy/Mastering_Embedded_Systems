@@ -31,7 +31,7 @@ void exti_gpio_reset(void)
 
 void exti_gpio_update(exti_pin_config_t *exti_cfg)
 {
-	// // configure GPIO to be Alternative Function
+	// configure GPIO to be Alternative Function
 	gpio_config_t cfg = {
 		.pin = exti_cfg->exti_pin.gpio_pin,
 		.mode = GPIO_MODE_IN_AF,
@@ -90,76 +90,76 @@ void exti_gpio_update(exti_pin_config_t *exti_cfg)
 
 void EXTI0_IRQHandler(void)
 {
-	EXTI->PR |= 1<<0;
-	IRQ_CB[0]();
+    EXTI->PR |= 1<<0;
+    IRQ_CB[0]();
 }
 
 void EXTI1_IRQHandler(void)
 {
-	EXTI->PR |= 1<<1;
-	IRQ_CB[1]();
+    EXTI->PR |= 1<<1;
+    IRQ_CB[1]();
 }
 void EXTI2_IRQHandler(void)
 {
-	EXTI->PR |= 1<<2;
-	IRQ_CB[2]();
+    EXTI->PR |= 1<<2;
+    IRQ_CB[2]();
 }
 void EXTI3_IRQHandler(void)
 {
-	EXTI->PR |= 1<<3;
-	IRQ_CB[3]();
+    EXTI->PR |= 1<<3;
+    IRQ_CB[3]();
 }
 
 void EXTI4_IRQHandler(void)
 {
-	EXTI->PR |= 1<<4;
-	IRQ_CB[4]();
+    EXTI->PR |= 1<<4;
+    IRQ_CB[4]();
 }
 
 void EXTI5_9_IRQHandler(void)
 {
-	if(EXTI->PR & (1<<5)){
-		EXTI->PR |= 1<<5;
-		IRQ_CB[5]();
-	}
-	if(EXTI->PR & (1<<6)){
-		EXTI->PR |= 1<<6;
-		IRQ_CB[6]();
-	}
-	if(EXTI->PR & (1<<7)){
-		EXTI->PR |= 1<<7;
-		IRQ_CB[7]();
-	}
-	if(EXTI->PR & (1<<8)){
-		EXTI->PR |= 1<<8;
-		IRQ_CB[8]();
-	}
-	if(EXTI->PR & (1<<9)){
-		EXTI->PR |= 1<<9;
-		IRQ_CB[9]();
-	}
+    if(EXTI->PR & (1<<5)){
+        EXTI->PR |= 1<<5;
+        IRQ_CB[5]();
+    }
+    if(EXTI->PR & (1<<6)){
+        EXTI->PR |= 1<<6;
+        IRQ_CB[6]();
+    }
+    if(EXTI->PR & (1<<7)){
+        EXTI->PR |= 1<<7;
+        IRQ_CB[7]();
+    }
+    if(EXTI->PR & (1<<8)){
+        EXTI->PR |= 1<<8;
+        IRQ_CB[8]();
+    }
+    if(EXTI->PR & (1<<9)){
+        EXTI->PR |= 1<<9;
+        IRQ_CB[9]();
+    }
 }
 
 void EXTI10_15_IRQHandler(void)
 {
-	if(EXTI->PR & (1<<10)){
-		EXTI->PR |= 1<<10;
-		IRQ_CB[10]();
-	}
-	if(EXTI->PR & (1<<11)){
-		EXTI->PR |= 1<<11;
-		IRQ_CB[11]();
-	}
-	if(EXTI->PR & (1<<12)){
-		EXTI->PR |= 1<<12;
-		IRQ_CB[12]();
-	}
-	if(EXTI->PR & (1<<13)){
-		EXTI->PR |= 1<<13;
-		IRQ_CB[13]();
-	}
-	if(EXTI->PR & (1<<14)){
-		EXTI->PR |= 1<<14;
-		IRQ_CB[14]();
-	}
+    if(EXTI->PR & (1<<10)){
+        EXTI->PR |= 1<<10;
+        IRQ_CB[10]();
+    }
+    if(EXTI->PR & (1<<11)){
+        EXTI->PR |= 1<<11;
+        IRQ_CB[11]();
+    }
+    if(EXTI->PR & (1<<12)){
+        EXTI->PR |= 1<<12;
+        IRQ_CB[12]();
+    }
+    if(EXTI->PR & (1<<13)){
+        EXTI->PR |= 1<<13;
+        IRQ_CB[13]();
+    }
+    if(EXTI->PR & (1<<14)){
+        EXTI->PR |= 1<<14;
+        IRQ_CB[14]();
+    }
 }
