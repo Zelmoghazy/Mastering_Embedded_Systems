@@ -53,6 +53,7 @@
 
 * **ELF** : Executable and Linkable Format
   * ELF is a standard file format for object and executable files.
+  * It contains information on how to load your program into memory or link with other object files to form an executable object
 * A file format standard describes a way of organizing various elements (data, read-only data, code, uninitialized data,etc.) of a program in different sections.
 
 * **ELF provides two interfaces to binary files :**
@@ -62,12 +63,7 @@
 * **The Executable Interface Provides Two Separate Logic Views :** 
     * **Load view :** classifies the input sections into two regions: read-write section and read-only section.
         * The load view also defines the base memory address of these regions so that the processor knows where it should load them into the memory.
-    * **Execution view :** informs the processor how to load the executable at runtime. A binary machine program includes four critical sections, including:
-        * a *text segment* that consists of binary machine instructions,
-        * a *read-only data segment* that defines the value of variables unalterable at runtime.
-        * a *read-write data segment* that sets the initial values of statically allocated and modifiable variables
-        * a *zero-initialized data segment* that holds all uninitialized variables declared in the program.
-
+    * **Execution view :** informs the processor how to load the executable at runtime. 
 
 <div style="border-radius: 30px; overflow: hidden;">
     <p align="center">
@@ -76,6 +72,8 @@
              style="border-radius: 30px;"/>
     </p>
 </div>
+
+**A typical ELF relocatable object file contains the following sections:**
 
 * `.text` : The machine code of the compiled program.
 * `.rodata` : Read-only data 
