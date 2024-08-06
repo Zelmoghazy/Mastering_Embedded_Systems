@@ -49,7 +49,6 @@
 #define NVIC_IRQ40_EXTI10_15_EN()		(NVIC_ISER1 |= (1<<8))  
 
 
-
 #define NVIC_IRQ6_EXTI0_DIS()			(NVIC_ICER0 |= (1<<6))
 #define NVIC_IRQ7_EXTI1_DIS()			(NVIC_ICER0 |= (1<<7))
 #define NVIC_IRQ8_EXTI2_DIS()			(NVIC_ICER0 |= (1<<8))

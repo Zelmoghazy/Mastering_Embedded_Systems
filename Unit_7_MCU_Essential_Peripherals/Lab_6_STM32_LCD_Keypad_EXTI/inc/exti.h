@@ -76,10 +76,6 @@ typedef struct exti_t{
 								  (x==GPIO_C)?2:\
 								  (x==GPIO_D)?3:0) 
 
-
-typedef void ((*callback_t)(void));
-
-
 typedef struct exti_gpio_mapping_t
 {
 	uint16_t  exti_line;

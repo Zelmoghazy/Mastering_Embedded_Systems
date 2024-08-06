@@ -36,6 +36,7 @@ void Enable_NVIC(uint16_t IRQ)
             break;		
 	}
 }
+
 void Disable_NVIC(uint16_t IRQ)
 {
 	switch(IRQ)

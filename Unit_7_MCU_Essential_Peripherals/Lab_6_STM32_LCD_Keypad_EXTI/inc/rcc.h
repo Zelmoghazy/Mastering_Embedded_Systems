@@ -36,7 +36,7 @@ typedef struct rcc_t{
 #define RCC_IOP_D_EN            5
 #define RCC_IOP_E_EN            6
 
-#define RCC_GPIO_CLK_EN(IO)     (RCC->APB2ENR |=(1<<IO))
+#define RCC_GPIO_CLK_EN(IO)   (RCC->APB2ENR |=(1<<IO))
 #define RCC_AFIO_CLK_EN()     (RCC->APB2ENR |= 1)
 
 #endif

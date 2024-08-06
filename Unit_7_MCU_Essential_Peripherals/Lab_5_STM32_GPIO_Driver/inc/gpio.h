@@ -8,6 +8,10 @@
 
 /*-------------GPIO-------------*/
 
+/**
+ * @brief Structure representing gpio registers
+ * 
+ */
 #pragma pack(1)
 typedef struct gpio_t
 {
@@ -20,18 +24,31 @@ typedef struct gpio_t
     vuint32_t LCKR;     // Port configuration lock register
 }gpio_t;
 
+/**
+ * @brief   Structure for i/o configuration if a gpio pin
+ * 
+ */
 typedef struct gpio_config_t{
     uint16_t    pin;
     uint8_t     mode;
     uint8_t     pull;
 }gpio_config_t;
 
+
+/**
+ * @brief Macros representing GPIO ports to access registers directly.
+ * 
+ */
 #define GPIO_A                      ((gpio_t *)(GPIO_A_BASE))
 #define GPIO_B                      ((gpio_t *)(GPIO_B_BASE))
 #define GPIO_C                      ((gpio_t *)(GPIO_C_BASE))
 #define GPIO_D                      ((gpio_t *)(GPIO_D_BASE))
 #define GPIO_E                      ((gpio_t *)(GPIO_E_BASE))
 
+/**
+ * @brief Macros representing GPIO pins
+ * 
+ */
 #define GPIO_PIN_0                  ((uint16_t)(1<<( 0U))) 
 #define GPIO_PIN_1                  ((uint16_t)(1<<( 1U))) 
 #define GPIO_PIN_2                  ((uint16_t)(1<<( 2U))) 
@@ -49,15 +66,19 @@ typedef struct gpio_config_t{
 #define GPIO_PIN_14                 ((uint16_t)(1<<(14U))) 
 #define GPIO_PIN_15                 ((uint16_t)(1<<(15U))) 
 
-/*---------------------------------GPIO MODES---------------------------------*/
-#define GPIO_SPEED_10M              (0x1U)
-#define GPIO_SPEED_2M               (0x2U)
-#define GPIO_SPEED_50M              (0x3U)
+/**
+ * @brief Macros enumerating all gpio modes 
+ * 
+ */
 
 #define GPIO_MODE_A                 (0x0U)          // Analog
 #define GPIO_MODE_IN_F              (0x4U)          // Input Floating
 #define GPIO_MODE_IN_AF             (0x4U)          // Input Alternative Function
 #define GPIO_MODE_IN_P              (0x8U)          // Input Internal Pull
+
+#define GPIO_SPEED_10M              (0x1U)
+#define GPIO_SPEED_2M               (0x2U)
+#define GPIO_SPEED_50M              (0x3U)
 
 #define GPIO_MODE_OUT_PP(s)         (0x0U|(s))      // Output Push-Pull
 #define GPIO_MODE_OUT_OD(s)         (0x4U|(s))      // Output Open-Drain
@@ -74,28 +95,36 @@ typedef struct gpio_config_t{
 
 #define READ_PIN(p,n)               (p)&(n)
 
+/**
+ * @brief GPIO pin levels
+ * 
+ */
 #define GPIO_LEVEL_LOW              (0x0U)
 #define GPIO_LEVEL_HIGH             (0x1U)
 
+/**
+ * @brief GPIO port lock
+ * 
+ */
 #define GPIO_PORT_LOCKED            (0x0U)
 #define GPIO_PORT_UNLOCKED          (0x1U)
 
 #define GPIO_LCKR_LCKK              (1U<<16U) 
 
 
-/*
-    @fn:            - gpio_init
-    @brief          - Initializes a GPIO pin to specified configuration   
-    @param [in]     - Required GPIO
-    @param[in]      - Pin Cofig    
+/** 
+    @fn            - gpio_init
+    @brief         - Initializes a GPIO pin to specified configuration   
+    @param[in]     - Required GPIO
+    @param[in]     - Pin Config    
     @retval     
 */
 void gpio_init(gpio_t *gpio, gpio_config_t  *config);
 
-/*
-    @fn:            - gpio_reset
-    @brief          - Resets GPIO Registers to default values 
-    @param [in]     - Required GPIO
+/** 
+    @fn:           - gpio_reset
+    @brief         - Resets GPIO Registers to default values 
+    @param[in]     - Required GPIO
     @retval     
 */
 void gpio_reset(const gpio_t *gpio);

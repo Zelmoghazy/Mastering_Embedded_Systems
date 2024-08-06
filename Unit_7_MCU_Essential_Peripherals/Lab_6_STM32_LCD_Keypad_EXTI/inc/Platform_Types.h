@@ -49,4 +49,6 @@ typedef volatile uint32_t vuint32_t;
 typedef volatile int64_t vint64_t;
 typedef volatile uint64_t vuint64_t;
 
+typedef void(*callback_t)(void);
+
 #endif /* PLATFORM_TYPES_H  */
