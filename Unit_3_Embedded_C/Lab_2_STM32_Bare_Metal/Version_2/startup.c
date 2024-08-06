@@ -77,4 +77,6 @@ void Reset_Handler(void)
 {
     Mem_Init();
     main();
+    // main function shouldnt return !
+    while(1);
 }

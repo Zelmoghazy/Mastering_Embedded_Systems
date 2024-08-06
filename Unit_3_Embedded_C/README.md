@@ -31,12 +31,14 @@
 |`-O<level>`|Optimization Level {0,1,2,3,s,fast,g}|
 |`-g`|Produce debugging information|
 |`-ggdb`|Produce debugging information for use by GDB.|
-|`-gdwarf-2`|Produce debugging information in DWARF format (Proteus).|
+|`-gdwarf-2`|Produce debugging information in DWARF format.|
 |`-I <dir>`| Add the directory `dir` to the head of the list of directories to be searched for header files.|
 |`-L <dir>`|Add directory `dir` to the list of directories to be searched for `-l`|
 |`-l<library>`|Search the library named `library` when linking.|
 |`-nostartfiles`|Do not use the standard system startup files when linking.|
 |`-nostdlib`|Do not use the standard system startup files or libraries when linking.|
+|`-fno-builtin`|Disable all replacement and inlining of standard C functions with equivalents.|
+|`-ffreestanding`|Prevents the compiler from making optimizations based on assumptions about the behaviors of the standard libraries|
 |`-Wl,<option>`| Pass `option` as an option to the linker.|
 
 ## Compilation Process
@@ -99,6 +101,8 @@
 |`-d`|Display assembler contents of executable sections|
 |`-D`|Display assembler contents of all sections|
 |`-S`|Intermix source code with disassembly|
+|`-t`|Display the contents of the symbol table|
+|`-l`|Include line numbers and filenames in output|
 
 
 ```c
@@ -375,6 +379,13 @@ void Mem_Init(void)
 * Linker script also includes the code and data memory address and size information.
 * Linker scripts are written using the GNU Linker command Language and has the file extension `.ld`.
 
+**A linker script contains four things:**
+
+* **Memory layout:** what memory is available where
+* **Section definitions:** what part of a program should go where
+* **Options:** commands to specify architecture, entry point, …etc. if needed
+* **Symbols:** variables to inject into the program at link time
+
 ### Linker Script Commands
 
 |Command|Meaning|
@@ -395,10 +406,18 @@ MEMORY
 ```
 
 * `MEMORY`: you can describe which memory regions may be used by the linker, and which memory regions it must avoid.
-  * `attr` define the attribute list of the memory region.
+  * `attr` define the optional attribute list of the memory region, these attributes are meant to describe the properties of the memory, not set it.
   * `name` is a name used internally by the linker to refer to the region.
   * `origin` is the start address of the region in physical memory.
   * `len` is the size in bytes of the region (an expression). 
+
+```
+MEMORY
+{
+  rom  (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00040000
+  ram  (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00008000
+}
+```
 
 
 |attr|Meaning|
@@ -421,7 +440,12 @@ SECTIONS { ...
   * The linker will not create output sections which do not have any contents. 
   * `secname` must meet the constraints of your output format.
 
+* You typically want to put symbols in the same section if:
+    * They should be in the same region of memory
+    * They need to be initialized together.
+
 * In the following example, the command script arranges the output file into three consecutive sections, named `.text`, `.data`, and `.bss`, taking the input for each from the correspondingly named sections of all the input files:
+    * `<filename>(<section>)` : input sections from following files , `*` represents all files.
 
 
 ```
@@ -430,20 +454,23 @@ SECTIONS {
   {
     *(.text)                   // merge .text section of all input files
     *(.rodata)
-  }>(vma) AT> (lma)
+  }>(vma) AT > (lma)
 
   .data :
   {
     *(.data) 
-  }>(vma) AT> (lma)
+  }>ram AT > flash
 
   .bss :
   {
     *(.bss)
-    *(COMMON) 
-  }>(vma) AT> (lma) 
+    *(COMMON)  // special input section where the compiler puts global uninitialized variables that go beyond file scope.
+  }>ram 
 }
 ```
+
+* Every section in our linker script has two addresses, its load address (LMA) and its virtual address (VMA).
+    * In a firmware context, the LMA is where your JTAG loader needs to place the section and the VMA is where the section is found during execution.
 
 * `AT (ldadr)` The expression `ldadr` that follows the `AT` keyword specifies the load address of the section. 
 * `>region` Assign this section to a previously defined region of memory. 
@@ -478,6 +505,11 @@ SECTIONS
 
 ### Linker Script symbols
 * A symbol is the name of an address
+* In order to make section addresses available to code, the linker is able to generate symbols and add them to the program.
+    * you must use a reference to them, never the variable themselves. 
+* a linker script symbol is not equivalent to a variable declaration in a high level language, it is instead a symbol that does not have a value.
+* Linker scripts symbol declarations, create an entry in the symbol table but do not assign any memory to them. Thus they are an address without a value. 
+    * Hence when you are using a linker script defined symbol in source code you should always take the address of the symbol, and never attempt to use its value.
 
 <div style="border-radius: 30px; overflow: hidden;">
     <p align="center">
@@ -500,6 +532,7 @@ SECTIONS
 |`-T script`|Use script as the linker script.|
 |`-nostdlib`|Do not use the standard system startup files or libraries when linking.|
 |`-Map=<file.map>`|Write a linker map to `<file>`|
+|`--gc-section`|The linker can perform the dead code elimination doing a garbage collection of code and data never referenced.|
 
 * Linking is the process of collecting and combining the various pieces of code and data that a program needs in order to be loaded (copied) into memory and executed. 
 * Linkers play a crucial role in software development because they enable separate compilation.
@@ -542,6 +575,8 @@ MEMORY
     SRAM(RWX) : ORIGIN = 0x20000000, LENGTH = 20k
 }
 
+STACK_SIZE = 0x1000;
+
 SECTIONS
 {
     .text : 
@@ -557,17 +592,20 @@ SECTIONS
         _S_DATA = . ;
         *(.data)
         _E_DATA = . ;
-    }>SRAM AT> FLASH
+    }>SRAM AT > FLASH
 
     .bss :
     {
         _S_BSS = . ;
         *(.bss)
+        *(COMMON)
         . = ALIGN(4);
         _E_BSS = . ;
-
-        . = ALIGN(4);
-        . = . + 0x1000 ;
+        // Reserve Space for stack
+        // Should be aligned on an 8-byte boundary (AAPCS)
+        . = ALIGN(8);
+        . = . + STACK_SIZE ;
+        . = ALIGN(8);
         _STACK_TOP = . ;
     }>SRAM
 }
