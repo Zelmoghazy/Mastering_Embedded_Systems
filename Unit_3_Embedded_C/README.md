@@ -45,7 +45,7 @@
 
 <div style="border-radius: 30px; overflow: hidden;">
     <p align="center">
-        <img src="Images/CompilationProcess.png"
+        <img src="Images/CompilationProcess.svg"
              width="100%" 
              style="border-radius: 30px;"/>
     </p>
