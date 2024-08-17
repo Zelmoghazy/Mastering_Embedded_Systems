@@ -1,11 +1,20 @@
 
 <div style="border-radius: 30px; overflow: hidden;">
     <p align="center">
+        <img src="./images/vec_table.png"
+             width="100%" 
+             style="border-radius: 30px;"/>
+    </p>
+</div>
+
+<div style="border-radius: 30px; overflow: hidden;">
+    <p align="center">
         <img src="./images/vectable.png"
              width="100%" 
              style="border-radius: 30px;"/>
     </p>
 </div>
+
 <div style="border-radius: 30px; overflow: hidden;">
     <p align="center">
         <img src="./images/boot_seq.png"
@@ -29,8 +38,6 @@
              style="border-radius: 30px;"/>
     </p>
 </div>
-
-
 
 <div style="border-radius: 30px; overflow: hidden;">
     <p align="center">

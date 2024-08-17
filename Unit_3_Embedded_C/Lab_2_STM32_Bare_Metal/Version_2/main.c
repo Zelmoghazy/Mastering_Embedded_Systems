@@ -65,7 +65,7 @@ volatile R_ODR_t* R_ODR = (volatile R_ODR_t*)(PORT_A_BASE + 0x0C);
 
 byte Initialized_Global[3] = {1,2,3};
 byte const Global_Const[3] = {1,2,3};
-byte const Uninitialized_Global[7];
+volatile byte Uninitialized_Global[7];
 
 int main(void)
 {
