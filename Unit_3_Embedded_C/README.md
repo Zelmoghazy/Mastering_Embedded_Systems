@@ -843,14 +843,34 @@ DEP=$(addprefix $(BUILD_DIR)/,$(notdir $(SRC:.c=.d)))
 |`shell <command>`         | Execute commands from terminal (ex `clear`)|
 |`python <commands>`       | Full python interpreter inside gdb|
 |`set var <name> = <value>`| Change the value of variable during debugging.|
+|`info all-registers`      | List of all registers and their contents, for selected stack frame.|
+|`info args`               | All argument variables of current stack frame or those matching REGEXPs.|
+|`info b`                  | Status of specified breakpoints (all user-settable breakpoints if no argument).|
+|`info files`              | Names of targets and files being debugged.|
+|`info f`                  | All about the selected stack frame.|
+|`info functions`          | All function names or those matching REGEXPs.|
+|`info line`               | Core addresses of the code for a source line.|
+|`info locals`             | All local variables of current stack frame or those matching REGEXPs.|
+
 
 * **Reverse debugging :**
   * `target record-full` : Record everything from this point
   * `r` + `n` : Step back over
   * `rs` + `n` : Step back into
 * **Print memory :** `x/nfu` 
-  * `n` : how many units to print
-  * `f` : format character
+  * `n` : How many units to print.
+  * `f` : Format Character
+    * `o` : (octal)
+    * `x` : (hex)
+    * `d` : (decimal)
+    * `u` : (unsigned decimal)
+    * `t` : (binary)
+    * `f` : (float)
+    * `a` : (address)
+    * `i` : (instruction)
+    * `c` : (char)
+    * `s` : (string)
+    * `z` : (hex, zero padded on the left)
   * `u` : Unit
     * `b` : 1 byte
     * `h` : 2 bytes
