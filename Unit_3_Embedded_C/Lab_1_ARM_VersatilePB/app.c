@@ -1,9 +1,11 @@
 #include "uart.h"
 
 unsigned char string_buffer[100] = "Zeyad Ahmed Ibrahim";
-char *rodata = "read only data";
+const char rodata[] = "read only data";
+volatile char bss[10];
 
-void main(void)
+int main(void)
 {
     uart_send_string(string_buffer);
+    uart_send_string(rodata);
 }
