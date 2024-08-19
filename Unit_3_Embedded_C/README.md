@@ -85,6 +85,16 @@
   * This section occupies no actual space in the object file; it is merely a place holder.
   * Object file formats distinguish between initialized and uninitialized variables for space efficiency
   * uninitialized variables do not have to occupy any actual disk space in the object file.
+* `.symtab` : A symbol table with information about functions and global variables that are defined and referenced in the program.
+* `.rel.text` : A list of locations in the `.text` section that will need to be modified when the linker combines this object file with others.
+    * In general, any instruction that calls an external function or references a global variable will need to be modified.
+* `.rel.data` : Relocation information for any global variables that are referenced or defined by the module.
+* `.debug` : A debugging symbol table with entries for local variables and typedefs defined in the program, global variables defined and referenced in the program, and the original C source file.
+    * It is only present if the compiler driver is invoked with the `-g` option.
+* `.line` : A mapping between line numbers in the original C source program and machine code instructions in the `.text` section.
+    * It is only present if the compiler driver is invoked with the `-g` option.
+* `.strtab` : A string table for the symbol tables in the `.symtab` and `.debug` sections, and for the section names in the section headers.
+    * A string table is a sequence of null-terminated character strings.
 
 ## Relocatable object files
 
@@ -109,7 +119,7 @@
 #include "uart.h"
 
 unsigned char string_buffer[100] = "Zeyad Ahmed Ibrahim"; // .data
-char *rodata = "read only data";                          // .rodata
+const char rodata[] = "read only data";                   // .rodata
 
 void main(void)
 {
@@ -194,12 +204,12 @@ void main(void)
 </p>
 
 * Memory map of the 4GB memory space in a Cortex-M3 microprocessor, Within this 4GB linear memory space, the address range of instruction memory, data memory, internal and external peripheral devices, and external RAM has no overlap with each other.
-    * The on-chip flash memory, used for the instruction memory, has 4 KB, and its address starts at `0x08000000`.
-    * The on-chip SRAM, used for the data memory, has 256 KB, and its memory address begins at `0x20000000`.
+    * The on-chip flash memory, used for the instruction memory, has 4 KB, and its address starts at `0x0800_0000`.
+    * The on-chip SRAM, used for the data memory, has 256 KB, and its memory address begins at `0x2000_0000`.
     * The external RAM allows the processor to expand the data memory capacity.
 
 *  The interrupt vector table is relocatable. 
-	*  While the interrupt vector table is located at the memory address `0x00000004`, this low memory address can be physically re-mapped to different regions, such as on-chip flash memory, on-chip RAM memory, or on-chip ROM memory.
+	*  While the interrupt vector table is located at the memory address `0x0000_0004`, this low memory address can be physically re-mapped to different regions, such as on-chip flash memory, on-chip RAM memory, or on-chip ROM memory.
 	*   This allows the processor to boot from various memory regions.
 
 * On many STM32 families, the boot address in the internal flash is `0x0800_0000`.
