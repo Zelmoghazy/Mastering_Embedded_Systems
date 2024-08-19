@@ -2,6 +2,8 @@
 
 uint16_t data;
 
+void delay(int ms);
+
 void clock_init(void)
 {
     RCC_GPIO_CLK_EN(RCC_IOP_A_EN);
@@ -18,9 +20,18 @@ int main(void)
 
     while(1)
 	{
-        usart_receive(USART1, &cfg, &data);
-        usart_send(USART1, &cfg, &data);
+        // usart_receive(USART1, &cfg, &data);
+        // usart_send(USART1, &cfg, data);
+        usart_print_str(USART1, &cfg, "Hello World\r\n");
+        delay(1000);
 	}
 
     return 0;
+}
+
+void delay(int ms) {
+    int iterations = ms * 1000;
+    for (int i = 0; i < iterations; i++) {
+        __asm("nop");
+    }
 }

@@ -5,7 +5,7 @@ OBJCPY=arm-none-eabi-objcopy
 SZ=arm-none-eabi-size
 
 OPT=-O0
-DBG=-gdwarf-2
+DBG=-gdwarf-2 -g
 CPU=-mcpu=cortex-m3
 STDLIB=--specs=nano.specs
 FP=-mfloat-abi=soft
@@ -73,6 +73,12 @@ clean:
 
 debug: all
 	uv4 -d .\Keil\STM32.uvprojx
+
+gdb: all
+	gdb-multiarch -ex "target remote localhost:50000" $(BUILD_DIR)/$(PROJ).elf
+
+openocd: all
+	openocd -c "gdb_port 50000" -f "C:\msys64\mingw64\share\openocd\scripts\interface\stlink-v2.cfg" -f "C:\msys64\mingw64\share\openocd\scripts\target\stm32f1x.cfg"
 
 simulate: all
 	start .\Proteus\stm32.pdsprj

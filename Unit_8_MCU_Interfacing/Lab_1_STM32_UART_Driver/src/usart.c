@@ -1,5 +1,6 @@
 #include "usart.h"
 #include "rcc.h"
+#include <stdint.h>
 
 callback_t USART_IRQ_CB[3];
 
@@ -193,7 +194,7 @@ void usart_gpio_set_pins(const usart_t *usart, usart_config_t *cfg)
 	}
 }
 
-void usart_send(usart_t *usart, usart_config_t *cfg, const uint16_t *txbuf)
+void usart_send(usart_t *usart, usart_config_t *cfg, const uint16_t txbuf)
 {
     // Polling mode wait until tranmit buffer is empty
 	if(cfg->irq_en == USART_IRQ_NONE){
@@ -206,10 +207,10 @@ void usart_send(usart_t *usart, usart_config_t *cfg, const uint16_t *txbuf)
 		because it is replaced by the parity.
 	*/
 	if(cfg->payload == USART_PAYLOAD_9B && cfg->parity == USART_PARITY_NONE){
-		usart->DR = (uint16_t)(*txbuf & 0x1FFU);
+		usart->DR = (uint16_t)(txbuf & 0x1FFU);
 	}else{
         // if parity is enabled in 8-bit word length the MSB has no effect
-		usart->DR = (uint8_t)(*txbuf & 0xFFU);
+		usart->DR = (uint8_t)(txbuf & 0xFFU);
 	}
 }
 
@@ -219,7 +220,7 @@ void usart_receive(usart_t *usart, usart_config_t *cfg, uint16_t *rxbuf)
 	if(cfg->irq_en == USART_IRQ_NONE){
 		while(!(usart->SR & USART_SR_RXNE)); // recieve empty
 	}
-
+    // we can either send 8 or 9 bits which complicates things a little bit
 	if(cfg->payload == USART_PAYLOAD_9B && cfg->parity == USART_PARITY_NONE){
         // 9 data bits
 		*(rxbuf) = usart->DR; 
@@ -231,6 +232,13 @@ void usart_receive(usart_t *usart, usart_config_t *cfg, uint16_t *rxbuf)
 			*(rxbuf) = (usart->DR & (uint8_t)0xFFU); 
 		}
 	}
+}
+
+void usart_print_str(usart_t *usart, usart_config_t *cfg, const char *str)
+{
+    while(*str){
+        usart_send(usart, cfg, (uint16_t)*(str++));
+    }
 }
 
 void usart_tx_complete(usart_t *usart)

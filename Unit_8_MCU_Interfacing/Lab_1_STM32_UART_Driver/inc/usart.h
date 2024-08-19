@@ -104,8 +104,9 @@ typedef struct usart_t
 void usart_init(usart_t *usart, usart_config_t *cfg);
 void usart_reset(const usart_t *usart);
 void usart_gpio_set_pins(const usart_t *usart, usart_config_t *cfg);
-void usart_send(usart_t *usart, usart_config_t *cfg, const uint16_t *txbuf);
+void usart_send(usart_t *usart, usart_config_t *cfg, const uint16_t txbuf);
 void usart_receive(usart_t *usart, usart_config_t *cfg, uint16_t *rxbuf);
 void usart_tx_complete(usart_t *usart);
+void usart_print_str(usart_t *usart, usart_config_t *cfg, const char *str);
 
 #endif
