@@ -1,5 +1,13 @@
 #include "nvic.h"
 
+// void NVIC_EnableIRQ(uint16_t IRQn)
+// {
+//   if ((int32_t)(IRQn) >= 0)
+//   {
+//     NVIC->ISER[(((uint32_t)IRQn) >> 5UL)] = (uint32_t)(1UL << (((uint32_t)IRQn) & 0x1FUL));
+//   }
+// }
+
 void Enable_NVIC(uint16_t IRQ)
 {
 	switch(IRQ)
