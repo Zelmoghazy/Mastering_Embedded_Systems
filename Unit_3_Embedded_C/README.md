@@ -259,7 +259,7 @@ void main(void)
 ```
 
 * **Startup in C**
-  * As (CortexM3) can intalize the stack pointer with the first 4 bytes, so we can write startup in C code.
+  * As (Cortex-M3) can initialize the stack pointer with the first 4 bytes, we can write startup code completely in C.
 
 <table>
 <tr>
@@ -388,6 +388,7 @@ void Mem_Init(void)
 * Linker and locator assign absolute addresses to different section of the output file by referring to address information mentioned in the linker script.
 * Linker script also includes the code and data memory address and size information.
 * Linker scripts are written using the GNU Linker command Language and has the file extension `.ld`.
+* Linker scripts are typically invoked via the use of the `-T script.ld` command line argument when calling the `ld` application.
 
 **A linker script contains four things:**
 
@@ -494,9 +495,11 @@ SECTIONS {
   * The location counter **cannot** moved backwards.
   * You can use this symbol inside the linker script to track and define boundaries of various sections.
 
-
 * `ALIGN(exp)` Return the result of the current location counter `.` aligned to the next `exp` boundary.
   *  `exp` must be an expression whose value is a power of two. 
+
+* `KEEP(section)` instruct the linker to keep the specified section, even if no symbols inside it are referenced.
+    * relevant when garbage collection is performed at link time, enabled by passing the` --gc-sections` switch to the linker.
 
 ```
 SECTIONS

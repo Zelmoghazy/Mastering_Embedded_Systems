@@ -1,17 +1,18 @@
 
 MEMORY
 {
-    FLASH(RX) : ORIGIN = 0x00000000, LENGTH = 512M
-    SRAM(RWX) : ORIGIN = 0x20000000, LENGTH = 512M
+    FLASH(RX) : ORIGIN = 0x00000000, LENGTH = 256K
+    SRAM(RWX) : ORIGIN = 0x20000000, LENGTH = 32K
 }
 
 SECTIONS
 {
     .text : 
     {
-        *(.vectors*)
+        KEEP(*(.vectors*))
         *(.text*)
         *(.rodata)
+        . = ALIGN(4) ;
         _E_TEXT = . ;
     } > FLASH
 
@@ -27,6 +28,8 @@ SECTIONS
     {
         _S_BSS = . ;
         *(.bss*)
+        *(COMMON)
+        . = ALIGN(4) ;
         _E_BSS = . ;
     }>SRAM
 }

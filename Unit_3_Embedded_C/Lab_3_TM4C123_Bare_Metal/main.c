@@ -7,20 +7,26 @@
 #define GPIO_PORT_F_DATA_R (*((vuint32_t*)0x400253FC))
 
 
-int main()
+int main(void)
 {
     vuint32_t delay_count;
 
     SYSCTL_RCGC2_R = 0x20;
 
+    /* small delay to make sure clock is activated */
     for(delay_count = 0; delay_count < 200; delay_count++);
+
     SET(GPIO_PORT_F_DIR_R,3);
     SET(GPIO_PORT_F_DEN_R,3);
+
     for(;;)
     {
         SET(GPIO_PORT_F_DATA_R,3);
+
         for(delay_count = 0; delay_count < 200000; delay_count++);
+
         CLEAR(GPIO_PORT_F_DATA_R,3);
+        
         for(delay_count = 0; delay_count < 200000; delay_count++);
     }
     return 0;    

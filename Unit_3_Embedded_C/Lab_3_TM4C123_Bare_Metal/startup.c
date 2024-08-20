@@ -1,6 +1,15 @@
 #include "Platform_Types.h"
 #include <stddef.h>
 
+
+typedef void(*const fp_t)(void);
+
+typedef union
+{
+    fp_t handler;
+    uint32_t u32_ptr;
+}vector_entry;
+
 extern int main(void);
 
 void Reset_Handler(void);
@@ -14,11 +23,29 @@ void NMI_Handler(void)                      __attribute__ ((weak,alias("Default_
 void Hard_Fault_Handler(void)               __attribute__ ((weak,alias("Default_Handler")));
 
 
-/* Allocate 1024 Bytes in .bss */
-static uint32 Stack_Top[256]; 
+/*
 
-void (* const pf_Vectors[])(void)  __attribute__((section(".vectors"))) = {
-    (void (*)(void)) (((uint32)Stack_Top+(uint32)sizeof(Stack_Top))),
++------+                        
+|      |                        
+|      |                        
+|      |      +-----+           
+|      |      |     |           
+|SP----+----->+-----+^ stack_top
++------+      |     || 256B      
+ FLASH        |BSS--+           
+              +-----+           
+              |DATA |           
+              +-----+           
+               RAM              
+ */
+ 
+/* Allocate 1024 Bytes in .bss */
+static uint32 stack[256]; 
+
+// Array of function pointers to handles
+const vector_entry vector_table[]  __attribute__((section(".vectors"))) = 
+{
+    {.u32_ptr = (((uint32)stack+(uint32)sizeof(stack)))}, // initial stack pointer
     &Reset_Handler,
     &NMI_Handler,
     &Hard_Fault_Handler
@@ -59,4 +86,6 @@ void Reset_Handler(void)
 {
     Mem_Init();
     main();
+    // should never return from main
+    for(;;);
 }
