@@ -3,9 +3,9 @@ LD=arm-none-eabi-ld
 AS=arm-none-eabi-as
 OBJCPY=arm-none-eabi-objcopy
 
-INCS=-I.
-OPT=-Og
-DBG=-gdwarf-2
+INCS=-I. -I./inc/
+OPT=-O0
+DBG=-gdwarf-2 -g
 CPU=-mcpu=cortex-m3 -mthumb -mfloat-abi=soft
 
 WARNINGS=-Wall -Wextra -Wsign-conversion -Wconversion
