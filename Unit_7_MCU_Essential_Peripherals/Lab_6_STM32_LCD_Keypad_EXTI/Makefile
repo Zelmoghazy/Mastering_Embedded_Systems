@@ -31,9 +31,9 @@ OBJ+=$(addprefix $(BUILD_DIR)/,$(notdir $(ASM:.s=.o)))
 
 PROJ=STM32
 
-STARTUP=startup_stm32f103x6
+STARTUP=startup_stm32f103xb
 
-LS=STM32F103C6Tx_FLASH.ld
+LS=STM32F103C8Tx_FLASH.ld
 
 LDFLAGS=-T $(LS) --specs=nosys.specs -Wl,-Map="./$(BUILD_DIR)/Map.map" $(STDLIB) $(FP) $(ISA) -Wl,--start-group -lc -lm -Wl,--end-group
 
