@@ -30,9 +30,9 @@ void Hard_Fault_Handler(void)               __attribute__ ((weak,alias("Default_
 |      |                        
 |      |      +-----+           
 |      |      |     |           
-|SP----+----->+-----+^ stack_top
-+------+      |     || 256B      
- FLASH        |BSS--+           
+|SP----+----->+-----+-  stack_top
++------+      |     ||   256B      
+ FLASH        |BSS--+-           
               +-----+           
               |DATA |           
               +-----+           

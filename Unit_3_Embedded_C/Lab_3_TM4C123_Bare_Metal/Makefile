@@ -57,5 +57,8 @@ $(BUILD_DIR)/$(PROJ).hex: $(BUILD_DIR)/$(PROJ).elf
 $(BUILD_DIR):
 	mkdir $@
 
+debug: all 
+	uv4 -d .\Keil_Project\TM4C123.uvprojx
+
 clean:
 	rm -fR $(BUILD_DIR)
