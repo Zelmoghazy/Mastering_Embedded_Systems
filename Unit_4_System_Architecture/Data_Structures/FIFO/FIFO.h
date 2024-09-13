@@ -44,17 +44,22 @@ typedef enum FIFO_status {
         }                                                                   \
     } while(0)
 
+
+/* FIFO Main APIs */
 FIFO_Buf_t  FIFO_new(data_type* buffer, size_t length);
 FIFO_status FIFO_enqueue(FIFO_Buf_t * fifo, data_type item);
 FIFO_status FIFO_dequeue(FIFO_Buf_t * fifo, data_type* item);
 FIFO_status FIFO_isfull(FIFO_Buf_t * fifo);
 FIFO_status FIFO_print(FIFO_Buf_t * fifo);
+
+/* Error Logging APIs */
 void FIFO_error_check_failed(FIFO_status status, const char* file, int line, const char *function);
 char *FIFO_status_to_string(FIFO_status status);
 
-// User should supply how to print his data type
-extern void data_type_print(data_type *dt);
+/* External user defined Hooks */
+extern void data_type_print(data_type *dt); // User should supply how to print his data type
 
+/* ---------------------------------------------------------------------------------------------------- */
 
 #ifdef FIFO_IMPL /* Must be done by only one source file */
 
