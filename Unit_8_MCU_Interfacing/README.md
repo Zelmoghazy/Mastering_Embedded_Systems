@@ -176,3 +176,42 @@ prescaler register.
     * `CPHA` is 1 : the second clock transition is the first capture edge.
 
 ![alt text](./images/8bit_pol_phase.png)
+
+
+---
+
+## Inter-Integrated Circuit
+
+* Enables the communication between microprocessors and their peripheral devices by using two wires:
+    * a serial data line (SDA)
+    * a serial clock line (SCL). 
+* The two-wire design reduces the number of physical pins, making it inexpensive and simple to interface. 
+* The data transfer rate of I2C can be up to 100 Kbit/s in standard mode, up to 400 Kbit/s in fast mode, and up to 3.4 Mbit/s in high-speed mode.
+
+![alt text](./images/i2c_circuit.png)
+
+* Each device, including master devices and peripheral devices, has a unique address, which typically has 7 bits, 10 bits, or 16 bits.
+
+* The pins of the master and peripheral devices connected to the SDA and SCL lines should be internally configured as open-drain
+    * The output pin connects to a positive voltage source if an active high (logic 1) is outputted.
+    * The output pin is in a high impedance state if a low (logic 0) is outputted. 
+
+*  However, the pull-up resistor within the processor is too large, often in the order of 100k ohm.
+    * Such a large resistor provides pull-up power that is too weak for I2C.
+    * To reduce the rise time of the I2C lines, smaller resistors, such as 3k ohm, are often used.
+    * The recommended resistance value is 4.7 k ohm for low speed, 3 k ohm for standard speed, and 1 k ohm for the fast speed.
+
+![alt text](./images/i2c_frame.png)
+
+* The communication begins with a START bit (S) and terminates by a STOP bit (P).
+    * A START bit is defined as a high-to-low transition of SDA while SCL is high.
+    * A STOP bit is defined as a low-to-high transition of SDA while SCL is high.
+* After the START bit, the master begins to send data byte by byte. For each byte, the most significant bit is transferred first.
+* The slave sends an acknowledge bit to the master, informing the master that the slave has successfully received a byte.
+
+* The transmitter releases the SDA line during the acknowledge clock period (the ninth clock period) so that the receiver can pull SDA low.
+* If the SDA line is low in the ninth clock period, an ACK takes place. If the SDA line is high in the ninth clock period, a scenario we call NACK occurs.
+
+* When a master sends data to a slave, a NACK answered by the slave means that the communication has failed. The master needs to either generate a STOP to abort the current transfer or a START to restart the transfer.
+
+![alt text](./images/ack_nack.png)
