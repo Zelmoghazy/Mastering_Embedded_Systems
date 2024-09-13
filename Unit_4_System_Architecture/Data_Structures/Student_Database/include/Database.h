@@ -10,21 +10,20 @@
 #include "Config.h"
 #include "Utilities.h"
 
-typedef struct student_data
-{
-    int ID;
-    float height;
-    char name[NAME_SIZE];
+typedef struct student_data{
+    int     ID;
+    float   height;
+    char    name[NAME_SIZE];
 }student_data;
 
-typedef struct student
-{
+// Node
+typedef struct student{
     student_data data;
     struct student *next; 
 } student;
 
-typedef struct student_database
-{
+// Linked List
+typedef struct student_database{
     student *first; 
     size_t size;
 } student_database;

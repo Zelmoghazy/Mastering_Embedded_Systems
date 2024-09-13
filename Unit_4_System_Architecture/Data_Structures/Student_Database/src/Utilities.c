@@ -26,6 +26,11 @@ void print_frame(const char *title, size_t size, char symbol,char *choice)
     printf("%s\n",Padding);
 }
 
+void clear_screen(void)
+{
+    printf("%s", "\033[2J\033[1;1H" );
+}
+
 bool is_integer(const char *str) 
 {
     if (str == NULL || *str == '\0') {

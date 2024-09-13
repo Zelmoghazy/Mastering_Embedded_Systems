@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
 
 #define GET_STRING(str, MAX)              \
     do{                                   \
@@ -20,6 +21,7 @@
 
 void symbol_repeat(char str[], size_t size, char symbol);
 void print_frame(const char *title, size_t size, char symbol,char *choice);
+void clear_screen(void);
 bool is_integer(const char *str); 
 bool is_float(const char *str);
 
