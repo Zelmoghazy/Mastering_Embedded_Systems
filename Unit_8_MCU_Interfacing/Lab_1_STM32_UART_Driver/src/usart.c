@@ -2,8 +2,8 @@
 #include "rcc.h"
 #include <stdint.h>
 
+// User supplied interupt callback functions
 callback_t USART_IRQ_CB[3];
-
 
 /**
  * @brief Initialize UART with user supplied configuration
@@ -13,7 +13,18 @@ callback_t USART_IRQ_CB[3];
  */
 void usart_init(usart_t *usart, usart_config_t *cfg)
 {
-	uint32_t pclk = 0;
+    /*
+        Add entire configuration to a temporary variable and set it once at the end
+        prevents subtle bugs that may occur, if for example we enable the uart peripheral
+        and a usart interrupt occurs before we finish configuration or something like that
+        unexcpected behaviour might happen
+     */
+    uint32_t CR1_tmp = 0;
+    uint32_t CR2_tmp = 0;
+    uint32_t CR3_tmp = 0;
+    uint32_t BRR_tmp = 0;
+
+	uint32_t pclk    = 0;
 
     /* Enable the clock for given USART peripheral */
 	if(usart == USART1){
@@ -22,26 +33,26 @@ void usart_init(usart_t *usart, usart_config_t *cfg)
 	}else if(usart == USART2){
 		RCC_USART2_CLK_EN();
 		pclk = rcc_get_pclk1_freq();
-	}else if(usart == USART2){
+	}else if(usart == USART3){
 		pclk = rcc_get_pclk1_freq();
 		RCC_USART3_CLK_EN();
 	}
 
-	usart->CR1 |= USART_EN;             // Enable USART module
-	usart->CR1 |= cfg->mode;            // Enable either RX or TX or both
-	usart->CR1 |= cfg->payload;         // Set payload length
-	usart->CR1 |= cfg->parity;          // Configure parity
+	CR1_tmp |= USART_EN;             // Enable USART module
+	CR1_tmp |= cfg->mode;            // Enable either RX or TX or both
+	CR1_tmp |= cfg->payload;         // Set payload length
+	CR1_tmp |= cfg->parity;          // Configure parity
 
-	usart->CR2 |= cfg->stop_bits;       // Set number of stop bits
+	CR2_tmp |= cfg->stop_bits;       // Set number of stop bits
 
-	usart->CR3 |= cfg->flow_ctrl;       // Set HW flow control if required
+	CR3_tmp |= cfg->flow_ctrl;       // Set HW flow control if required
 
-	usart->BRR = USART_BRR_REG(pclk,cfg->baudrate);
+	BRR_tmp = USART_BRR_REG(pclk,cfg->baudrate);
 
     // Enable interrupt mechanism if needed
 	if(cfg->irq_en != USART_IRQ_NONE)
 	{
-		usart->CR1 |= cfg->irq_en;
+		CR1_tmp |= cfg->irq_en;
 
 		if(usart == USART1){
 			NVIC_IRQ37_USART1_EN();
@@ -49,11 +60,16 @@ void usart_init(usart_t *usart, usart_config_t *cfg)
 		}else if(usart == USART2){
 			NVIC_IRQ38_USART2_EN();
 			USART_IRQ_CB[1] = cfg->irq_cb;
-		}else if(usart == USART2){
+		}else if(usart == USART3){
 			NVIC_IRQ39_USART3_EN();
 			USART_IRQ_CB[2] = cfg->irq_cb;
 		}
 	}
+    // Set configuration once
+    usart->CR1 = CR1_tmp;
+    usart->CR2 = CR2_tmp;
+    usart->CR3 = CR3_tmp;
+    usart->BRR = BRR_tmp;
 
     /* Set GPIO pins */
     usart_gpio_set_pins(usart, cfg);
@@ -73,7 +89,7 @@ void usart_reset(const usart_t *usart)
 	}else if(usart == USART2){
 		RCC_USART2_CLK_RST();
 		NVIC_IRQ38_USART2_DIS();
-	}else if(usart == USART2){
+	}else if(usart == USART3){
 		RCC_USART3_CLK_RST();
 		NVIC_IRQ39_USART3_DIS();
 	}
@@ -232,6 +248,14 @@ void usart_receive(usart_t *usart, usart_config_t *cfg, uint16_t *rxbuf)
 			*(rxbuf) = (usart->DR & (uint8_t)0xFFU); 
 		}
 	}
+}
+
+void usart_tx_n(usart_t *usart, usart_config_t *cfg, const uint8_t *data, size_t length)
+{
+    for(size_t i = 0; i < length; i++){
+        usart_send(usart, cfg, (uint16_t)data[i]);
+    }
+    
 }
 
 void usart_print_str(usart_t *usart, usart_config_t *cfg, const char *str)
