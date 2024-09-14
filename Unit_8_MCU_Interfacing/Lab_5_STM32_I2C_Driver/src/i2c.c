@@ -241,12 +241,7 @@ void i2c_master_tx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_
 
 	// send address
 	uint16_t address = (dev_add << 1);
-	if(read)
-	{
-		address |= (1UL << 0UL);
-	}else{
-		address &= ~(1UL << 0UL);
-	}
+    address |= (1UL << 0UL);
 
 	handle->reg->DR = address;
 
@@ -328,11 +323,7 @@ void i2c_master_rx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_
 
 	// send address
 	uint16_t address = (dev_add << 1);
-	if(read){
-		address |= (1UL << 0UL);
-	}else{
-		address &= ~(1UL << 0UL);
-	}
+    address |= (1UL << 0UL);
 
 	// Reading I2C_SR2 after reading I2C_SR1 clears the ADDR flag
 	if(handle->reg->SR1 & (1U<<1U)){

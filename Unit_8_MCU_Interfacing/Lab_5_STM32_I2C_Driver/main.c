@@ -20,7 +20,6 @@ i2c_handle_t hi2c={
     .cfg = &i2c_cfg
 };
 
-
 void clock_init(void)
 {
     RCC_GPIO_CLK_EN(RCC_IOP_A_EN);
@@ -28,12 +27,18 @@ void clock_init(void)
     RCC_AFIO_CLK_EN();
 }
 
-
+volatile int counter;
 
 int main(void)
 {
     i2c_init(&hi2c);
     clock_init();
+
+    while(1)
+    {
+        counter++;
+
+    }
 
     return 0;
 }
