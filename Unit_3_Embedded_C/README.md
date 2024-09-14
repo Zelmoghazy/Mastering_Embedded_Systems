@@ -11,6 +11,8 @@
     * `arm` : Architecture
     * `none` : No OS
     * `eabi` : Embedded Application Binary Interface
+        * An embedded-application binary interface (EABI) specifies standard conventions for file formats, data types, register usage, stack frame organization, and function parameter passing of an embedded software program, so that object files generated from one compiler is compatible with object files generated from another compiler.
+  
 
 ## Compiler Flags
 
