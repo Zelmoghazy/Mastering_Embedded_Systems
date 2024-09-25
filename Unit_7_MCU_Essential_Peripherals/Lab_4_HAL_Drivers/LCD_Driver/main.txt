@@ -6,7 +6,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-
 #include "lcd.h"
 
 
@@ -25,16 +24,13 @@ int main(void)
     while (1) 
     {
         lcd_cursor(&lcd, 0, 0);
-
-        lcd_string(&lcd, "Hello");
+        
+        lcd_string(&lcd, "Testing..");
 
         lcd_cursor(&lcd, 1, 0);
 
-        lcd_string(&lcd, "World!");
+        lcd_string(&lcd, "LCD..");
 
-        lcd_write_command(&lcd, CURSOR_RIGHT);
-        _delay_ms(100); 
-        lcd_write_command(&lcd, DISPLAY_RIGHT);
         _delay_ms(1000); 
 
         lcd_clear(&lcd);
