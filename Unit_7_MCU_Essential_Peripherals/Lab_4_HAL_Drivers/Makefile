@@ -4,7 +4,7 @@ OBJCPY=avr-objcopy
 OPT=-Og
 DBG=-gdwarf-2
 CPU=-mmcu=atmega328p
-F_CPU=-DF_CPU=16000000UL
+F_CPU=-DF_CPU=8000000UL
 BAUD=-DBAUD=9600
 
 INCS=$(foreach DIR,$(INC_DIRS),-I$(DIR))
@@ -15,9 +15,9 @@ CFLAGS=$(CPU) $(DBG) $(INCS) $(OPT) $(F_CPU) $(BAUD) $(WARNINGS)
 LDFLAGS=-Wl,--gc-sections -Wl,--relax
 
 BUILD_DIR=build
-INC_DIRS=. ./include/
+INC_DIRS=. ./include/ ./LCD_Driver/ ./Keypad_Driver/
 LIB_DIRS=
-CODE_DIRS=. LCD_Driver
+CODE_DIRS=. LCD_Driver Keypad_Driver src
 VPATH=$(CODE_DIRS)
 
 SRC=$(foreach DIR,$(CODE_DIRS),$(wildcard $(DIR)/*.c))

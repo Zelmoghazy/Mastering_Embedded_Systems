@@ -1,29 +1,6 @@
 
 #include "lcd.h"
 
-/************************************** GPIO **************************************/
-uint8_t gpio_read(gpio_t* gpio, uint8_t pin) 
-{
-    return (gpio->PIN & pin) ? 1 : 0;
-}
-
-void gpio_write(gpio_t *gpio, uint8_t pin, uint8_t value) 
-{
-    if (value) {
-        gpio->PORT |= (pin);
-    } else {
-        gpio->PORT &= ~(pin);
-    }
-}
-void gpio_set_direction(gpio_t *gpio, uint8_t pin, uint8_t dir) 
-{
-    if(dir == GPIO_INPUT){
-        gpio->DDR &= ~(pin);
-    }else{
-        gpio->DDR |= (pin);
-    }
-}
-
 /************************************** LCD **************************************/
 
 lcd_handle_t lcd_create(
@@ -56,37 +33,46 @@ lcd_handle_t lcd_create(
 
 void lcd_init(lcd_handle_t * lcd)
 {
-    _delay_ms(20);
-
     gpio_set_direction(lcd->rs_port, lcd->rs_pin, GPIO_OUTPUT);
     gpio_set_direction(lcd->rw_port, lcd->rw_pin, GPIO_OUTPUT);
-    gpio_set_direction(GPIO_C, GPIO_PIN_5,  GPIO_OUTPUT);
+    gpio_set_direction(lcd->en_port, lcd->en_pin, GPIO_OUTPUT);
 
+    _delay_ms(20);
     /* 
         - The program must set all functions prior to the 4-bit operation
-        - When the power is turned on,  the first write is performed as an 8-bit operation.
+        - When the power is turned on, the first write is performed as an 8-bit operation.
         - Since DB0 to DB3 are not connected, a rewrite is then required.
-        - However, since one operation is completed in two accesses for 4-bit operation, a rewrite is needed to set the functions
+        - However, since one operation is completed in two accesses for 4-bit operation, 
+          a rewrite is needed to set the functions
     */
 	if(lcd->mode == LCD_4_BIT_MODE){
         lcd_set_data_dir(lcd, LCD_NIB, GPIO_OUTPUT);
 
-        lcd_write_command(lcd, EIGHT_BIT);
+        // 8-bit commands, we take upper bits because D0->D3 are not connected anyway
+        lcd_write(lcd, ((EIGHT_BIT >> 4) & 0x0F), LCD_NIB);
         _delay_ms(5);
-        lcd_write_command(lcd, EIGHT_BIT);
+        lcd_write(lcd, ((EIGHT_BIT >> 4) & 0x0F), LCD_NIB);
         _delay_ms(1);
-        lcd_write_command(lcd, EIGHT_BIT);
+        lcd_write(lcd, ((EIGHT_BIT >> 4) & 0x0F), LCD_NIB);
 
-        lcd_write_command(lcd, FOUR_BIT_TWO_LINES);				// 4-bit mode
+        /*
+            Sets to 4-bit operation.
+            In this case, operation is
+            handled as 8 bits by initialization, 
+            and only this instruction completes with one write.
+          */
+        lcd_write(lcd, ((FUNCTION_SET >> 4) & 0x0F), LCD_NIB); 
+
+        lcd_write_command(lcd, FOUR_BIT_TWO_LINES);	    // 4-bit mode
 	}else{
         lcd_set_data_dir(lcd, LCD_BYTE, GPIO_OUTPUT);
 
 		lcd_write_command(lcd, EIGHT_BIT_TWO_LINES);
     }
 
-	lcd_write_command(lcd, CLEAR_DISPLAY);      // Clear screen
 	lcd_write_command(lcd, DISPLAY_ON_CURSOR_BLINK);		
 	lcd_write_command(lcd, ENTRY_INC);			// Increment cursor
+	lcd_write_command(lcd, CLEAR_DISPLAY);      // Clear screen
 }
 
 void lcd_set_data_dir(lcd_handle_t *lcd, uint8_t len, uint8_t dir)
@@ -96,75 +82,27 @@ void lcd_set_data_dir(lcd_handle_t *lcd, uint8_t len, uint8_t dir)
 	}
 }
 
-
 void lcd_enable_pulse(lcd_handle_t *lcd)
 {
     gpio_write(lcd->en_port, lcd->en_pin, 1);
-    _delay_us(1);
+    _delay_us(100);
     gpio_write(lcd->en_port, lcd->en_pin, 0);
-    _delay_us(1);
-}
-
-void lcd_clear(lcd_handle_t * lcd) 
-{
-	lcd_write_command(lcd, CLEAR_DISPLAY);
-}
-
-void lcd_cursor(lcd_handle_t * lcd, uint8_t row, uint8_t col)
-{
-    if(col > 16){
-        col = 16;
-    }
-
-    if (row == 0){
-        lcd_write_command(lcd, SET_DDRAM_ADDR + col);
-    }else{
-        lcd_write_command(lcd, (SET_DDRAM_ADDR + 0x40) + col);
-    }
-}
-
-void lcd_string(lcd_handle_t * lcd, char * string)
-{
-	while(*string){
-		lcd_write_data(lcd, *string);
-        string++;
-        _delay_ms(100); // typewriting effect
-	}
-}
-
-void lcd_number(lcd_handle_t * lcd, int number)
-{
-	char buffer[11];
-	sprintf(buffer, "%d", number);
-
-	lcd_string(lcd, buffer);
-}
-
-
-void lcd_custom_char(lcd_handle_t * lcd, uint8_t code, uint8_t bitmap[])
-{
-	lcd_write_command(lcd, SETCGRAM_ADDR + (code << 3));
-	for(uint8_t i=0;i<8;++i){
-		lcd_write_data(lcd, bitmap[i]);
-	}
-
+    _delay_us(100);
 }
 
 void lcd_write(lcd_handle_t * lcd, uint8_t data, uint8_t len)
 {
-
 	for(uint8_t i = 0; i < len; i++){
 		gpio_write(lcd->data_port[i], lcd->data_pin[i], (data >> i) & 0x01);
 	}
-
     lcd_enable_pulse(lcd);
 }
 
 void lcd_send(lcd_handle_t * lcd, uint8_t byte)
 {
     if(lcd->mode == LCD_4_BIT_MODE){
-		lcd_write(lcd, (byte >> 4), LCD_NIB);
-		lcd_write(lcd, byte & 0x0F, LCD_NIB);
+		lcd_write(lcd, ((byte >> 4) & 0x0F), LCD_NIB);
+		lcd_write(lcd, (byte & 0x0F), LCD_NIB);
 	}else{
 		lcd_write(lcd, byte, LCD_BYTE);
 	}
@@ -193,7 +131,48 @@ void lcd_write_data(lcd_handle_t * lcd, uint8_t data)
     _delay_us(100);
 }
 
-// TODO: Can it be used to read cursor position ?
+void lcd_clear(lcd_handle_t * lcd) 
+{
+	lcd_write_command(lcd, CLEAR_DISPLAY);
+}
+
+void lcd_cursor(lcd_handle_t * lcd, uint8_t row, uint8_t col)
+{
+    if(col > 16){
+        col = 16;
+    }
+    if (row == 0){
+        lcd_write_command(lcd, SET_DDRAM_ADDR + col);
+    }else{
+        lcd_write_command(lcd, (SET_DDRAM_ADDR + 0x40) + col);
+    }
+}
+
+void lcd_string(lcd_handle_t * lcd, char * string)
+{
+	while(*string){
+		lcd_write_data(lcd, *string);
+        string++;
+        _delay_ms(100); // typewriting effect
+	}
+}
+
+void lcd_number(lcd_handle_t * lcd, int number)
+{
+	char buffer[11];
+	sprintf(buffer, "%d", number);
+	lcd_string(lcd, buffer);
+}
+
+void lcd_custom_char(lcd_handle_t * lcd, uint8_t code, uint8_t bitmap[])
+{
+	lcd_write_command(lcd, SETCGRAM_ADDR + (code << 3));
+	for(uint8_t i=0;i<8;++i){
+		lcd_write_data(lcd, bitmap[i]);
+	}
+}
+
+// TODO: Can it be used to get cursor position ?
 uint8_t lcd_busy_flag(lcd_handle_t * lcd)
 {
     if(lcd->mode == LCD_4_BIT_MODE){
