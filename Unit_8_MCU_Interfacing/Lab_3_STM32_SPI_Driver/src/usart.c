@@ -22,7 +22,7 @@ void usart_init(usart_t *usart, usart_config_t *cfg)
 	}else if(usart == USART2){
 		RCC_USART2_CLK_EN();
 		pclk = rcc_get_pclk1_freq();
-	}else if(usart == USART2){
+	}else if(usart == USART3){
 		pclk = rcc_get_pclk1_freq();
 		RCC_USART3_CLK_EN();
 	}
@@ -49,7 +49,7 @@ void usart_init(usart_t *usart, usart_config_t *cfg)
 		}else if(usart == USART2){
 			NVIC_IRQ38_USART2_EN();
 			USART_IRQ_CB[1] = cfg->irq_cb;
-		}else if(usart == USART2){
+		}else if(usart == USART3){
 			NVIC_IRQ39_USART3_EN();
 			USART_IRQ_CB[2] = cfg->irq_cb;
 		}
@@ -73,7 +73,7 @@ void usart_reset(const usart_t *usart)
 	}else if(usart == USART2){
 		RCC_USART2_CLK_RST();
 		NVIC_IRQ38_USART2_DIS();
-	}else if(usart == USART2){
+	}else if(usart == USART3){
 		RCC_USART3_CLK_RST();
 		NVIC_IRQ39_USART3_DIS();
 	}

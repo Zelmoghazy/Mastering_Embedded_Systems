@@ -19,15 +19,25 @@ void clock_init(void)
 
 uint16_t data;
 
+// void spi_irq_cb(spi_irq_src_t irq_src)
+// {
+//     if(irq_src.rxne){
+//         data = 0xf;
+//         spi_tx_rx_data(SPI1, &spi_cfg, &data);
+//         usart_send(USART1, &usart_cfg, data);
+//     }
+
+// }
+
 void usart_irq_cb(void)
 {
     usart_receive(USART1, &usart_cfg, &data);
     usart_send(USART1, &usart_cfg, data);
 
     // Send to SPI
-    gpio_write_pin(GPIO_A, GPIO_PIN_4, GPIO_LEVEL_LOW);
-    spi_tx_rx_data(SPI1,&spi_cfg, &data);
-    gpio_write_pin(GPIO_A, GPIO_PIN_4, GPIO_LEVEL_HIGH);
+    gpio_write_pin(GPIO_A, GPIO_PIN_4, GPIO_LEVEL_LOW);     // Activate slave select
+    spi_tx_rx_data(SPI1, &spi_cfg, &data);
+    gpio_write_pin(GPIO_A, GPIO_PIN_4, GPIO_LEVEL_HIGH);    // Deactivate slave select
 }
 
 int main(void)
@@ -41,11 +51,14 @@ int main(void)
     usart_init(USART1, &usart_cfg);
 
     // Init SPI
+    // spi_cfg.IRQ_en = SPI_IRQ_RXNEIE;
+    // spi_cfg.irq_cb = spi_irq_cb;
+
     spi_init(SPI1,&spi_cfg);
     spi_set_gpio(SPI1, &spi_cfg);
 
     gpio_config_t ss_sw = {
-        .pin = GPIO_PIN_4,
+        .pin  = GPIO_PIN_4,
         .mode = GPIO_MODE_OUT_PP(GPIO_SPEED_10M),
         .pull = GPIO_PULL_NONE
     };
@@ -58,8 +71,8 @@ int main(void)
 
     while(1)
 	{
-        usart_print_str(USART1, &usart_cfg, "Hello World\r\n");
-        delay(1000);
+        // usart_print_str(USART1, &usart_cfg, "Hello World\r\n");
+        // delay(1000);
 	}
 
     return 0;

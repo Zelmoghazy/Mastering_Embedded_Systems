@@ -67,7 +67,7 @@ void spi_init(spi_t *spi, spi_config_t *cfg)
 	if(cfg->IRQ_en != SPI_IRQ_NONE){
 
 		spi_irq_src_t irq_src;
-		irq_src.txe = ((spi->SR & (1<<1))>>1);
+		irq_src.txe =  ((spi->SR & (1<<1))>>1);
 		irq_src.rxne = ((spi->SR & (1<<0))>>0);
 		irq_src.erri = ((spi->SR & (1<<4))>>4);
 

@@ -20,7 +20,7 @@ ASFLAGS=$(CPU) $(DBG) $(FP) $(ISA)
 BUILD_DIR=build
 INC_DIRS=. ./inc/
 LIB_DIRS=
-CODE_DIRS=. src HAL/Keypad_Driver HAL/LCD_Driver
+CODE_DIRS=. src
 VPATH=$(CODE_DIRS)
 
 SRC=$(foreach DIR,$(CODE_DIRS),$(wildcard $(DIR)/*.c))

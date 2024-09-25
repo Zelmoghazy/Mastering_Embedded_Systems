@@ -55,8 +55,8 @@ typedef struct spi_t
 
 /* SPI DEVICE MODE */
 // This bit should not be changed when communication is ongoing.
-#define SPI_MODE_MASTER						0U
-#define SPI_MODE_SLAVE						(1U<<2U)
+#define SPI_MODE_MASTER						(1U<<2U)
+#define SPI_MODE_SLAVE						0U
 
 
 /* SPI COMMUNICATION DIRECTION */
