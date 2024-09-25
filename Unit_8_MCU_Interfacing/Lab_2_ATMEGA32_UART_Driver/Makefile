@@ -4,7 +4,7 @@ OBJCPY=avr-objcopy
 OPT=-Og
 DBG=-gdwarf-2
 CPU=-mmcu=atmega328p
-F_CPU=-DF_CPU=16000000UL
+F_CPU=-DF_CPU=8000000UL
 BAUD=-DBAUD=9600
 
 INCS=$(foreach DIR,$(INC_DIRS),-I$(DIR))
