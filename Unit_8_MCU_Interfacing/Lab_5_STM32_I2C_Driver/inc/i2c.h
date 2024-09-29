@@ -1,7 +1,6 @@
 #ifndef I2C_H_
 #define I2C_H_
 
-#include "assert.h"
 #include "Platform_Types.h"
 #include "STM32F103x8.h"
 #include "rcc.h"
@@ -94,8 +93,9 @@ typedef struct i2c_handle_t
 #define I2C_ACK_EN				(1UL << 10UL)   //  Acknowledge returned after a byte is received
 #define I2C_ACK_DIS				(0UL)
 
-
 #define I2C_SWRST               (1UL<<15UL)
+
+#define I2C_POS                 (1UL<<11UL)
 /* -------------I2C_CR2------------- */
 
 #define I2C_ITEV_EN				(1UL<<9UL)		// Event Interrupt enable
@@ -110,6 +110,8 @@ typedef struct i2c_handle_t
 #define I2C_ADDMODE_7B			(0UL)
 #define I2C_ADDMODE_10B			(1UL << 15UL)
 
+#define I2C_ADD0                (1UL << 0UL)
+
 /* -------------I2C_OAR2------------- */
 #define I2C_DUAL_EN				(1UL<<0UL)
 #define I2C_DUAL_DIS		    (0UL)
@@ -117,21 +119,22 @@ typedef struct i2c_handle_t
 /* -------------I2C_SR1------------- */
 #define I2C_SR_START            (1UL<<0UL)      // Set when a Start condition generated.
 #define I2C_SR_ADDR             (1UL<<1UL)      // For 7-bit addressing, the bit is set after the ACK of the address byte.
-#define I2C_SR_BTF             (1UL<<2UL)       // Data byte transfer succeeded
-#define I2C_SR_STOPF             (1UL<<4UL)     // Set by hardware when a Stop condition is detected on the bus
+#define I2C_SR_BTF              (1UL<<2UL)      // Data byte transfer succeeded
+#define I2C_SR_STOPF            (1UL<<4UL)      // Set by hardware when a Stop condition is detected on the bus
 #define I2C_SR_RxNE             (1UL<<6UL)      // Set when data register is not empty in receiver mode.
-#define I2C_SR_TxE             (1UL<<7UL)       // Set when DR is empty in transmission.
+#define I2C_SR_TxE              (1UL<<7UL)       // Set when DR is empty in transmission.
+#define I2C_SR_AF               (1UL<<10UL)      // Acknowledge failure
 
 /* -------------I2C_SR2------------- */
-#define I2C_SR_MSL             (1UL<<0UL)     // Set by hardware as soon as the interface is in Master mode 
-#define I2C_SR_BUSY            (1UL<<1UL)    // Set by hardware on detection of SDA or SCL low  
+#define I2C_SR_MSL              (1UL<<0UL)     // Set by hardware as soon as the interface is in Master mode 
+#define I2C_SR_BUSY             (1UL<<1UL)    // Set by hardware on detection of SDA or SCL low  
 
 /* -------------I2C_CCR------------- */
-#define I2C_MODE_SM			(0UL)
-#define I2C_MODE_FM			(1UL << 15)
+#define I2C_MODE_SM			    (0UL)
+#define I2C_MODE_FM			    (1UL << 15)
 
-#define I2C_DUTY_2			(0UL)
-#define I2C_DUTY_16_9		(1UL << 14)
+#define I2C_DUTY_2			    (0UL)
+#define I2C_DUTY_16_9		    (1UL << 14)
 
 
 
@@ -141,13 +144,13 @@ typedef struct i2c_handle_t
 #define I2C_SCLK_FM_D1(pclk,clk)		(((((pclk)) - 1U) / (((clk)) * (25U))) + 1U)
 
 
-#define I2C_CLK_STRETCH_EN		(0UL)	
-#define I2C_CLK_STRETCH_DIS		(1UL << 7UL)
+#define I2C_CLK_STRETCH_EN		        (0UL)	
+#define I2C_CLK_STRETCH_DIS		        (1UL << 7UL)
 
-#define I2C_MODE_DEFAULT		(0UL)
-#define I2C_MODE_SMBUS			(1UL << 1UL)
+#define I2C_MODE_DEFAULT		        (0UL)
+#define I2C_MODE_SMBUS			        (1UL << 1UL)
 
-#define I2C_EVENT_MASTER_BYTE_TX	((uint32_t)0x00070080UL)
+#define I2C_READ_FLAG(sr,f)             (sr & (f))
 
 
 void i2c_init(i2c_handle_t *handle);

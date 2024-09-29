@@ -6,15 +6,18 @@
 #include <stdint.h>
 
 
-/*
-    The following is the required sequence in master mode.
-        • Program the peripheral input clock in I2C_CR2 Register in order to generate correct timings
-        • Configure the clock control registers
-        • Configure the rise time register
-        • Program the I2C_CR1 register to enable the peripheral
-        • Set the START bit in the I2C_CR1 register to generate a Start condition
-
-    TODO: handle 10-bit addresses
+/**
+ * @brief initialize the i2c peripheral with user defined configuration
+ *
+ * @note 
+ *   The following is the required sequence in master mode.
+ *       • Program the peripheral input clock in I2C_CR2 Register in order to generate correct timings
+ *       • Configure the clock control registers
+ *       • Configure the rise time register
+ *       • Program the I2C_CR1 register to enable the peripheral
+ *       • Set the START bit in the I2C_CR1 register to generate a Start condition
+ *
+ *   TODO: handle 10-bit addresses
 */
 void i2c_init(i2c_handle_t *handle)
 {
@@ -131,6 +134,11 @@ void i2c_init(i2c_handle_t *handle)
 	}
 
     // TODO: complete this implementation and register callbacks 
+    /* 
+        - NVIC configuration if you need to use interrupt process
+            - Configure the I2Cx interrupt priority
+            - Enable the NVIC I2C IRQ Channel
+     */
 	if(handle->cfg->slave_event_cb != NULL)
     {
 		handle->reg->CR2 |= (I2C_ITEV_EN|I2C_ITBUF_EN|I2C_ITERR_EN);
@@ -167,6 +175,14 @@ void i2c_reset(i2c_handle_t *handle)
 
 }
 
+/**
+ * @brief 
+ * 
+ * @param handle 
+    - I2C pins configuration
+        - Enable the clock for the I2C GPIOs
+        - Configure I2C pins as alternate function open-drain
+ */
 
 void i2c_gpio_set_pins(i2c_handle_t *handle)
 {
@@ -200,7 +216,8 @@ void i2c_gpio_set_pins(i2c_handle_t *handle)
 }
 
 
-/*
+/**
+    @brief:
     In Master mode, the I2C interface initiates a data transfer and generates the clock signal.
     A serial data transfer always begins with a start condition and ends with a stop condition. 
     Both start and stop conditions are generated in master mode by software.
@@ -222,59 +239,165 @@ void i2c_gpio_set_pins(i2c_handle_t *handle)
     
     4- After the last byte is written to the DR register, the STOP bit is set by software to generate a Stop condition.
         -  The interface automatically goes back to slave mode (MSL bit cleared).
+
+    @TODO: Implement more robust error handling mechanism
   */
 void i2c_master_tx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_t len, bool stop_cond, bool repeated_start)
 {
+    // wait if there is communication going on on the bus
+    while(I2C_READ_FLAG(handle->reg->SR2, I2C_SR_BUSY));
+
 	if(!repeated_start){
 		// No Start generation
 		handle->reg->CR1 &= ~(I2C_START_GEN);
+
 		// check if bus is idle
-		while(handle->reg->SR2 & (1U<<1U));
+        while(I2C_READ_FLAG(handle->reg->SR2, I2C_SR_BUSY));
+
 		// TODO: support timeout
 	}else{
+        // Generate a start condition if first transfer
 		handle->reg->CR1 |= (I2C_START_GEN);
 	}
 
 	// check if start bit condition is generated
-	while(!(handle->reg->SR2 & (1U<<0U)));
+	while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_START));
 
+	/*------------------ send slave address ------------------------------*/ 
 
-	// send address
-	uint16_t address = (dev_add << 1);
-    address |= (1UL << 0UL);
+    /* 
+        The master can decide to enter Transmitter or Receiver mode depending on the LSB of the slave address sent.
+            • In 7-bit addressing mode,
+                – To enter Transmitter mode, a master sends the slave address with LSB reset.
+                – To enter Receiver mode, a master sends the slave address with LSB set.
 
-	handle->reg->DR = address;
+        // TODO: handle 10-bit addresses
+    */
+    dev_add &= ~(I2C_ADD0);             // Transmitter mode, lsb reset 
+
+	handle->reg->DR = dev_add;
+
+    // wait until ADDR flag is set
+	while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_ADDR)){
+        // Check for aknowledge failure
+        if(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_AF)){
+            // stop transmission
+            handle->reg->CR1 |= I2C_STOP_GEN;
+            // clear flag in software by writing 0
+            handle->reg->SR1 &= ~(I2C_SR_AF);
+            // TODO: Return error code and exit
+        }
+    }
 
 	// Reading I2C_SR2 after reading I2C_SR1 clears the ADDR flag
-	if(handle->reg->SR1 & (1U<<1U)){
-		uint32_t dummy = handle->reg->SR1;
-	}
-
-	uint32_t tmp_sr1 = handle->reg->SR1;
-	uint32_t tmp_sr2 = handle->reg->SR2;
-	tmp_sr2 = tmp_sr2 << 16U;
-
-	while((uint32_t)(tmp_sr1|tmp_sr2) != I2C_EVENT_MASTER_BYTE_TX){
-		tmp_sr1 = handle->reg->SR1;
-		tmp_sr2 = handle->reg->SR2;
-		tmp_sr2 = tmp_sr2 << 16U;
-	}
+    uint32_t dummy = handle->reg->SR1;
+    dummy = handle->reg->SR2;
 	
+
 	// Transmit data
 	for (int i = 0; i < len; ++i)
-	{
+    {
+        // Wait untile TXE flag is set
+		while(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_TxE));
+        // Write data on DR
 		handle->reg->DR = buf[i];
-		while(handle->reg->SR1 & (1U<<7U));
+
+        // wait until we make sure that byte is transmitted successfully
+        if(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_BTF) && (i < len-1)){
+            // Write data on DR
+            handle->reg->DR = buf[i];
+            i++;
+        }
 	}
+    // wait until BTF is set
+    while(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_BTF));
 
-	//send stop condition
-
+	// Generate stop condition
 	if(stop_cond){
-		handle->reg->CR1 |= (1UL << 9UL);
+		handle->reg->CR1 |= I2C_STOP_GEN;
 	}else{
-		handle->reg->CR1 &= ~(1UL << 9UL);
+		handle->reg->CR1 &= ~I2C_STOP_GEN;
 	}
 
+    /* Done */
+}
+
+
+void i2c_master_tx_mem(i2c_handle_t *handle, uint16_t dev_add, uint16_t mem_add, uint16_t mem_add_size, uint8_t *buf, uint32_t len, bool stop_cond, bool repeated_start)
+{
+    // wait if there is communication going on on the bus
+    while(I2C_READ_FLAG(handle->reg->SR2, I2C_SR_BUSY));
+
+	if(!repeated_start){
+		// No Start generation
+		handle->reg->CR1 &= ~(I2C_START_GEN);
+
+		// check if bus is idle
+        while(I2C_READ_FLAG(handle->reg->SR2, I2C_SR_BUSY));
+
+		// TODO: support timeout
+	}else{
+        // Generate a start condition if first transfer
+		handle->reg->CR1 |= (I2C_START_GEN);
+	}
+
+	// check if start bit condition is generated
+	while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_START));
+
+	/*------------------ send slave address ------------------------------*/ 
+
+    dev_add &= ~(I2C_ADD0);             // Transmitter mode, lsb reset 
+
+	handle->reg->DR = dev_add;
+
+    // wait until ADDR flag is set
+	while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_ADDR)){
+        // Check for aknowledge failure
+        if(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_AF)){
+            // stop transmission
+            handle->reg->CR1 |= I2C_STOP_GEN;
+            // clear flag in software by writing 0
+            handle->reg->SR1 &= ~(I2C_SR_AF);
+            // TODO: Return error code and exit
+        }
+    }
+
+	// Reading I2C_SR2 after reading I2C_SR1 clears the ADDR flag
+    uint32_t dummy = handle->reg->SR1;
+    dummy = handle->reg->SR2;
+	
+    // wait for txe to be set
+    while(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_TxE));
+
+    // Send memory address (8-bit)
+    handle->reg->DR = ((uint8_t) ((uint16_t) ((mem_add) & (uint16_t) 0x00FF)));
+
+
+	// Transmit data
+	for (int i = 0; i < len; ++i)
+    {
+        // Wait untile TXE flag is set
+		while(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_TxE));
+        // Write data on DR
+		handle->reg->DR = buf[i];
+
+        if(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_BTF) && (i < len-1)){
+            // Write data on DR
+            handle->reg->DR = buf[i];
+            i++;
+        }
+	}
+    // wait until BTF is set
+    while(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_BTF));
+
+	// Generate stop condition
+	if(stop_cond){
+		handle->reg->CR1 |= I2C_STOP_GEN;
+	}else{
+		handle->reg->CR1 &= ~I2C_STOP_GEN;
+	}
+
+    /* Done */
 }
 
 /*
@@ -307,54 +430,202 @@ void i2c_master_tx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_
 
 void i2c_master_rx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_t len, bool stop_cond, bool repeated_start)
 {
+    // wait if there is communication going on on the bus
+    while(I2C_READ_FLAG(handle->reg->SR2, I2C_SR_BUSY));
+
 	if(!repeated_start){
 		// No Start generation
 		handle->reg->CR1 &= ~(I2C_START_GEN);
 		// check if bus is idle
-		while(handle->reg->SR2 & (1U<<1U));
+		while(I2C_READ_FLAG(handle->reg->SR2, I2C_SR_BUSY));
 		// TODO: support timeout
 	}else{
+        // Generate a start condition if first transfer
 		handle->reg->CR1 |= (I2C_START_GEN);
 	}
 
+
 	// check if start bit condition is generated
-	while(!(handle->reg->SR2 & (1U<<0U)));
+	while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_START));
 
 
-	// send address
-	uint16_t address = (dev_add << 1);
-    address |= (1UL << 0UL);
+    /* 
+        The master can decide to enter Transmitter or Receiver mode depending on the LSB of the slave address sent.
+            • In 7-bit addressing mode,
+                – To enter Transmitter mode, a master sends the slave address with LSB reset.
+                – To enter Receiver mode, a master sends the slave address with LSB set.
 
-	// Reading I2C_SR2 after reading I2C_SR1 clears the ADDR flag
-	if(handle->reg->SR1 & (1U<<1U)){
-		uint32_t dummy = handle->reg->SR1;
-	}
+        // TODO: handle 10-bit addresses
+    */
+    dev_add |= (I2C_ADD0);                  // receiver mode, LSB set    
 
-	uint32_t tmp_sr1 = handle->reg->SR1;
-	uint32_t tmp_sr2 = handle->reg->SR2;
-	tmp_sr2 = tmp_sr2 << 16U;
+	handle->reg->DR = dev_add;
 
-	while((uint32_t)(tmp_sr1|tmp_sr2) != I2C_EVENT_MASTER_BYTE_TX){
-		tmp_sr1 = handle->reg->SR1;
-		tmp_sr2 = handle->reg->SR2;
-		tmp_sr2 = tmp_sr2 << 16U;
-	}
-	
-	// Transmit data
-	uint8_t *data_ptr = buf;
-	for (int i = len; i > 0; i--)
-	{
-		while(!(handle->reg->SR1 & (1U<<6U)));
-		*data_ptr++ = handle->reg->DR;
-	}
 
-	//send nack
-	if(stop_cond){
-		handle->reg->CR1 |= (1UL << 9UL);
-	}else{
-		handle->reg->CR1 &= ~(1UL << 9UL);
-	}
+    // wait until ADDR flag is set
+	while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_ADDR))
+    {
+        // Check for aknowledge failure
+        if(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_AF)){
+            // stop transmission
+            handle->reg->CR1 |= I2C_STOP_GEN;
+            // clear flag in software by writing 0
+            handle->reg->SR1 &= ~(I2C_SR_AF);
+            // TODO: Return error code and exit
+        }
+    }
 
+
+
+    uint8_t* bp = buf;
+    uint32_t tx_len = len;
+    /*
+        We will have three cases and treat them differently 
+            1 - len > 2
+            2-  len = 2 
+            2-  len = 1 
+    */
+    if (tx_len == 1)
+    {
+        /*
+            Case of a single byte to be received:
+                – In the ADDR event, clear the ACK bit.
+                – Clear ADDR
+                – Program the STOP/START bit.
+                – Read the data after the RxNE flag is set.
+        */
+
+        // disable acknowledge
+        handle->reg->CR1 &= ~I2C_ACK_EN;
+
+        // Reading I2C_SR2 after reading I2C_SR1 clears the ADDR flag
+        uint32_t dummy = handle->reg->SR1;
+        dummy = handle->reg->SR2;
+
+        // Generate stop bit
+        handle->reg->CR1 |= I2C_STOP_GEN;
+
+        // wait until register data is empty so we can receive
+        while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_RxNE));
+
+        // read data
+        *bp = (uint8_t)handle->reg->DR;
+    }
+    else if(tx_len == 2)
+    {
+        /* 
+        - Case of two bytes to be received:         
+            – Set POS and ACK
+            – Wait for the ADDR flag to be set
+            – Clear ADDR
+            – Clear ACK
+            – Wait for BTF to be set
+            – Program STOP
+            – Read DR twice 
+        */
+
+        // acknowledge is enabled, enable POS
+        handle->reg->CR1 |= I2C_POS;
+
+        // Reading I2C_SR2 after reading I2C_SR1 clears the ADDR flag
+        uint32_t dummy = handle->reg->SR1;
+        dummy = handle->reg->SR2;
+
+        // clear acknowledge
+        handle->reg->CR1 &= ~I2C_ACK_EN;
+
+        // wait for BTF to be set
+        while(!I2C_READ_FLAG(handle->reg->SR1,I2C_SR_BTF));
+
+        // Generate stop bit
+        handle->reg->CR1 |= I2C_STOP_GEN;
+
+        // read data
+        *bp = (uint8_t)handle->reg->DR;
+        bp++;
+
+        // read again
+        *bp = (uint8_t)handle->reg->DR;
+    }
+    else
+    {
+        // Enable acknowledge
+        handle->reg->CR1 |= I2C_ACK_EN;
+
+        // Reading I2C_SR2 after reading I2C_SR1 clears the ADDR flag
+        uint32_t dummy = handle->reg->SR1;
+        dummy = handle->reg->SR2;
+
+
+        while(tx_len > 0)
+        {
+            // last three bytes are handled differently
+            if(tx_len <= 3)
+            {
+                /*
+                    When 3 bytes remain to be read:
+                        • RxNE = 1 => Nothing (DataN-2 not read).
+                        • DataN-1 received
+                        • BTF = 1 because both shift and data registers are full:
+                          DataN-2 in DR and DataN-1 in the shift register 
+                          => SCL tied low: no other data will be received on the bus.
+                        • Clear ACK bit
+                        • Read DataN-2 in DR => This will launch the DataN reception in the shift register
+                        • DataN received (with a NACK)
+                        • Program START/STOP
+                        • Read DataN-1
+                        • RxNE = 1
+                        • Read DataN 
+                 */
+
+                while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_BTF));
+
+                // program ACK = 0
+                handle->reg->CR1 &= ~I2C_ACK_EN;
+
+                // Read DataN-2 in DR
+                *bp = (uint8_t)handle->reg->DR;
+                bp++;
+                tx_len--;
+
+                while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_BTF));
+
+                // Program STOP = 1
+                handle->reg->CR1 |= I2C_STOP_GEN;
+
+                // Read DataN-1
+                *bp = (uint8_t)handle->reg->DR;
+                bp++;
+                tx_len--;
+
+                while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_RxNE));
+                
+                // Read DataN 
+                *bp = (uint8_t)handle->reg->DR;
+                bp++;
+                tx_len--;
+
+            }else{
+                // wait until register data is empty so we can receive
+                while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_RxNE));
+                // read data
+                *bp = (uint8_t)handle->reg->DR;
+                bp++;
+                tx_len--;
+
+                if(I2C_READ_FLAG(handle->reg->SR1,I2C_SR_BTF))
+                {
+                    if(tx_len == 3){
+                        handle->reg->CR1 &= ~I2C_ACK_EN;
+                    }
+                    // read data
+                    *bp = (uint8_t)handle->reg->DR;
+                    bp++;
+                    tx_len--;
+                }
+            }
+        }
+    }
 }
 
 
