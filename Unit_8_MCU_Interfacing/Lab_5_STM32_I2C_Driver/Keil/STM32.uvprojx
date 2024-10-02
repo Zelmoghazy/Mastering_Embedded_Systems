@@ -48,7 +48,7 @@
             <NotGenerated>0</NotGenerated>
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
-          <OutputDirectory>..\..\Lab_3_STM32_SPI_Driver\build\</OutputDirectory>
+          <OutputDirectory>..\build\</OutputDirectory>
           <OutputName>STM32</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>

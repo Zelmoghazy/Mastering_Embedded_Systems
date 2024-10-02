@@ -1,4 +1,5 @@
 ## IO Electrical Characteristics
+
 <p align="center">
   <img src="./images/BJTFET.svg"
        width="75%" 
@@ -207,11 +208,42 @@ prescaler register.
     * A START bit is defined as a high-to-low transition of SDA while SCL is high.
     * A STOP bit is defined as a low-to-high transition of SDA while SCL is high.
 * After the START bit, the master begins to send data byte by byte. For each byte, the most significant bit is transferred first.
-* The slave sends an acknowledge bit to the master, informing the master that the slave has successfully received a byte.
+* The slave sends an acknowledge bit to the master after each received byte, informing the master that the slave has successfully received a byte.
 
 * The transmitter releases the SDA line during the acknowledge clock period (the ninth clock period) so that the receiver can pull SDA low.
-* If the SDA line is low in the ninth clock period, an ACK takes place. If the SDA line is high in the ninth clock period, a scenario we call NACK occurs.
+    * If the SDA line is low in the ninth clock period, an ACK takes place. 
+    * If the SDA line is high in the ninth clock period, a scenario we call NACK occurs.
 
 * When a master sends data to a slave, a NACK answered by the slave means that the communication has failed. The master needs to either generate a STOP to abort the current transfer or a START to restart the transfer.
 
 ![alt text](./images/ack_nack.png)
+
+![alt text](./images/i2c_signal.png)
+
+### Master Transmitter format
+
+![alt text](./images/master_tx_format.png)
+
+### Master Receiver format
+
+![alt text](./images/master_rx_format.png)
+
+
+### 10-bit addressing 
+
+![alt text](./images/10-bit_addressing.png)
+
+
+### Repeated Start Condition
+
+![alt text](./images/i2c_repeated_start.jpg)
+
+* During an I2C transfer there is often the need to first send a command and then read back an answer right away. 
+    * This has to be done without the risk of another (multimaster) device interrupting this atomic operation. 
+* The I2C protocol defines a so-called **repeated start condition**. 
+* After having sent the address byte (address and read/write bit) the master may send any number of bytes followed by a stop condition.
+* Instead of sending the stop condition it is also allowed to send another start condition again followed by an address (and of course including a read/write bit) and more data. 
+    * This is defined recursively allowing any number of start conditions to be sent.
+* The purpose of this is to allow combined write/read operations to one or more devices without releasing the bus and thus with the guarantee that the operation is not interrupted.
+    * Regardless of the number of start conditions sent during one transfer the transfer must be ended by exactly one stop condition.
+    

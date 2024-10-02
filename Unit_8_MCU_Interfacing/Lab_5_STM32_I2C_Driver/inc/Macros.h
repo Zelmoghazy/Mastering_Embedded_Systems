@@ -12,6 +12,8 @@
 #define CONCAT_AUX(a, b)                a##b
 #define CONCAT(a, b)                    CONCAT_AUX(a, b)
 
+#define NUM_ELEMS(x) ((sizeof(x))/(sizeof((x)[0])))
+
 #define CLEAR_RANGE(a, s, e)           \
     do{                                \
     uint32 mask = ~0;                  \

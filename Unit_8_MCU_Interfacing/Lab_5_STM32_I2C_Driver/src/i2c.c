@@ -5,17 +5,18 @@
 #include "rcc.h"
 #include <stdint.h>
 
-
 /**
  * @brief initialize the i2c peripheral with user defined configuration
  *
  * @note 
  *   The following is the required sequence in master mode.
- *       • Program the peripheral input clock in I2C_CR2 Register in order to generate correct timings
- *       • Configure the clock control registers
- *       • Configure the rise time register
- *       • Program the I2C_CR1 register to enable the peripheral
- *       • Set the START bit in the I2C_CR1 register to generate a Start condition
+ *       - Program the peripheral input clock in I2C_CR2 Register
+ *         in order to generate correct timings
+ *       - Configure the clock control registers
+ *       - Configure the rise time register
+ *       - Program the I2C_CR1 register to enable the peripheral
+ *       - Set the START bit in the I2C_CR1 register to generate
+ *         a Start condition
  *
  *   TODO: handle 10-bit addresses
 */
@@ -28,27 +29,35 @@ void i2c_init(i2c_handle_t *handle)
 		RCC_I2C2_CLK_EN();
 	}
 
-    // disable the peripheral to make sure nothing goes wrong
+    // Disable the peripheral to make sure 
+    // nothing goes wrong while initializing
     handle->reg->CR1 &= ~(I2C_ENABLE);
 
     // reset i2c
     handle->reg->CR1 |= (I2C_SWRST);
     handle->reg->CR1 &= ~(I2C_SWRST);
 
-    // Regular I2C not SMBUS
+    // Regular I2C
 	if(handle->cfg->mode == I2C_MODE_DEFAULT)
 	{
         // get pclk1 frequency
 		uint32_t pclk1 	   = rcc_get_pclk1_freq();
 		uint32_t freqrange = pclk1/1000000;
 
-        // Check that pclk frequency is in operating range of i2c peripheral
-		if(freqrange < 50 && freqrange > 2){
+        /*
+            Check that pclk frequency is in the
+            correct operating range of i2c peripheral
+            The minimum allowed frequency is 2 MHz,
+            the maximum frequency is limited by the maximum 
+            APB frequency and cannot exceed 50 MHz 
+            (peripheral intrinsic maximum limit)
+        */ 
+		if(freqrange > 50 || freqrange < 2){
             // TODO: assert here 
         }
 
-		// set FREQ
-        handle->reg->CR2 &=~(0x3f);     // clear bits 0->5
+		// set FREQ with the APB clock frequency value
+        handle->reg->CR2 &=~(0x3FU);         // clear bits 0->5
 		handle->reg->CR2 |= freqrange; 
 
 		/*
@@ -56,12 +65,16 @@ void i2c_init(i2c_handle_t *handle)
             It must be at least 4 MHz to achieve Fm mode I²C frequencies.
             It must be a multiple of 10MHz to reach the 400 kHz maximum I²C Fm mode clock
 		*/
-		if((handle->cfg->clock_speed <= 100000U) && (freqrange >= 2)) // standard mode
+		if((handle->cfg->clock_speed <= I2C_CLK_SM_100K) && (freqrange >= 2)) // standard mode
 		{ 
             // Configure rise time
             handle->reg->TRISE &=~(0x3f);               // clear bits 0->5
 
-            // In standard mode, the maximum rise time is 1000 ns
+            /*
+                TRISE register is configured as (maximum_rise_time / clock_period) + 1.
+                In standard mode, the maximum rise time is 1000 ns
+                ((((freqrange) * 1000U) / 1000U) + 1U) = (freqrange + 1)
+            */
 			handle->reg->TRISE |= (freqrange + 1U); 
 
             // set i2c peripheral speed
@@ -79,18 +92,21 @@ void i2c_init(i2c_handle_t *handle)
 		{
             // Configure rise time
             handle->reg->TRISE &=~(0x3f); // clear bits 0->5
-            // TRISE register is configured as (maximum_rise_time / clock_period) + 1.
-            // maximum rise time for I2C Fast Mode in nanoseconds (300 ns) / 1000 -> converted to microseconds -> Mhz
+
+            /*
+                TRISE register is configured as (maximum_rise_time / clock_period) + 1.
+                maximum rise time for I2C Fast Mode in nanoseconds (300 ns) / 1000 -> converted to microseconds -> Mhz
+            */
 			handle->reg->TRISE |= ((((freqrange) * 300U) / 1000U) + 1U);
 
             // set i2c peripheral speed
-            handle->reg->CCR &=~((0xFFFU) | (1U<<15U) | (1U<<14U));             // clear bits 0->11 , 14 (duty), 15(f/s)
+            handle->reg->CCR &=~((0xFFFU) | I2C_MODE_FM | I2C_DUTY_16_9);    // clear bits 0->11 , 14 (duty), 15(f/s)
 
             // set fast mode
             handle->reg->CCR |= I2C_MODE_FM;
 
             // set duty cycle
-			handle->reg->CCR   |= handle->cfg->duty_cycle;
+			handle->reg->CCR |= handle->cfg->duty_cycle;
 
             // Set according to required speed and duty cycle
 			if((handle->cfg->duty_cycle == I2C_DUTY_2) && (freqrange >= 4))
@@ -105,6 +121,10 @@ void i2c_init(i2c_handle_t *handle)
 				// the minimum allowed value is 0x01
 				handle->reg->CCR |= (ccr_tmp < 0x01)?0x01:ccr_tmp;
 			}
+            else
+            {
+                // TODO: shouldnt reach here, assert maybe
+            }
 		}
 
         // General call config
@@ -113,9 +133,8 @@ void i2c_init(i2c_handle_t *handle)
         // Clock stretching config
 		handle->reg->CR1 |= handle->cfg->clock_stretch;
 
-        // ack cfg
-		handle->reg->CR1 |= handle->cfg->ack_ctrl;
-
+		// enable ack
+		handle->reg->CR1 |= I2C_ACK_EN;
 
 		handle->reg->CR1 |= handle->cfg->addr_mode;
 
@@ -139,7 +158,7 @@ void i2c_init(i2c_handle_t *handle)
             - Configure the I2Cx interrupt priority
             - Enable the NVIC I2C IRQ Channel
      */
-	if(handle->cfg->slave_event_cb != NULL)
+	if(handle->cfg->irq_en)
     {
 		handle->reg->CR2 |= (I2C_ITEV_EN|I2C_ITBUF_EN|I2C_ITERR_EN);
 
@@ -172,7 +191,6 @@ void i2c_reset(i2c_handle_t *handle)
 		NVIC_IRQ34_I2C2_ER_DIS();
 		RCC_I2C2_CLK_RST();
 	}
-
 }
 
 /**
@@ -189,7 +207,6 @@ void i2c_gpio_set_pins(i2c_handle_t *handle)
 	RCC_GPIO_CLK_EN(RCC_IOP_B_EN);
 
 	gpio_config_t gpio_cfg;
-
 
 	if(handle->reg == I2C1){
 		// SCLK
@@ -235,33 +252,34 @@ void i2c_gpio_set_pins(i2c_handle_t *handle)
     3- Following the address transmission and after clearing ADDR, the master sends bytes from the DR register to the SDA line via the internal shift register.
         - The master waits until the first data byte is written into I2C_DR
         - When the acknowledge pulse is received, the TxE bit is set by hardware
-        - If TxE is set and a data byte was not written in the DR register before the end of the last data transmission, BTF is set and the interface waits until BTF is cleared by a read from I2C_SR1 followed bya write to I2C_DR, stretching SCL low.
+        - If TxE is set and a data byte was not written in the DR register before the end of the last data transmission, 
+          BTF is set and the interface waits until BTF is cleared by a read from I2C_SR1 followed bya write to I2C_DR, stretching SCL low.
     
     4- After the last byte is written to the DR register, the STOP bit is set by software to generate a Stop condition.
         -  The interface automatically goes back to slave mode (MSL bit cleared).
 
-    @TODO: Implement more robust error handling mechanism
-  */
+    @TODO: Implement more robust error handling mechanism and handle 10-bit slave address, support timeout
+*/
+
 void i2c_master_tx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_t len, bool stop_cond, bool repeated_start)
 {
-    // wait if there is communication going on on the bus
-    while(I2C_READ_FLAG(handle->reg->SR2, I2C_SR_BUSY));
+	if(repeated_start)
+	{
+		// Re-start generation we already have the bus
+		handle->reg->CR1 |= (I2C_START_GEN);
+	}
+	else
+	{
+	    // wait if there is communication going on on the bus
+	    while(I2C_READ_FLAG(handle->reg->SR2, I2C_SR_BUSY));
 
-	if(!repeated_start){
-		// No Start generation
-		handle->reg->CR1 &= ~(I2C_START_GEN);
-
-		// check if bus is idle
-        while(I2C_READ_FLAG(handle->reg->SR2, I2C_SR_BUSY));
-
-		// TODO: support timeout
-	}else{
         // Generate a start condition if first transfer
 		handle->reg->CR1 |= (I2C_START_GEN);
 	}
 
 	// check if start bit condition is generated
-	while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_START));
+    while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_START));
+
 
 	/*------------------ send slave address ------------------------------*/ 
 
@@ -273,6 +291,8 @@ void i2c_master_tx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_
 
         // TODO: handle 10-bit addresses
     */
+
+    dev_add <<= 1;
     dev_add &= ~(I2C_ADD0);             // Transmitter mode, lsb reset 
 
 	handle->reg->DR = dev_add;
@@ -290,15 +310,17 @@ void i2c_master_tx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_
     }
 
 	// Reading I2C_SR2 after reading I2C_SR1 clears the ADDR flag
-    uint32_t dummy = handle->reg->SR1;
+    vuint32_t dummy = handle->reg->SR1;
     dummy = handle->reg->SR2;
+    (void)dummy;                        // dont give me warnings
 	
 
 	// Transmit data
 	for (int i = 0; i < len; ++i)
     {
         // Wait untile TXE flag is set
-		while(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_TxE));
+		while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_TxE));
+
         // Write data on DR
 		handle->reg->DR = buf[i];
 
@@ -309,34 +331,35 @@ void i2c_master_tx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_
             i++;
         }
 	}
+
     // wait until BTF is set
-    while(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_BTF));
+    while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_BTF));
 
 	// Generate stop condition
 	if(stop_cond){
 		handle->reg->CR1 |= I2C_STOP_GEN;
 	}else{
+		// we want to resend a start with different address maybe
+		// we dont want to give up the bus yet
 		handle->reg->CR1 &= ~I2C_STOP_GEN;
 	}
-
     /* Done */
 }
 
-
+// write to a specific memory address ex. EEPROM
 void i2c_master_tx_mem(i2c_handle_t *handle, uint16_t dev_add, uint16_t mem_add, uint16_t mem_add_size, uint8_t *buf, uint32_t len, bool stop_cond, bool repeated_start)
 {
-    // wait if there is communication going on on the bus
-    while(I2C_READ_FLAG(handle->reg->SR2, I2C_SR_BUSY));
 
-	if(!repeated_start){
-		// No Start generation
-		handle->reg->CR1 &= ~(I2C_START_GEN);
-
-		// check if bus is idle
+	if(repeated_start)
+	{
+		// Re-start generation we already have the bus
+		handle->reg->CR1 |= (I2C_START_GEN);
+	}
+	else
+	{
+        // wait if there is communication going on on the bus
         while(I2C_READ_FLAG(handle->reg->SR2, I2C_SR_BUSY));
 
-		// TODO: support timeout
-	}else{
         // Generate a start condition if first transfer
 		handle->reg->CR1 |= (I2C_START_GEN);
 	}
@@ -346,6 +369,7 @@ void i2c_master_tx_mem(i2c_handle_t *handle, uint16_t dev_add, uint16_t mem_add,
 
 	/*------------------ send slave address ------------------------------*/ 
 
+    dev_add <<=1;
     dev_add &= ~(I2C_ADD0);             // Transmitter mode, lsb reset 
 
 	handle->reg->DR = dev_add;
@@ -363,21 +387,37 @@ void i2c_master_tx_mem(i2c_handle_t *handle, uint16_t dev_add, uint16_t mem_add,
     }
 
 	// Reading I2C_SR2 after reading I2C_SR1 clears the ADDR flag
-    uint32_t dummy = handle->reg->SR1;
+    vuint32_t dummy = handle->reg->SR1;
     dummy = handle->reg->SR2;
+    (void)dummy;                        // dont give me warnings
 	
     // wait for txe to be set
-    while(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_TxE));
+    while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_TxE));
 
     // Send memory address (8-bit)
-    handle->reg->DR = ((uint8_t) ((uint16_t) ((mem_add) & (uint16_t) 0x00FF)));
+    if(mem_add_size <= 0xFF)
+    {
+	    handle->reg->DR = ((uint8_t) ((uint16_t) ((mem_add) & (uint16_t) 0x00FF)));
+    }
+    // Send memory address (16-bit)
+    else
+    {
+	    /* Send MSB of Memory Address */
+	    handle->reg->DR = ((uint8_t) ((uint16_t) (((uint16_t) ((mem_add) & (uint16_t) 0xFF00)) >> 8)));
 
+	    // wait for txe to be set
+	    while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_TxE));
+
+	    /* Send LSB of Memory Address */
+	    handle->reg->DR = ((uint8_t) ((uint16_t) ((mem_add) & (uint16_t) 0x00FF)));
+    }
 
 	// Transmit data
 	for (int i = 0; i < len; ++i)
     {
         // Wait untile TXE flag is set
-		while(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_TxE));
+		while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_TxE));
+
         // Write data on DR
 		handle->reg->DR = buf[i];
 
@@ -387,8 +427,9 @@ void i2c_master_tx_mem(i2c_handle_t *handle, uint16_t dev_add, uint16_t mem_add,
             i++;
         }
 	}
+    
     // wait until BTF is set
-    while(I2C_READ_FLAG(handle->reg->SR1, I2C_SR_BTF));
+    while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_BTF));
 
 	// Generate stop condition
 	if(stop_cond){
@@ -396,7 +437,6 @@ void i2c_master_tx_mem(i2c_handle_t *handle, uint16_t dev_add, uint16_t mem_add,
 	}else{
 		handle->reg->CR1 &= ~I2C_STOP_GEN;
 	}
-
     /* Done */
 }
 
@@ -430,24 +470,26 @@ void i2c_master_tx_mem(i2c_handle_t *handle, uint16_t dev_add, uint16_t mem_add,
 
 void i2c_master_rx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_t len, bool stop_cond, bool repeated_start)
 {
-    // wait if there is communication going on on the bus
-    while(I2C_READ_FLAG(handle->reg->SR2, I2C_SR_BUSY));
 
-	if(!repeated_start){
-		// No Start generation
-		handle->reg->CR1 &= ~(I2C_START_GEN);
-		// check if bus is idle
-		while(I2C_READ_FLAG(handle->reg->SR2, I2C_SR_BUSY));
-		// TODO: support timeout
-	}else{
+	if(repeated_start)
+	{
+		// Re-start generation we already have the bus
+		handle->reg->CR1 |= (I2C_START_GEN);
+	}
+	else
+	{
+	    // wait if there is communication going on on the bus
+	    while(I2C_READ_FLAG(handle->reg->SR2, I2C_SR_BUSY));
+
         // Generate a start condition if first transfer
 		handle->reg->CR1 |= (I2C_START_GEN);
 	}
 
+    // check if start bit condition is generated
+    while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_START));
 
-	// check if start bit condition is generated
-	while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_START));
-
+ 	// Disable POS
+    handle->reg->CR1 &= ~I2C_POS;
 
     /* 
         The master can decide to enter Transmitter or Receiver mode depending on the LSB of the slave address sent.
@@ -457,10 +499,10 @@ void i2c_master_rx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_
 
         // TODO: handle 10-bit addresses
     */
+    dev_add <<= 1;
     dev_add |= (I2C_ADD0);                  // receiver mode, LSB set    
 
 	handle->reg->DR = dev_add;
-
 
     // wait until ADDR flag is set
 	while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_ADDR))
@@ -474,7 +516,6 @@ void i2c_master_rx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_
             // TODO: Return error code and exit
         }
     }
-
 
 
     uint8_t* bp = buf;
@@ -578,6 +619,7 @@ void i2c_master_rx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_
                         • Read DataN 
                  */
 
+            	// wait until BTF is set	
                 while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_BTF));
 
                 // program ACK = 0
@@ -598,13 +640,10 @@ void i2c_master_rx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_
                 bp++;
                 tx_len--;
 
-                while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_RxNE));
-                
                 // Read DataN 
                 *bp = (uint8_t)handle->reg->DR;
                 bp++;
                 tx_len--;
-
             }else{
                 // wait until register data is empty so we can receive
                 while(!I2C_READ_FLAG(handle->reg->SR1, I2C_SR_RxNE));
@@ -628,6 +667,9 @@ void i2c_master_rx(i2c_handle_t *handle, uint16_t dev_add, uint8_t *buf, uint32_
     }
 }
 
+/*
+	@TODO: Handle interrupts
+*/
 
 void I2C1_ER_IRQHandler(void)
 {
