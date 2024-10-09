@@ -18,7 +18,7 @@ void spi_master_init(void)
     // set fosc/16
     SET_SCK_FREQ(SCK_FREQ_F_16);
 
-    // Enable SPI, set as master mode
+    // Enable SPI, set as master mode, set clock polarity and phase and configure data order
     SPI->SPCR = (SPI_SPCR_EN | SPI_SPCR_MODE_MASTER | SPI_SPCR_DORD_MSB | SPI_SPCR_CPOL_LOW | SPI_SPCR_CPHA_1_EDGE); 
 
     // Set SS high
@@ -50,6 +50,16 @@ void spi_master_tx(char data)
     SPI->SPDR = data;
     // Wait for transmission to complete
     while(SPI_BUSY());
+}
+
+char spi_master_tx_rx(char data)
+{
+    // load data in SPI data register
+    SPI->SPDR = data;
+
+    // Wait for transmission to complete
+    while(SPI_BUSY());
+    return SPI->SPDR;
 }
 
 char spi_slave_rx(void)

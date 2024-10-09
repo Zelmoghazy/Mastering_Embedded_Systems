@@ -55,13 +55,13 @@ typedef struct spi_t
 #define SPI_SPSR_SPIF           (1U<<7U)    // When a serial transfer is complete, the SPIF Flag is set.
 #define SPI_SPSR_WCOL           (1U<<6U)    // is set if the SPI data register (SPDR) is written during a data transfer.
 
-#define SCK_FREQ_F_2        2
-#define SCK_FREQ_F_4        4
-#define SCK_FREQ_F_8        8
-#define SCK_FREQ_F_16       16
-#define SCK_FREQ_F_32       32
-#define SCK_FREQ_F_64       64
-#define SCK_FREQ_F_128      128
+#define SCK_FREQ_F_2            2
+#define SCK_FREQ_F_4            4
+#define SCK_FREQ_F_8            8
+#define SCK_FREQ_F_16           16
+#define SCK_FREQ_F_32           32
+#define SCK_FREQ_F_64           64
+#define SCK_FREQ_F_128          128
 
 #define CONCAT(a, b) a##b
 
@@ -73,6 +73,7 @@ typedef struct spi_t
 void spi_master_init(void);
 void spi_slave_init(void);
 void spi_master_tx(char data);
+char spi_master_tx_rx(char data);
 char spi_slave_rx(void);
 
 #endif
