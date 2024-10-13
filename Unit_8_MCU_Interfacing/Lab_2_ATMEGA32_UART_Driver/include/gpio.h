@@ -37,5 +37,6 @@ typedef struct gpio_t
 void gpio_set_direction(gpio_t *gpio, uint8_t pin, uint8_t dir);
 void gpio_write(gpio_t *gpio, uint8_t pin, uint8_t value); 
 uint8_t gpio_read(gpio_t* gpio, uint8_t pin); 
+uint8_t gpio_read_port(gpio_t* gpio) ;
 
 #endif

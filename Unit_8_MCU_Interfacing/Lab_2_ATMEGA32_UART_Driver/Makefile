@@ -15,9 +15,9 @@ CFLAGS=$(CPU) $(DBG) $(INCS) $(OPT) $(F_CPU) $(BAUD) $(WARNINGS)
 LDFLAGS=-Wl,--gc-sections -Wl,--relax
 
 BUILD_DIR=build
-INC_DIRS=. ./include/
+INC_DIRS=. ./include/ ./HAL/
 LIB_DIRS=
-CODE_DIRS=. src
+CODE_DIRS=. src	HAL
 VPATH=$(CODE_DIRS)
 
 SRC=$(foreach DIR,$(CODE_DIRS),$(wildcard $(DIR)/*.c))

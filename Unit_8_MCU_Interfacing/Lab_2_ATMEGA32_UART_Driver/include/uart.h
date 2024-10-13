@@ -104,5 +104,6 @@ void uart_init(uart_cfg_t *cfg);
 void uart_tx(uint16 data);
 unsigned char uart_rx(void);
 void uart_tx_str(const char* str); 
+void uart_rx_str(unsigned char* str, uint32_t size); 
 
 #endif

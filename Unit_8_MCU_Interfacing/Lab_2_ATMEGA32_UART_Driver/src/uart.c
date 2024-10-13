@@ -39,3 +39,16 @@ void uart_tx_str(const char* str)
         uart_tx((uint16)*str++);
     }
 }
+
+void uart_rx_str(unsigned char* str, uint32_t size) 
+{
+    uint32_t i = 0;
+    str[i] = uart_rx();
+    uart_tx(str[i]);
+    while(i < size-1 && str[i] != 0x0D){
+        i++;
+        str[i] = uart_rx();
+        uart_tx(str[i]);
+    }
+    str[i] = '\0';  // replace new line with '\0'
+}
