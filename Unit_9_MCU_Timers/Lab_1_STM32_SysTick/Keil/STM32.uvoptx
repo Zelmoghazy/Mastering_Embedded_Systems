@@ -125,7 +125,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGDARM</Key>
-          <Name>(1010=-1,-1,-1,-1,0)(1007=-1,-1,-1,-1,0)(1008=-1,-1,-1,-1,0)(1009=-1,-1,-1,-1,0)(100=-1,-1,-1,-1,0)(110=-1,-1,-1,-1,0)(111=-1,-1,-1,-1,0)(1011=-1,-1,-1,-1,0)(180=-1,-1,-1,-1,0)(120=-1,-1,-1,-1,0)(121=2740,653,3161,1080,0)(122=-1,-1,-1,-1,0)(123=-1,-1,-1,-1,0)(140=-1,-1,-1,-1,0)(240=-1,-1,-1,-1,0)(190=-1,-1,-1,-1,0)(200=-1,-1,-1,-1,0)(170=-1,-1,-1,-1,0)(130=-1,-1,-1,-1,0)(131=-1,-1,-1,-1,0)(132=-1,-1,-1,-1,0)(133=-1,-1,-1,-1,0)(160=-1,-1,-1,-1,0)(161=-1,-1,-1,-1,0)(162=-1,-1,-1,-1,0)(210=-1,-1,-1,-1,0)(211=-1,-1,-1,-1,0)(220=2797,145,3274,666,1)(221=-1,-1,-1,-1,0)(230=-1,-1,-1,-1,0)(234=-1,-1,-1,-1,0)(231=-1,-1,-1,-1,0)(232=-1,-1,-1,-1,0)(233=-1,-1,-1,-1,0)(150=-1,-1,-1,-1,0)(151=-1,-1,-1,-1,0)</Name>
+          <Name>(1010=609,11,985,568,0)(1007=-1,-1,-1,-1,0)(1008=764,181,1140,417,1)(1009=-1,-1,-1,-1,0)(100=-1,-1,-1,-1,0)(110=-1,-1,-1,-1,0)(111=-1,-1,-1,-1,0)(1011=-1,-1,-1,-1,0)(180=-1,-1,-1,-1,0)(120=-1,-1,-1,-1,0)(121=2740,653,3161,1080,0)(122=-1,-1,-1,-1,0)(123=-1,-1,-1,-1,0)(140=-1,-1,-1,-1,0)(240=-1,-1,-1,-1,0)(190=-1,-1,-1,-1,0)(200=-1,-1,-1,-1,0)(170=-1,-1,-1,-1,0)(130=-1,-1,-1,-1,0)(131=-1,-1,-1,-1,0)(132=-1,-1,-1,-1,0)(133=-1,-1,-1,-1,0)(160=-1,-1,-1,-1,0)(161=-1,-1,-1,-1,0)(162=-1,-1,-1,-1,0)(210=-1,-1,-1,-1,0)(211=-1,-1,-1,-1,0)(220=2797,145,3274,666,0)(221=-1,-1,-1,-1,0)(230=-1,-1,-1,-1,0)(234=-1,-1,-1,-1,0)(231=-1,-1,-1,-1,0)(232=-1,-1,-1,-1,0)(233=-1,-1,-1,-1,0)(150=-1,-1,-1,-1,0)(151=-1,-1,-1,-1,0)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -142,199 +142,151 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>46</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134218408</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32\main.c\46</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
           <LineNumber>27</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134227006</Address>
+          <Address>134223916</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\HAL\eeprom.c</Filename>
+          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_9_MCU_Timers\Lab_1_STM32_SysTick\HAL\eeprom.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\STM32\HAL/eeprom.c\27</Expression>
         </Bp>
         <Bp>
-          <Number>2</Number>
+          <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>296</LineNumber>
+          <LineNumber>295</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134221688</Address>
+          <Address>134220412</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
+          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_9_MCU_Timers\Lab_1_STM32_SysTick\src\i2c.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\STM32\src/i2c.c\296</Expression>
+          <Expression>\\STM32\src/i2c.c\295</Expression>
         </Bp>
         <Bp>
-          <Number>3</Number>
+          <Number>2</Number>
           <Type>0</Type>
           <LineNumber>313</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134221766</Address>
+          <Address>134220434</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
+          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_9_MCU_Timers\Lab_1_STM32_SysTick\src\i2c.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\STM32\src/i2c.c\313</Expression>
         </Bp>
         <Bp>
-          <Number>4</Number>
+          <Number>3</Number>
           <Type>0</Type>
           <LineNumber>339</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134221894</Address>
+          <Address>134220502</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
+          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_9_MCU_Timers\Lab_1_STM32_SysTick\src\i2c.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\STM32\src/i2c.c\339</Expression>
         </Bp>
         <Bp>
-          <Number>5</Number>
+          <Number>4</Number>
           <Type>0</Type>
           <LineNumber>521</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134222574</Address>
+          <Address>134220854</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
+          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_9_MCU_Timers\Lab_1_STM32_SysTick\src\i2c.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\STM32\src/i2c.c\521</Expression>
         </Bp>
         <Bp>
-          <Number>6</Number>
+          <Number>5</Number>
           <Type>0</Type>
-          <LineNumber>505</LineNumber>
+          <LineNumber>502</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134222504</Address>
+          <Address>134220832</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
+          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_9_MCU_Timers\Lab_1_STM32_SysTick\src\i2c.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\STM32\src/i2c.c\505</Expression>
+          <Expression>\\STM32\src/i2c.c\502</Expression>
         </Bp>
         <Bp>
-          <Number>7</Number>
+          <Number>6</Number>
           <Type>0</Type>
           <LineNumber>594</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134222784</Address>
+          <Address>134220864</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
+          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_9_MCU_Timers\Lab_1_STM32_SysTick\src\i2c.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\STM32\src/i2c.c\594</Expression>
         </Bp>
         <Bp>
-          <Number>8</Number>
-          <Type>0</Type>
-          <LineNumber>628</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134222824</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32\src/i2c.c\628</Expression>
-        </Bp>
-        <Bp>
-          <Number>9</Number>
+          <Number>7</Number>
           <Type>0</Type>
           <LineNumber>640</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134222864</Address>
+          <Address>134220992</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
+          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_9_MCU_Timers\Lab_1_STM32_SysTick\src\i2c.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\STM32\src/i2c.c\640</Expression>
         </Bp>
         <Bp>
-          <Number>10</Number>
+          <Number>8</Number>
           <Type>0</Type>
-          <LineNumber>647</LineNumber>
+          <LineNumber>30</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134222904</Address>
+          <Address>134218364</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
+          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_9_MCU_Timers\Lab_1_STM32_SysTick\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\STM32\src/i2c.c\647</Expression>
+          <Expression>\\STM32\main.c\30</Expression>
         </Bp>
         <Bp>
-          <Number>11</Number>
+          <Number>9</Number>
           <Type>0</Type>
-          <LineNumber>57</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134218452</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32\main.c\57</Expression>
-        </Bp>
-        <Bp>
-          <Number>12</Number>
-          <Type>0</Type>
-          <LineNumber>280</LineNumber>
+          <LineNumber>15</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>0</Address>
           <ByteObject>0</ByteObject>
@@ -343,87 +295,7 @@
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>0</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
-        </Bp>
-        <Bp>
-          <Number>13</Number>
-          <Type>0</Type>
-          <LineNumber>403</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>0</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
-        </Bp>
-        <Bp>
-          <Number>14</Number>
-          <Type>0</Type>
-          <LineNumber>433</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>0</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
-        </Bp>
-        <Bp>
-          <Number>15</Number>
-          <Type>0</Type>
-          <LineNumber>516</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>0</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
-        </Bp>
-        <Bp>
-          <Number>16</Number>
-          <Type>0</Type>
-          <LineNumber>517</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>0</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
-        </Bp>
-        <Bp>
-          <Number>17</Number>
-          <Type>0</Type>
-          <LineNumber>518</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>0</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_8_MCU_Interfacing\Lab_5_STM32_I2C_Driver\src\i2c.c</Filename>
+          <Filename>C:\Users\zezo_\Desktop\Programming\Mastering_Embedded_Systems\Unit_9_MCU_Timers\Lab_1_STM32_SysTick\main.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression></Expression>
         </Bp>

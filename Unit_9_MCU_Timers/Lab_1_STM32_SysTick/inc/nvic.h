@@ -23,6 +23,7 @@
 
 #define NVIC_ICTR                       *((vuint32_t*)(NVIC_BASE + 0x004U))     // Interrupt Control Type Register
 
+/* System Timer Registers */
 #define NVIC_SYSTICK_CSR                *((vuint32_t*)(NVIC_BASE + 0x010U))     // SysTick Control and Status Register
 #define NVIC_SYSTICK_RVR                *((vuint32_t*)(NVIC_BASE + 0x014U))     // SysTick Reload Value Register
 #define NVIC_SYSTICK_CVR                *((vuint32_t*)(NVIC_BASE + 0x018U))     // SysTick Current Value Register
@@ -172,6 +173,7 @@
     It then loads the RELOAD value again, and begins counting.
 */
 #define NVIC_SYSTICK_EN()             (NVIC_SYSTICK_CSR |= (1U<<0U))        
+#define NVIC_SYSTICK_DIS()            (NVIC_SYSTICK_CSR &= ~(1U<<0U))        
 
 #define NVIC_SYSTICK_TICKINT()        (NVIC_SYSTICK_CSR |= (1U<<1U))        // Counting down to zero to asserts the SysTick exception request.
 #define NVIC_SYSTICK_COUNTFLAG()      (NVIC_SYSTICK_CSR & (1U<<16U))        // Returns 1 if timer counted to 0 since last time this was read.
@@ -188,7 +190,10 @@
 #define NVIC_SET_RELOAD(r)           (NVIC_SYSTICK_RVR |= (r&0x00FFFFFFU))
 #define NVIC_GET_CURR_VAL()          (NVIC_SYSTICK_CVR & 0x00FFFFFFU)       // Reads return the current value of the SysTick counter.
 
-#define NVIC_SET_SYSTICK_PRIO(n)      (NVIC_SHP3 = (NVIC_SHP3 & ~(0xF << 28U)) | ((n & 0xF) << 28U))
+// Writing any value to SysTick_VAL resets it to zero
+#define NVIC_CLEAR_VAL()             (NVIC_SYSTICK_CVR = 0x0U)       
+
+#define NVIC_SET_SYSTICK_PRIO(n)     (NVIC_SHP3 = (NVIC_SHP3 & ~(0xF << 28U)) | ((n & 0xF) << 28U))
 
 /*---------------------------------------------------------------*/
 void Enable_NVIC(uint16_t IRQ);

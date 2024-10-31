@@ -4,32 +4,33 @@
 #include "gpio.h"
 #include "nvic.h"
 
-
-#define SYS_CLOCK 8000000UL
-#define TICKS_PER_MS (SYS_CLOCK / 1000)
-
 volatile uint32_t sysTickCounter = 0;
+
+#define SYS_CLOCK           8000000UL
+#define TICKS_PER_MS        (SYS_CLOCK / 1000U)
+#define TICKS_PER_US        (SYS_CLOCK / 1000000U)
+
+#define DELAY_MS(ms)                                   \
+    do {                                               \
+        uint32_t start = sysTickCounter;               \
+        while ((sysTickCounter - start) < ms);         \
+    } while (0)
+
 
 void SysTick_Handler(void) 
 {
-    if (sysTickCounter > 0) {
-        sysTickCounter--;
-    }
+    sysTickCounter++;
 }
 
 void SysTick_init(void) 
 {
+    NVIC_SYSTICK_DIS();
     NVIC_SET_RELOAD(TICKS_PER_MS-1);
-    NVIC_SYSTICK_CLKSRC_AHB();
+    NVIC_CLEAR_VAL();
     NVIC_SET_SYSTICK_PRIO(0);
     NVIC_SYSTICK_TICKINT();
+    NVIC_SYSTICK_CLKSRC_AHB();
     NVIC_SYSTICK_EN();
-}
-
-void delay_ms(uint32_t ms) 
-{
-    sysTickCounter = ms;
-    while (sysTickCounter != 0); 
 }
 
 int main(void)
@@ -49,7 +50,7 @@ int main(void)
     while(1)
     {
         gpio_toggle_pin(GPIO_C, GPIO_PIN_13);
-        delay_ms(10);
+        DELAY_MS(10);
     }
 
     return 0;
