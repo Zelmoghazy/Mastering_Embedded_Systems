@@ -7,6 +7,8 @@
 #include "afio.h"
 #include "nvic.h"
 
+#define RUN_CB(n)   if(IRQ_CB[(n)])IRQ_CB[(n)]() 
+
 
 /*---------------------EXTI---------------------*/
 typedef struct exti_t{
@@ -76,9 +78,7 @@ typedef struct exti_t{
 								  (x==GPIO_C)?2:\
 								  (x==GPIO_D)?3:0) 
 
-
 typedef void ((*callback_t)(void));
-
 
 typedef struct exti_gpio_mapping_t
 {
@@ -89,14 +89,14 @@ typedef struct exti_gpio_mapping_t
 }exti_gpio_mapping_t;
 
 typedef struct exti_pin_config_t{
-	exti_gpio_mapping_t exti_pin;
+	exti_gpio_mapping_t pin;
 	uint8_t 			trigger;
 	uint8_t 			irq_en;
 	callback_t			irq_callback;
 }exti_pin_config_t;
 
-
+void exti_gpio_init(exti_pin_config_t *exti_config);
 void exti_gpio_update(exti_pin_config_t *exti_cfg);
-
+void exti_gpio_reset(void);
 
 #endif
