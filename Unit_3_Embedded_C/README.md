@@ -1,5 +1,6 @@
 ## Cross-Compilation Toolchain
-* `arm-none-eabi-gcc`     : Compiler, linker and assembler
+
+* `arm-none-eabi-gcc`     : Compiler, linker and assembler (Compiler Driver).
 * `arm-none-eabi-as`      : Assembler
 * `arm-none-eabi-ld`      : Linker
 * `arm-none-eabi-objcopy` : Format converter
@@ -99,6 +100,12 @@
     * A string table is a sequence of null-terminated character strings.
 
 ## Relocatable object files
+* Compilers and assemblers generate relocatable object files
+    * which are object files that contains binary code and data in a form that can be combined with other relocatable object files at compile time to create an executable object file.
+* Object file formats vary from system to system.
+    * The first Unix systems `.out`
+    * Windows NT `PE`
+    * Modern Unix systems `elf` -> `.o`
 
 * `.o` files contains machine specific code and data of the program
   * it doesnt contain any absolute addresses.
@@ -129,6 +136,14 @@ void main(void)
 }
 ```
 
+
+<p align="center">
+  <img src="./Images/disasm.png"
+       width="35%" 
+       style="border-radius: 30px;"/>
+</p>
+
+
 <div style="border-radius: 30px; overflow: hidden;">
     <p align="center">
         <img src="Images/Objdump.png"
@@ -146,13 +161,27 @@ void main(void)
 * `CODE` – Section contains executable code only.
 * `DATA` – Section contains data only (no executable code).
 
+### Object file symbols
+
+<div style="border-radius: 30px; overflow: hidden;">
+    <p align="center">
+        <img src="Images/SymbolTable.png"
+             width="100%" 
+             style="border-radius: 30px;"/>
+    </p>
+</div>
+
+* `T` : The symbol is in the text (code) section.
+* `D` : The symbol is in the initialized data section.
+* `U` : The symbol is undefined.
+
 ---
 
 ## Start-up File
 
 * Startup file is responsible for setting up the enviroment for the main user code to run.
-* Code written in startup file runs before `main()`.
-* Some parts of the startup code is target dependent.
+    * Code written in startup file runs before `main()`.
+    * Some parts of the startup code is target dependent.
 * **Startup code takes care of :**
   * Vector table placement.
   * Stack reinitialization.
@@ -526,17 +555,88 @@ SECTIONS
 * Linker scripts symbol declarations, create an entry in the symbol table but do not assign any memory to them. Thus they are an address without a value. 
     * Hence when you are using a linker script defined symbol in source code you should always take the address of the symbol, and never attempt to use its value.
 
-<div style="border-radius: 30px; overflow: hidden;">
-    <p align="center">
-        <img src="Images/SymbolTable.png"
-             width="100%" 
-             style="border-radius: 30px;"/>
-    </p>
-</div>
+<table>
+<tr>
+<th> Defining Linker script symbols </th>
+<th> Using Linker script symbols in code</th>
+</tr>
+<tr>
+<td>
 
-* `T` : The symbol is in the text (code) section.
-* `D` : The symbol is in the initialized data section.
-* `U` : The symbol is undefined.
+```ld
+SECTIONS
+{
+    .text : 
+    {
+        *(.vectors*)
+        *(.text*)
+        *(.rodata)
+        _E_TEXT = . ;
+    } > FLASH
+
+    .data :
+    {
+        _S_DATA = . ;
+        *(.data)
+        _E_DATA = . ;
+    }>SRAM AT> FLASH
+
+    .bss :
+    {
+        _S_BSS = . ;
+        *(.bss)
+        . = ALIGN(4);
+        _E_BSS = . ;
+
+        . = ALIGN(4);
+        . = . + 0x1000 ;
+        _STACK_TOP = . ;
+        
+    }>SRAM
+}
+```
+
+</td>
+<td>
+
+```c
+void Mem_Init(void)
+{
+    extern uint32 _S_DATA;
+    extern uint32 _E_DATA;
+    extern uint32 _S_BSS;
+    extern uint32 _E_BSS;
+    extern uint32 _E_TEXT;
+
+    /********* Copy from FLASH to SRAM *********/
+
+    uint32 size_data = (uint32)&_E_DATA - (uint32)&_S_DATA;
+
+    byte *dst = (byte *)(&_S_DATA); // SRAM
+    byte *src = (byte *)(&_E_TEXT); // FLASH
+
+    for(uint32 i = 0; i<size_data; i++){
+        *dst++ = *src++;
+    }
+    
+    /**************** Zero BSS ****************/
+
+    uint32 size_bss = (uint32)&_E_BSS - (uint32)&_S_BSS;
+
+    dst = (byte *)&_S_BSS;
+
+    for(uint32 i = 0; i<size_bss; i++){
+        *dst++ = (byte)0;
+    }
+
+}
+
+```
+
+</td>
+</tr>
+</table>
+
 
 ## Linking
 
@@ -548,6 +648,7 @@ SECTIONS
 |`-nostdlib`|Do not use the standard system startup files or libraries when linking.|
 |`-Map=<file.map>`|Write a linker map to `<file>`|
 |`--gc-section`|The linker can perform the dead code elimination doing a garbage collection of code and data never referenced.|
+|`--warn-common`|Warn when a common symbol is combined with another common symbol|
 
 * Linking is the process of collecting and combining the various pieces of code and data that a program needs in order to be loaded (copied) into memory and executed. 
 * Linkers play a crucial role in software development because they enable separate compilation.
@@ -580,6 +681,61 @@ SECTIONS
              style="border-radius: 30px;"/>
     </p>
 </div>
+
+### Symbols and Symbol Tables
+
+* Each relocatable object file has a symbol table that contains information about the symbols that are defined and referenced by it
+    * **Global defined symbols :** defined by module and can be reference by other modules (nonstatic C functions and non-static global variables)
+    * **Global referenced symbols :** defined by some other module and referenced inside your module (externals).
+    * **Local symbols :** defined and referenced exclusively by the module and cannot be referenced by other modules (C functions and global variables that are defined with the static attribute.)
+* An ELF symbol table is contained in the `.symtab` section. 
+
+
+* There are three special pseudo-sections that don’t have entries in the section header table:
+    * `ABS` is for symbols that should not be relocated.
+    * `UNDEF` is for undefined symbols, that is, symbols that are referenced in this object module but defined elsewhere.
+    * `COMMON` is for uninitialized data objects that are not yet allocated.
+
+| Symbol | Description                                                            |
+|--------|------------------------------------------------------------------------|
+| `l`    | The symbol is local.                                                   |
+| `g`    | The symbol is global.                                                  |
+| `u`    | The symbol is a unique global.                                         |
+| `!`    | The symbol is both global and local.                                   |
+| `w`    | The symbol is weak.                                                    |
+| `C`    | The symbol denotes a constructor.                                      |
+| `W`    | The symbol is a warning.                                               |
+| `I`    | The symbol is an indirect reference to another symbol.                 |
+| `i`    | The symbol is a function to be evaluated during relocation processing. |
+| `d`    | The symbol is a debugging symbol.                                      |
+| `D`    | The symbol is a dynamic symbol.                                        |
+| `F`    | The symbol is the name of a function.                                  |
+| `f`    | The symbol is the name of a file.                                      |
+| `O`    | The symbol is the name of an object.                                   |
+
+<p align="center">
+  <img src="./Images/sym_tab.png"
+       width="50%" 
+       style="border-radius: 30px;"/>
+</p>
+
+
+### Symbol Resolution
+* The linker resolves symbol references by associating each reference with exactly one symbol definition from
+the symbol tables of its input relocatable object files
+
+*  When the compiler encounters a symbol (either a variable or function name) that is not defined in the current module, it assumes that it is defined in some other module, generates a linker symbol table entry, and leaves it for the linker to handle.
+* If the linker is unable to find a definition for the referenced symbol in any of its input modules, it prints an error message and terminates.
+
+* At compile time, the compiler exports each global symbol to the assembler as either strong or weak, and the
+assembler encodes this information implicitly in the symbol table of the relocatable object file.
+* Functions and initialized global variables get strong symbols. Uninitialized global variables get weak symbols.
+* **For multiply-defined symbols :**
+    * Multiple strong symbols are not allowed.
+    *  Given a strong symbol and multiple weak symbols, choose the strong symbol.
+    *  Given multiple weak symbols, choose any of the weak symbols.
+* Invoke the linker with a flag such as the GCC `-warn-common` flag, which instructs it to print a warning message
+when it resolves multiply-defined global symbol definitions.
 
 ## Case Study (STM32)
 
@@ -657,7 +813,7 @@ _exit, _close, environ, execve, fork, fstat, getpid, isatty, kill, link, lseek, 
 
 |System Call|Meaning|
 |:---:|:---:|
-|`sbrk_`|Increase program data space,` malloc` and related functions depend on this|
+|`sbrk_`|Increase program data space,`malloc` and related functions depend on this|
 |`write_`|Write to a file. libc subroutines will use this system routine for output to all files, including stdout|
 |`read_`|Read from a file.|
 
@@ -866,12 +1022,13 @@ DEP=$(addprefix $(BUILD_DIR)/,$(notdir $(SRC:.c=.d)))
 |`info functions`          | All function names or those matching REGEXPs.|
 |`info line`               | Core addresses of the code for a source line.|
 |`info locals`             | All local variables of current stack frame or those matching REGEXPs.|
-
+|`jump func`               | Jump to a certain function.|
 
 * **Reverse debugging :**
   * `target record-full` : Record everything from this point
   * `r` + `n` : Step back over
   * `rs` + `n` : Step back into
+
 * **Print memory :** `x/nfu` 
   * `n` : How many units to print.
   * `f` : Format Character
@@ -892,9 +1049,29 @@ DEP=$(addprefix $(BUILD_DIR)/,$(notdir $(SRC:.c=.d)))
     * `w` : 4 bytes
     * `g` : 8 bytes
 
+### Breakpoint Command Lists
+
+* For example, here is how you could use breakpoint commands to print the value of x at entry to foo whenever x is positive.
+
+```
+break foo if x>0
+commands
+silent
+printf "x is %d\n",x
+cont
+end
+```
+* If the first command you specify in a command list is `silent`, the usual message about stopping at a breakpoint is not printed. This may be desirable for breakpoints that are to print a specific message and then `continue`.
+
+* End with the `continue` command so that your program does not stop
+
 
 ### TUI Mode
 * `Ctrl+X+A` : TUI Mode
+* `layout src` : show source view only
+* `layout asm` : show disassembly view only
+* `layout split` : show both source and assembly view 
+* `layout regs` : show the register window with source or assembly.
 * `Ctrl+X` + `2` : Cycle views (Disassembly, registers, source code)
 * `Ctrl+L` : Refresh Screen
 * `Ctrl+P`: previous command in tui
