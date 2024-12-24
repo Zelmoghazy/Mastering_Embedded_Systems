@@ -1,0 +1,211 @@
+[
+  {
+    "directory": "c:/Users/zezo_/Desktop/Programming/Embedded/stm32/SD_Card",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-c",
+      "-mcpu=cortex-m3",
+      "-g",
+      "-gdwarf-2",
+      "-I.",
+      "-I./inc/",
+      "-I./HAL/",
+      "-O0",
+      "-mthumb",
+      "main.c",
+      "-o",
+      "build/main.o"
+    ],
+    "file": "main.c"
+  },
+  {
+    "directory": "c:/Users/zezo_/Desktop/Programming/Embedded/stm32/SD_Card",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-c",
+      "-mcpu=cortex-m3",
+      "-g",
+      "-gdwarf-2",
+      "-I.",
+      "-I./inc/",
+      "-I./HAL/",
+      "-O0",
+      "-mthumb",
+      "src/exti.c",
+      "-o",
+      "build/exti.o"
+    ],
+    "file": "src/exti.c"
+  },
+  {
+    "directory": "c:/Users/zezo_/Desktop/Programming/Embedded/stm32/SD_Card",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-c",
+      "-mcpu=cortex-m3",
+      "-g",
+      "-gdwarf-2",
+      "-I.",
+      "-I./inc/",
+      "-I./HAL/",
+      "-O0",
+      "-mthumb",
+      "src/gpio.c",
+      "-o",
+      "build/gpio.o"
+    ],
+    "file": "src/gpio.c"
+  },
+  {
+    "directory": "c:/Users/zezo_/Desktop/Programming/Embedded/stm32/SD_Card",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-c",
+      "-mcpu=cortex-m3",
+      "-g",
+      "-gdwarf-2",
+      "-I.",
+      "-I./inc/",
+      "-I./HAL/",
+      "-O0",
+      "-mthumb",
+      "src/i2c.c",
+      "-o",
+      "build/i2c.o"
+    ],
+    "file": "src/i2c.c"
+  },
+  {
+    "directory": "c:/Users/zezo_/Desktop/Programming/Embedded/stm32/SD_Card",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-c",
+      "-mcpu=cortex-m3",
+      "-g",
+      "-gdwarf-2",
+      "-I.",
+      "-I./inc/",
+      "-I./HAL/",
+      "-O0",
+      "-mthumb",
+      "src/nvic.c",
+      "-o",
+      "build/nvic.o"
+    ],
+    "file": "src/nvic.c"
+  },
+  {
+    "directory": "c:/Users/zezo_/Desktop/Programming/Embedded/stm32/SD_Card",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-c",
+      "-mcpu=cortex-m3",
+      "-g",
+      "-gdwarf-2",
+      "-I.",
+      "-I./inc/",
+      "-I./HAL/",
+      "-O0",
+      "-mthumb",
+      "src/rcc.c",
+      "-o",
+      "build/rcc.o"
+    ],
+    "file": "src/rcc.c"
+  },
+  {
+    "directory": "c:/Users/zezo_/Desktop/Programming/Embedded/stm32/SD_Card",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-c",
+      "-mcpu=cortex-m3",
+      "-g",
+      "-gdwarf-2",
+      "-I.",
+      "-I./inc/",
+      "-I./HAL/",
+      "-O0",
+      "-mthumb",
+      "src/sdcard.c",
+      "-o",
+      "build/sdcard.o"
+    ],
+    "file": "src/sdcard.c"
+  },
+  {
+    "directory": "c:/Users/zezo_/Desktop/Programming/Embedded/stm32/SD_Card",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-c",
+      "-mcpu=cortex-m3",
+      "-g",
+      "-gdwarf-2",
+      "-I.",
+      "-I./inc/",
+      "-I./HAL/",
+      "-O0",
+      "-mthumb",
+      "src/spi.c",
+      "-o",
+      "build/spi.o"
+    ],
+    "file": "src/spi.c"
+  },
+  {
+    "directory": "c:/Users/zezo_/Desktop/Programming/Embedded/stm32/SD_Card",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-c",
+      "-mcpu=cortex-m3",
+      "-g",
+      "-gdwarf-2",
+      "-I.",
+      "-I./inc/",
+      "-I./HAL/",
+      "-O0",
+      "-mthumb",
+      "src/syscalls.c",
+      "-o",
+      "build/syscalls.o"
+    ],
+    "file": "src/syscalls.c"
+  },
+  {
+    "directory": "c:/Users/zezo_/Desktop/Programming/Embedded/stm32/SD_Card",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-c",
+      "-mcpu=cortex-m3",
+      "-g",
+      "-gdwarf-2",
+      "-I.",
+      "-I./inc/",
+      "-I./HAL/",
+      "-O0",
+      "-mthumb",
+      "src/systick.c",
+      "-o",
+      "build/systick.o"
+    ],
+    "file": "src/systick.c"
+  },
+  {
+    "directory": "c:/Users/zezo_/Desktop/Programming/Embedded/stm32/SD_Card",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-c",
+      "-mcpu=cortex-m3",
+      "-g",
+      "-gdwarf-2",
+      "-I.",
+      "-I./inc/",
+      "-I./HAL/",
+      "-O0",
+      "-mthumb",
+      "src/usart.c",
+      "-o",
+      "build/usart.o"
+    ],
+    "file": "src/usart.c"
+  }
+]
