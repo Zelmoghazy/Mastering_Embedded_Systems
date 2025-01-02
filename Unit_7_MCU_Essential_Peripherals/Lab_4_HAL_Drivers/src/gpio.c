@@ -25,6 +25,11 @@ void gpio_set_direction(gpio_t *gpio, uint8_t pin, uint8_t dir)
 {
     if(dir == GPIO_INPUT){
         gpio->DDR &= ~(pin);
+        /*
+            If PORTxn is written logic one 
+            when the pin is configured input,
+            the pull-up resistor is activated.
+        */
         gpio->PORT |= pin;
     }else{
         gpio->DDR |= (pin);

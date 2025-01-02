@@ -16,16 +16,15 @@
 
 * The GPIO pins with the same pin number in all GPIO ports are assigned to the same external interrupt
 
----
-
-## Software Configuration Steps
-
 <p align="center">
   <img src="./images/EXTI_PINS.png"
        width="100%" 
        style="border-radius: 30px;"/>
 </p>
 
+---
+
+## Software Configuration Steps
 
 1. Set up the external interrupt configuration register `EXTICR` to map the GPIO pin n to the external interrupt input line n.
 

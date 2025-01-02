@@ -70,7 +70,7 @@ void exti_gpio_update(exti_pin_config_t *exti_cfg)
 	if(exti_cfg->trigger == EXTI_TRIGGER_RISING || exti_cfg->trigger == EXTI_TRIGGER_RISING_FALLING){
 		EXTI->RTSR |= (1<<exti_cfg->exti_pin.exti_line);
 	}
-	if(exti_cfg->trigger == EXTI_TRIGGER_RISING || exti_cfg->trigger == EXTI_TRIGGER_RISING_FALLING){
+	if(exti_cfg->trigger == EXTI_TRIGGER_FALLING || exti_cfg->trigger == EXTI_TRIGGER_RISING_FALLING){
 		EXTI->FTSR |= (1<<exti_cfg->exti_pin.exti_line);
 	}
 
@@ -116,7 +116,7 @@ void EXTI4_IRQHandler(void)
     EXTI_IRQ_CB[4]();
 }
 
-void EXTI5_9_IRQHandler(void)
+void EXTI9_5_IRQHandler(void)
 {
     if(EXTI->PR & (1<<5)){
         EXTI->PR |= 1<<5;
@@ -140,7 +140,7 @@ void EXTI5_9_IRQHandler(void)
     }
 }
 
-void EXTI10_15_IRQHandler(void)
+void EXTI15_10_IRQHandler(void)
 {
     if(EXTI->PR & (1<<10)){
         EXTI->PR |= 1<<10;
