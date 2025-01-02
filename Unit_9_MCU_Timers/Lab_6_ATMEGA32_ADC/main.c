@@ -21,7 +21,7 @@ void __vector_14(void)
 }
 
 int main(void)
-{
+{a
     tim0_init();
     gpio_set_direction(GPIO_B, GPIO_PIN_1, GPIO_OUTPUT);
     
