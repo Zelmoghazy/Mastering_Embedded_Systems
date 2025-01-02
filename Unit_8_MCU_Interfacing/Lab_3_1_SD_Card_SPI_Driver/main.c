@@ -7,6 +7,7 @@
 #include "systick.h"
 
 spi_config_t spi_cfg = SPI_DEFAULT_CONFIG();
+
 uint8_t buf[32];
 
 void clock_init(void)
@@ -23,8 +24,8 @@ int main(void)
 
     SysTick_init();
     
-    spi_init(SPI1, &spi_cfg);
     spi_set_gpio(SPI1, &spi_cfg);
+    spi_init(SPI1, &spi_cfg);
 
     gpio_config_t ss_sw = {
         .pin  = GPIO_PIN_4,
@@ -40,7 +41,6 @@ int main(void)
         .err = SD_ERR_NONE,
         .card_type = SD_TYPE_ERR,
     };
-
 
     sd_init(&sd_h);
 

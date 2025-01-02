@@ -250,6 +250,19 @@ void usart_receive(usart_t *usart, usart_config_t *cfg, uint16_t *rxbuf)
 	}
 }
 
+void usart_rx_n(usart_t *usart, usart_config_t *cfg, uint16_t *data, size_t length)
+{
+    uint16_t *ptr = data;
+
+    if (length > 0)
+    {
+        for(size_t i = 0; i < length; i++){
+            usart_receive(usart,cfg,ptr);
+            ptr++;
+        }
+    }
+}
+
 void usart_tx_n(usart_t *usart, usart_config_t *cfg, const uint8_t *data, size_t length)
 {
     for(size_t i = 0; i < length; i++){

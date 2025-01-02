@@ -81,3 +81,36 @@ void i2c_master_rx(uint8_t slave_addr, uint8_t *data)
 
     I2C_GEN_STOP();
 }
+
+extern volatile uint8_t received_data;
+
+
+// Slave receiver
+
+/* TWI Vector defined in startup file */
+
+// void __vector_24(void) __attribute__((__signal__));
+
+// void __vector_24(void)
+// {
+//     switch (GET_STATUS()) 
+//     {
+//         case I2C_TWSR_SLV_RX_ADDR_ACK:          
+//         case I2C_TWSR_SLV_RX_ARB_ADDR_ACK:
+//             I2C->TWCR = (I2C_TWCR_TWINT) | (I2C_TWCR_TWEN) | (I2C_TWCR_TWEA) | (I2C_TWCR_TWIE);
+//             break;
+
+//         case I2C_TWSR_SLV_RX_DATA_ACK:    
+//         case I2C_TWSR_SLV_RX_GC_DATA_ACK: 
+//             received_data = I2C->TWDR; // Read received data
+//             I2C->TWCR = (I2C_TWCR_TWINT) | (I2C_TWCR_TWEN) | (I2C_TWCR_TWEA) | (I2C_TWCR_TWIE);
+//             break;
+
+//         case I2C_TWSR_SLV_RX_STOP: 
+//             I2C->TWCR = (I2C_TWCR_TWINT) | (I2C_TWCR_TWEN) | (I2C_TWCR_TWEA) | (I2C_TWCR_TWIE);
+//             break;
+//         default:
+//             I2C->TWCR = (I2C_TWCR_TWINT) | (I2C_TWCR_TWEN) | (I2C_TWCR_TWEA) | (I2C_TWCR_TWIE);
+//             break;
+//     }
+// }

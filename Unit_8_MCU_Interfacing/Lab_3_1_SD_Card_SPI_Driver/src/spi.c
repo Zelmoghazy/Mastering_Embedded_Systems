@@ -43,12 +43,12 @@ void spi_init(spi_t *spi, spi_config_t *cfg)
 
 
     // NSS
-    if(cfg->NSS == SPI_NSS_HW_MASTER_SSOE){
-        CR2_tmp |= cfg->NSS;
-    }else if(cfg->NSS == SPI_NSS_HW_MASTER_SSOD){
-        CR2_tmp &= cfg->NSS;
+    if(cfg->slave_select == SPI_NSS_HW_SS_OUTPUT){
+        CR2_tmp |= cfg->slave_select;
+    }else if(cfg->slave_select == SPI_NSS_HW_SS_INPUT){
+        CR2_tmp &= cfg->slave_select;
     }else{
-        CR1_tmp |= cfg->NSS;
+        CR1_tmp |= cfg->slave_select;
     }
 
     // spi bauderate prescaler
@@ -99,12 +99,12 @@ void spi_rst(spi_t *spi)
 // TODO : handle rest of modes, currently support full duplex only
 void spi_set_gpio(spi_t *spi, spi_config_t *cfg)
 {
-    // SPI1 NSS  -> PA4
+    // SPI1 NSS  -> PA4  (you can use any pin if you wouldn't trigger it using SSI or HW)
     // SPI1 SCK  -> PA5     
     // SPI1 MISO -> PA6     
     // SPI1 MOSI -> PA7     
 
-    // SPI2 NSS  -> PB12
+    // SPI2 NSS  -> PB12 (you can use any pin if you wouldn't trigger it using SSI or HW)
     // SPI2 SCK  -> PB13
     // SPI2 MISO -> PB14
     // SPI2 MOSI -> PB15
@@ -117,14 +117,14 @@ void spi_set_gpio(spi_t *spi, spi_config_t *cfg)
         /*---MASTER---*/
         if(cfg->dev_mode == SPI_MODE_MASTER){
             // NSS
-            switch (cfg->NSS) 
+            switch (cfg->slave_select) 
             {
-                case SPI_NSS_HW_MASTER_SSOD:
+                case SPI_NSS_HW_SS_INPUT:
                     gpio_cfg.pin = GPIO_PIN_4;
                     gpio_cfg.mode = GPIO_MODE_IN_F;
                     gpio_init(GPIO_A, &gpio_cfg);
                     break;
-                case SPI_NSS_HW_MASTER_SSOE:
+                case SPI_NSS_HW_SS_OUTPUT:
                     gpio_cfg.pin = GPIO_PIN_4;
                     gpio_cfg.mode = AFIO_MODE_OUT_PP(GPIO_SPEED_10M);
                     gpio_init(GPIO_A, &gpio_cfg);
@@ -149,9 +149,9 @@ void spi_set_gpio(spi_t *spi, spi_config_t *cfg)
         /*---SLAVE---*/ 
         }else{
 
-            if (cfg->NSS ==SPI_NSS_HW_SLAVE) 
+            if (cfg->slave_select == SPI_NSS_HW_SSM) 
             {
-                gpio_cfg.pin = GPIO_PIN_4;
+                gpio_cfg.pin  = GPIO_PIN_4;
                 gpio_cfg.mode = GPIO_MODE_IN_F;
                 gpio_init(GPIO_A, &gpio_cfg);
             }
@@ -178,14 +178,14 @@ void spi_set_gpio(spi_t *spi, spi_config_t *cfg)
         /*---MASTER---*/
         if(cfg->dev_mode == SPI_MODE_MASTER){
             // NSS
-            switch (cfg->NSS) 
+            switch (cfg->slave_select) 
             {
-                case SPI_NSS_HW_MASTER_SSOD:
+                case SPI_NSS_HW_SS_INPUT:
                     gpio_cfg.pin = GPIO_PIN_12;
                     gpio_cfg.mode = GPIO_MODE_IN_F;
                     gpio_init(GPIO_B, &gpio_cfg);
                     break;
-                case SPI_NSS_HW_MASTER_SSOE:
+                case SPI_NSS_HW_SS_OUTPUT:
                     gpio_cfg.pin = GPIO_PIN_12;
                     gpio_cfg.mode = AFIO_MODE_OUT_PP(GPIO_SPEED_10M);
                     gpio_init(GPIO_B, &gpio_cfg);
@@ -210,7 +210,7 @@ void spi_set_gpio(spi_t *spi, spi_config_t *cfg)
         /*---SLAVE---*/ 
         }else{
 
-            if (cfg->NSS ==SPI_NSS_HW_SLAVE) 
+            if (cfg->slave_select ==SPI_NSS_HW_SSM) 
             {
                 gpio_cfg.pin = GPIO_PIN_12;
                 gpio_cfg.mode = GPIO_MODE_IN_F;

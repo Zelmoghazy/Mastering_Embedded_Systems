@@ -23,8 +23,8 @@ void spi_init(spi_t *spi, spi_config_t *cfg)
 	// enable spi peripheral
 	CR1_tmp |= SPI_EN;
 
-	// spi device mode
-	CR1_tmp |= cfg->device_mode;
+    // spi device mode
+    CR1_tmp |= cfg->dev_mode;
 
 	// spi communication mode
 	CR1_tmp |= cfg->comm_mode;
@@ -42,29 +42,29 @@ void spi_init(spi_t *spi, spi_config_t *cfg)
 	CR1_tmp |= cfg->clk_phase;
 
 
-	// NSS
-	if(cfg->NSS == SPI_NSS_HW_MASTER_SSOE){
-		CR2_tmp |= cfg->NSS;
-	}else if(cfg->NSS == SPI_NSS_HW_MASTER_SSOD){
-		CR2_tmp &= cfg->NSS;
-	}else{
-		CR1_tmp |= cfg->NSS;
-	}
+    // NSS
+    if(cfg->slave_select == SPI_NSS_HW_SS_OUTPUT){
+        CR2_tmp |= cfg->slave_select;
+    }else if(cfg->slave_select == SPI_NSS_HW_SS_INPUT){
+        CR2_tmp &= cfg->slave_select;
+    }else{
+        CR1_tmp |= cfg->slave_select;
+    }
 
-	// spi bauderate prescaler
-	CR1_tmp |= cfg->baudrate_prescaler; 
+    // spi bauderate prescaler
+    CR1_tmp |= cfg->baud_presc;
 
-	if(cfg->IRQ_en != SPI_IRQ_NONE)
-	{
-		CR2_tmp |= cfg->IRQ_en;
-		if(spi == SPI1){
-			NVIC_IRQ35_SPI1_EN();
-		}else{
-			NVIC_IRQ36_SPI2_EN();
-		}
-	}
+    if(cfg->irq_en != SPI_IRQ_NONE)
+    {
+        CR2_tmp |= cfg->irq_en;
+        if(spi == SPI1){
+            NVIC_IRQ35_SPI1_EN();
+        }else{
+            NVIC_IRQ36_SPI2_EN();
+        }
+    }
 
-	if(cfg->IRQ_en != SPI_IRQ_NONE){
+    if(cfg->irq_en != SPI_IRQ_NONE){
 
 		spi_irq_src_t irq_src;
 		irq_src.txe =  ((spi->SR & (1<<1))>>1);
@@ -99,41 +99,41 @@ void spi_rst(spi_t *spi)
 // TODO : handle rest of modes, currently support full duplex only
 void spi_set_gpio(spi_t *spi, spi_config_t *cfg)
 {
-	// SPI1 NSS  -> PA4
-	// SPI1 SCK  -> PA5		
-	// SPI1 MISO -> PA6		
-	// SPI1 MOSI -> PA7		
+    // SPI1 NSS  -> PA4  (you can use any pin if you wouldn't trigger it using SSI or HW)
+    // SPI1 SCK  -> PA5     
+    // SPI1 MISO -> PA6     
+    // SPI1 MOSI -> PA7     
 
-	// SPI2 NSS  -> PB12
-	// SPI2 SCK  -> PB13
-	// SPI2 MISO -> PB14
-	// SPI2 MOSI -> PB15
+    // SPI2 NSS  -> PB12 (you can use any pin if you wouldn't trigger it using SSI or HW)
+    // SPI2 SCK  -> PB13
+    // SPI2 MISO -> PB14
+    // SPI2 MOSI -> PB15
 
 	gpio_config_t gpio_cfg;
 
-	/* SPI1 */
-	if(spi == SPI1)
-	{
-		/*---MASTER---*/
-		if(cfg->device_mode == SPI_MODE_MASTER){
-			// NSS
-			switch (cfg->NSS) 
-			{
-				case SPI_NSS_HW_MASTER_SSOD:
-					gpio_cfg.pin = GPIO_PIN_4;
-					gpio_cfg.mode = GPIO_MODE_IN_F;
-					gpio_init(GPIO_A, &gpio_cfg);
-					break;
-				case SPI_NSS_HW_MASTER_SSOE:
-					gpio_cfg.pin = GPIO_PIN_4;
-					gpio_cfg.mode = AFIO_MODE_OUT_PP(GPIO_SPEED_10M);
-					gpio_init(GPIO_A, &gpio_cfg);
-					break;
-			}
-			// SCLK
-			gpio_cfg.pin = GPIO_PIN_5;
-			gpio_cfg.mode = AFIO_MODE_OUT_PP(GPIO_SPEED_10M);
-			gpio_init(GPIO_A, &gpio_cfg);
+    /* SPI1 */
+    if(spi == SPI1)
+    {
+        /*---MASTER---*/
+        if(cfg->dev_mode == SPI_MODE_MASTER){
+            // NSS
+            switch (cfg->slave_select) 
+            {
+                case SPI_NSS_HW_SS_INPUT:
+                    gpio_cfg.pin = GPIO_PIN_4;
+                    gpio_cfg.mode = GPIO_MODE_IN_F;
+                    gpio_init(GPIO_A, &gpio_cfg);
+                    break;
+                case SPI_NSS_HW_SS_OUTPUT:
+                    gpio_cfg.pin = GPIO_PIN_4;
+                    gpio_cfg.mode = AFIO_MODE_OUT_PP(GPIO_SPEED_10M);
+                    gpio_init(GPIO_A, &gpio_cfg);
+                    break;
+            }
+            // SCLK
+            gpio_cfg.pin = GPIO_PIN_5;
+            gpio_cfg.mode = AFIO_MODE_OUT_PP(GPIO_SPEED_10M);
+            gpio_init(GPIO_A, &gpio_cfg);
 
 			// MISO (Full Duplex only handled)
 			gpio_cfg.pin = GPIO_PIN_6;
@@ -149,16 +149,16 @@ void spi_set_gpio(spi_t *spi, spi_config_t *cfg)
 		/*---SLAVE---*/	
 		}else{
 
-			if (cfg->NSS ==SPI_NSS_HW_SLAVE) 
-			{
-				gpio_cfg.pin = GPIO_PIN_4;
-				gpio_cfg.mode = GPIO_MODE_IN_F;
-				gpio_init(GPIO_A, &gpio_cfg);
-			}
-			// SCLK
-			gpio_cfg.pin = GPIO_PIN_5;
-			gpio_cfg.mode = GPIO_MODE_IN_F;
-			gpio_init(GPIO_A, &gpio_cfg);
+            if (cfg->slave_select == SPI_NSS_HW_SSM) 
+            {
+                gpio_cfg.pin  = GPIO_PIN_4;
+                gpio_cfg.mode = GPIO_MODE_IN_F;
+                gpio_init(GPIO_A, &gpio_cfg);
+            }
+            // SCLK
+            gpio_cfg.pin = GPIO_PIN_5;
+            gpio_cfg.mode = GPIO_MODE_IN_F;
+            gpio_init(GPIO_A, &gpio_cfg);
 
 			// MISO (Full Duplex only handled)
 			gpio_cfg.pin = GPIO_PIN_6;
@@ -171,30 +171,30 @@ void spi_set_gpio(spi_t *spi, spi_config_t *cfg)
 			gpio_init(GPIO_A, &gpio_cfg);
 		}
 
-	}
-	/* SPI2 */	
-	else
-	{
-		/*---MASTER---*/
-		if(cfg->device_mode == SPI_MODE_MASTER){
-			// NSS
-			switch (cfg->NSS) 
-			{
-				case SPI_NSS_HW_MASTER_SSOD:
-					gpio_cfg.pin = GPIO_PIN_12;
-					gpio_cfg.mode = GPIO_MODE_IN_F;
-					gpio_init(GPIO_B, &gpio_cfg);
-					break;
-				case SPI_NSS_HW_MASTER_SSOE:
-					gpio_cfg.pin = GPIO_PIN_12;
-					gpio_cfg.mode = AFIO_MODE_OUT_PP(GPIO_SPEED_10M);
-					gpio_init(GPIO_B, &gpio_cfg);
-					break;
-			}
-			// SCLK
-			gpio_cfg.pin = GPIO_PIN_13;
-			gpio_cfg.mode = AFIO_MODE_OUT_PP(GPIO_SPEED_10M);
-			gpio_init(GPIO_B, &gpio_cfg);
+    }
+    /* SPI2 */  
+    else
+    {
+        /*---MASTER---*/
+        if(cfg->dev_mode == SPI_MODE_MASTER){
+            // NSS
+            switch (cfg->slave_select) 
+            {
+                case SPI_NSS_HW_SS_INPUT:
+                    gpio_cfg.pin = GPIO_PIN_12;
+                    gpio_cfg.mode = GPIO_MODE_IN_F;
+                    gpio_init(GPIO_B, &gpio_cfg);
+                    break;
+                case SPI_NSS_HW_SS_OUTPUT:
+                    gpio_cfg.pin = GPIO_PIN_12;
+                    gpio_cfg.mode = AFIO_MODE_OUT_PP(GPIO_SPEED_10M);
+                    gpio_init(GPIO_B, &gpio_cfg);
+                    break;
+            }
+            // SCLK
+            gpio_cfg.pin = GPIO_PIN_13;
+            gpio_cfg.mode = AFIO_MODE_OUT_PP(GPIO_SPEED_10M);
+            gpio_init(GPIO_B, &gpio_cfg);
 
 			// MISO (Full Duplex only handled)
 			gpio_cfg.pin = GPIO_PIN_14;
@@ -210,7 +210,7 @@ void spi_set_gpio(spi_t *spi, spi_config_t *cfg)
 		/*---SLAVE---*/	
 		}else{
 
-			if (cfg->NSS ==SPI_NSS_HW_SLAVE) 
+            if (cfg->slave_select ==SPI_NSS_HW_SSM) 
 			{
 				gpio_cfg.pin = GPIO_PIN_12;
 				gpio_cfg.mode = GPIO_MODE_IN_F;
@@ -237,26 +237,28 @@ void spi_set_gpio(spi_t *spi, spi_config_t *cfg)
 // TODO: support rest of modes
 void spi_tx_data(spi_t *spi, spi_config_t *cfg, uint16_t *tx_buf)
 {
-	if(cfg->IRQ_en == SPI_IRQ_NONE){
-		while(!(spi->SR & SPI_SR_TXE));
-	}
+    if(cfg->irq_en == SPI_IRQ_NONE){
+        while(!(spi->SR & SPI_SR_TXE));
+    }
 
 	spi->DR = *tx_buf;
 }
 
 void spi_rx_data(spi_t *spi, spi_config_t *cfg, uint16_t *rx_buf)
 {
-	if(cfg->IRQ_en == SPI_IRQ_NONE){
-		while(!(spi->SR & SPI_SR_RXNE));
-	}
+    if(cfg->irq_en == SPI_IRQ_NONE){
+        while(!(spi->SR & SPI_SR_RXNE));
+    }
 
 	*rx_buf = spi->DR;
 }
 
-void spi_tx_rx_data(spi_t *spi,spi_config_t *cfg, uint16_t *buf)
+uint16_t spi_tx_rx_data(spi_t *spi,spi_config_t *cfg, uint16_t *buf)
 {
-	spi_tx_data(spi,cfg,buf);
-	spi_rx_data(spi, cfg, buf);
+    uint16_t rx;
+    spi_tx_data(spi, cfg, buf);
+    spi_rx_data(spi, cfg, &rx);
+    return rx;
 }
 
 void SPI1_IRQHandler(void)

@@ -247,3 +247,19 @@ prescaler register.
 * The purpose of this is to allow combined write/read operations to one or more devices without releasing the bus and thus with the guarantee that the operation is not interrupted.
     * Regardless of the number of start conditions sent during one transfer the transfer must be ended by exactly one stop condition.
     
+### Clock Stretching
+
+![alt text](./images/clock_stretching.png)
+
+* The slave can extend the SCL low period by pulling the SCL line low.
+* This is useful if the clock speed set up by the master is too fast for the slave, or the slave needs
+extra time for processing between the data transmissions. 
+* The slave extending the SCL low period will not affect the SCL high period, which is determined by the master. As a consequence, the slave can reduce the I2C data transfer speed by prolonging the SCL duty cycle.
+
+### Multiple Masters 
+
+* Two problems arise in multi-master systems:
+    * An algorithm must be implemented allowing only one of the masters to complete the transmission. All other masters should cease transmission when they discover that they have lost the selection process (arbitration). 
+    * Different masters may use different SCL frequencies. A scheme must be devised to synchronize the serial clocks from all masters, in order to let the transmission proceed in a lockstep fashion.
+
+![alt text](./images/clk_sync.png)

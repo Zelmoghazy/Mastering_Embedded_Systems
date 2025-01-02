@@ -49,7 +49,7 @@ typedef struct usart_t
 #define USART_SR_RXNE               (1U<<5U)        // Read data register not empty
 #define USART_SR_TC                 (1U<<6U)        // Transmission complete
 #define USART_SR_TXE                (1U<<7U)        // Transmit data register empty
-#define USART_SR_LBD                (1U<<8U)       
+#define USART_SR_LBD                (1U<<8U)        // LIN break detection flag (when configured as LIN)
 #define USART_SR_CTS                (1U<<9U)        // flow ctrl clear to send flag
 
 /* USART MODE */
@@ -132,5 +132,7 @@ void usart_send(usart_t *usart, usart_config_t *cfg, const uint16_t txbuf);
 void usart_receive(usart_t *usart, usart_config_t *cfg, uint16_t *rxbuf);
 void usart_tx_complete(usart_t *usart);
 void usart_print_str(usart_t *usart, usart_config_t *cfg, const char *str);
+void usart_rx_n(usart_t *usart, usart_config_t *cfg, uint16_t *data, size_t length);
+void usart_tx_n(usart_t *usart, usart_config_t *cfg, const uint8_t *data, size_t length);
 
 #endif /* USART_H_ */
