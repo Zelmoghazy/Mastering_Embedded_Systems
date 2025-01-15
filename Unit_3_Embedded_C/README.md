@@ -64,12 +64,7 @@
 * **ELF provides two interfaces to binary files :**
     * **Linkable Interface :** is used at static link time to combine multiple files when compiling and building a program.
     * **Executable Interface :** is utilized at runtime to create a process image in memory when a program is loaded into memory and then executed.
-
-* **The Executable Interface Provides Two Separate Logic Views :** 
-    * **Load view :** classifies the input sections into two regions: read-write section and read-only section.
-        * The load view also defines the base memory address of these regions so that the processor knows where it should load them into the memory.
-    * **Execution view :** informs the processor how to load the executable at runtime. 
-
+    
 <div style="border-radius: 30px; overflow: hidden;">
     <p align="center">
         <img src="Images/ELF.png"
@@ -77,6 +72,19 @@
              style="border-radius: 30px;"/>
     </p>
 </div>
+
+* **The Executable Interface Provides Two Separate Logic Views :** 
+    * **Load view :** classifies the input sections into two regions: read-write section and read-only section.
+        * The load view also defines the base memory address of these regions so that the processor knows where it should load them into the memory.
+    * **Execution view :** informs the processor how to load the executable at runtime. 
+
+
+<p align="center">
+  <img src="Images/elf_views.png"
+       width="100%" 
+       style="border-radius: 30px;"/>
+</p>
+
 
 **A typical ELF relocatable object file contains the following sections:**
 
@@ -100,7 +108,7 @@
     * A string table is a sequence of null-terminated character strings.
 
 ## Relocatable object files
-* Compilers and assemblers generate relocatable object files
+* Compilers and assemblers generate **relocatable object files**.
     * which are object files that contains binary code and data in a form that can be combined with other relocatable object files at compile time to create an executable object file.
 * Object file formats vary from system to system.
     * The first Unix systems `.out`
@@ -177,6 +185,61 @@ void main(void)
 
 ---
 
+### Symbols and Symbol Tables
+
+* Each relocatable object file has a symbol table that contains information about the symbols that are defined and referenced by it
+    * **Global defined symbols :** defined by module and can be reference by other modules (nonstatic C functions and non-static global variables)
+    * **Global referenced symbols :** defined by some other module and referenced inside your module (externals).
+    * **Local symbols :** defined and referenced exclusively by the module and cannot be referenced by other modules (C functions and global variables that are defined with the static attribute.)
+* An ELF symbol table is contained in the `.symtab` section. 
+
+
+* There are three special pseudo-sections that don’t have entries in the section header table:
+    * `ABS` is for symbols that should not be relocated.
+    * `UNDEF` is for undefined symbols, that is, symbols that are referenced in this object module but defined elsewhere.
+    * `COMMON` is for uninitialized data objects that are not yet allocated.
+
+| Symbol | Description                                                            |
+|--------|------------------------------------------------------------------------|
+| `l`    | The symbol is local.                                                   |
+| `g`    | The symbol is global.                                                  |
+| `u`    | The symbol is a unique global.                                         |
+| `!`    | The symbol is both global and local.                                   |
+| `w`    | The symbol is weak.                                                    |
+| `C`    | The symbol denotes a constructor.                                      |
+| `W`    | The symbol is a warning.                                               |
+| `I`    | The symbol is an indirect reference to another symbol.                 |
+| `i`    | The symbol is a function to be evaluated during relocation processing. |
+| `d`    | The symbol is a debugging symbol.                                      |
+| `D`    | The symbol is a dynamic symbol.                                        |
+| `F`    | The symbol is the name of a function.                                  |
+| `f`    | The symbol is the name of a file.                                      |
+| `O`    | The symbol is the name of an object.                                   |
+
+<p align="center">
+  <img src="./Images/sym_tab.png"
+       width="50%" 
+       style="border-radius: 30px;"/>
+</p>
+
+
+### Symbol Resolution
+* The linker resolves symbol references by associating each reference with exactly one symbol definition from the symbol tables of its input relocatable object files
+*  When the compiler encounters a symbol (either a variable or function name) that is not defined in the current module, it assumes that it is defined in some other module, generates a linker symbol table entry, and leaves it for the linker to handle.
+* If the linker is unable to find a definition for the referenced symbol in any of its input modules, it prints an error message and terminates.
+
+* At compile time, the compiler exports each global symbol to the assembler as either strong or weak, and the
+assembler encodes this information implicitly in the symbol table of the relocatable object file.
+* Functions and initialized global variables get strong symbols. Uninitialized global variables get weak symbols.
+* **For multiply-defined symbols :**
+    * Multiple strong symbols are not allowed.
+    *  Given a strong symbol and multiple weak symbols, choose the strong symbol.
+    *  Given multiple weak symbols, choose any of the weak symbols.
+* Invoke the linker with a flag such as the GCC `-warn-common` flag, which instructs it to print a warning message
+when it resolves multiply-defined global symbol definitions.
+
+---
+
 ## Start-up File
 
 * Startup file is responsible for setting up the enviroment for the main user code to run.
@@ -223,10 +286,16 @@ void main(void)
   * When specified, alignment must be an integer constant power of 2.
   * Specifying no alignment argument implies the ideal alignment for the target.
 
+--- 
+
 ### Vector Table (ARM Cortex-M Case Study)
+
 * The vector table is a section of our flash memory that mostly holds the addresses of various handlers.
     * Starting address of the **reset handler** (Reset handler is the code executed on reset)
     * Starting addresses of all other exceptions and interrupts including the NMI handler, Hard fault handler and so on.
+
+* The interrupt vector table is called "vector" because it holds addresses (pointers) to interrupt service routines (ISRs). 
+	* When an interrupt occurs, the processor uses the interrupt number to vector (direct) to the appropriate ISR via the table.
 
 <p align="center">
   <img src="Images/STM32MemMap.png"
@@ -239,9 +308,17 @@ void main(void)
     * The on-chip SRAM, used for the data memory, has 256 KB, and its memory address begins at `0x2000_0000`.
     * The external RAM allows the processor to expand the data memory capacity.
 
-*  The interrupt vector table is relocatable. 
-	*  While the interrupt vector table is located at the memory address `0x0000_0004`, this low memory address can be physically re-mapped to different regions, such as on-chip flash memory, on-chip RAM memory, or on-chip ROM memory.
-	*   This allows the processor to boot from various memory regions.
+
+<p align="center">
+  <img src="Images/memap.png"
+       width="75%" 
+       style="border-radius: 30px;"/>
+</p>
+
+
+* The interrupt vector table is relocatable. 
+	* While the interrupt vector table is located at the memory address `0x0000_0004`, this low memory address can be physically re-mapped to different regions, such as on-chip flash memory, on-chip RAM memory, or on-chip ROM memory.
+	* This allows the processor to boot from various memory regions.
 
 * On many STM32 families, the boot address in the internal flash is `0x0800_0000`.
   *  This address is remapped to address `0x0000_0000` by boot mode mechanism. 
@@ -637,106 +714,6 @@ void Mem_Init(void)
 </tr>
 </table>
 
-
-## Linking
-
-* `arm-none-eabi-ld`      : Linker
-
-|Flag|Meaning|
-|:---:|:---:|
-|`-T script`|Use script as the linker script.|
-|`-nostdlib`|Do not use the standard system startup files or libraries when linking.|
-|`-Map=<file.map>`|Write a linker map to `<file>`|
-|`--gc-section`|The linker can perform the dead code elimination doing a garbage collection of code and data never referenced.|
-|`--warn-common`|Warn when a common symbol is combined with another common symbol|
-
-* Linking is the process of collecting and combining the various pieces of code and data that a program needs in order to be loaded (copied) into memory and executed. 
-* Linkers play a crucial role in software development because they enable separate compilation.
-  * Instead of organizing a large application as one source file, we can decompose it into smaller, more manageable modules that can be modified and compiled separately.
-  * When we change one of these modules, we simply recompile it and relink the application, without having to recompile the other files.
-* Linker program take as input a collection of relocatable object files and command line arguments and generate as output a fully linked executable object file that can be loaded and run.
-  * The input relocatable object files consist of various code and data sections.
-  * Instructions are in one section (`.text`), initialized global variables are in another section (`.data`), and uninitialized variables are in yet another section (`.bss`).
-* To build the executable, the linker must perform two main tasks:
-  * **Symbol resolution :** Object files define and reference symbols.
-    * The purpose of symbol resolution is to associate each symbol reference with exactly one symbol definition.
-  * **Relocation :** Compilers and assemblers generate code and data sections that start at address zero.
-    * The linker relocates these sections by associating a memory location with each symbol definition, and then modifying all of the references to those symbols so that they point to this memory location.
-* A linker concatenates blocks together, decides on run-time locations for the concatenated blocks, and modifies various locations within the code and data blocks. 
-
-<div style="border-radius: 30px; overflow: hidden;">
-    <p align="center">
-        <img src="Images/MemoryMap.png"
-             width="100%" 
-             style="border-radius: 30px;"/>
-    </p>
-</div>
-
-### Final Executable Symbol Table
-
-<div style="border-radius: 30px; overflow: hidden;">
-    <p align="center">
-        <img src="Images/Symbol_exec.png"
-             width="45%" 
-             style="border-radius: 30px;"/>
-    </p>
-</div>
-
-### Symbols and Symbol Tables
-
-* Each relocatable object file has a symbol table that contains information about the symbols that are defined and referenced by it
-    * **Global defined symbols :** defined by module and can be reference by other modules (nonstatic C functions and non-static global variables)
-    * **Global referenced symbols :** defined by some other module and referenced inside your module (externals).
-    * **Local symbols :** defined and referenced exclusively by the module and cannot be referenced by other modules (C functions and global variables that are defined with the static attribute.)
-* An ELF symbol table is contained in the `.symtab` section. 
-
-
-* There are three special pseudo-sections that don’t have entries in the section header table:
-    * `ABS` is for symbols that should not be relocated.
-    * `UNDEF` is for undefined symbols, that is, symbols that are referenced in this object module but defined elsewhere.
-    * `COMMON` is for uninitialized data objects that are not yet allocated.
-
-| Symbol | Description                                                            |
-|--------|------------------------------------------------------------------------|
-| `l`    | The symbol is local.                                                   |
-| `g`    | The symbol is global.                                                  |
-| `u`    | The symbol is a unique global.                                         |
-| `!`    | The symbol is both global and local.                                   |
-| `w`    | The symbol is weak.                                                    |
-| `C`    | The symbol denotes a constructor.                                      |
-| `W`    | The symbol is a warning.                                               |
-| `I`    | The symbol is an indirect reference to another symbol.                 |
-| `i`    | The symbol is a function to be evaluated during relocation processing. |
-| `d`    | The symbol is a debugging symbol.                                      |
-| `D`    | The symbol is a dynamic symbol.                                        |
-| `F`    | The symbol is the name of a function.                                  |
-| `f`    | The symbol is the name of a file.                                      |
-| `O`    | The symbol is the name of an object.                                   |
-
-<p align="center">
-  <img src="./Images/sym_tab.png"
-       width="50%" 
-       style="border-radius: 30px;"/>
-</p>
-
-
-### Symbol Resolution
-* The linker resolves symbol references by associating each reference with exactly one symbol definition from
-the symbol tables of its input relocatable object files
-
-*  When the compiler encounters a symbol (either a variable or function name) that is not defined in the current module, it assumes that it is defined in some other module, generates a linker symbol table entry, and leaves it for the linker to handle.
-* If the linker is unable to find a definition for the referenced symbol in any of its input modules, it prints an error message and terminates.
-
-* At compile time, the compiler exports each global symbol to the assembler as either strong or weak, and the
-assembler encodes this information implicitly in the symbol table of the relocatable object file.
-* Functions and initialized global variables get strong symbols. Uninitialized global variables get weak symbols.
-* **For multiply-defined symbols :**
-    * Multiple strong symbols are not allowed.
-    *  Given a strong symbol and multiple weak symbols, choose the strong symbol.
-    *  Given multiple weak symbols, choose any of the weak symbols.
-* Invoke the linker with a flag such as the GCC `-warn-common` flag, which instructs it to print a warning message
-when it resolves multiply-defined global symbol definitions.
-
 ## Case Study (STM32)
 
 ```ld
@@ -788,6 +765,54 @@ SECTIONS
        style="border-radius: 30px;"/>
 </p>
 
+
+
+## Linking
+
+* `arm-none-eabi-ld`      : Linker
+
+|Flag|Meaning|
+|:---:|:---:|
+|`-T script`|Use script as the linker script.|
+|`-nostdlib`|Do not use the standard system startup files or libraries when linking.|
+|`-Map=<file.map>`|Write a linker map to `<file>`|
+|`--gc-section`|The linker can perform the dead code elimination doing a garbage collection of code and data never referenced.|
+|`--warn-common`|Warn when a common symbol is combined with another common symbol|
+
+* Linking is the process of collecting and combining the various pieces of code and data that a program needs in order to be loaded (copied) into memory and executed. 
+* Linkers play a crucial role in software development because they enable separate compilation.
+  * Instead of organizing a large application as one source file, we can decompose it into smaller, more manageable modules that can be modified and compiled separately.
+  * When we change one of these modules, we simply recompile it and relink the application, without having to recompile the other files.
+* Linker program take as input a collection of relocatable object files and command line arguments and generate as output a fully linked executable object file that can be loaded and run.
+  * The input relocatable object files consist of various code and data sections.
+  * Instructions are in one section (`.text`), initialized global variables are in another section (`.data`), and uninitialized variables are in yet another section (`.bss`).
+* To build the executable, the linker must perform two main tasks:
+  * **Symbol resolution :** Object files define and reference symbols.
+    * The purpose of symbol resolution is to associate each symbol reference with exactly one symbol definition.
+  * **Relocation :** Compilers and assemblers generate code and data sections that start at address zero.
+    * The linker relocates these sections by associating a memory location with each symbol definition, and then modifying all of the references to those symbols so that they point to this memory location.
+* A linker concatenates blocks together, decides on run-time locations for the concatenated blocks, and modifies various locations within the code and data blocks. 
+
+<div style="border-radius: 30px; overflow: hidden;">
+    <p align="center">
+        <img src="Images/MemoryMap.png"
+             width="100%" 
+             style="border-radius: 30px;"/>
+    </p>
+</div>
+
+### Final Executable Symbol Table
+
+<div style="border-radius: 30px; overflow: hidden;">
+    <p align="center">
+        <img src="Images/Symbol_exec.png"
+             width="45%" 
+             style="border-radius: 30px;"/>
+    </p>
+</div>
+
+---
+
 ## Integrating C Standard Library
 
 * **Newlib** is a C standard library implementation intended for use on embedded systems.
@@ -836,6 +861,7 @@ _exit, _close, environ, execve, fork, fstat, getpid, isatty, kill, link, lseek, 
 
 
 ---
+
 # Makefile
 
 ### Dependency Graph
@@ -974,7 +1000,7 @@ DEP=$(addprefix $(BUILD_DIR)/,$(notdir $(SRC:.c=.d)))
 
 ## GDB
 
-* `gdb-multiarch`
+* `gdb-multiarch` : GNU Debugger (with support for multiple architectures)
 
 * Use `-g` flag while compiling to include debugging information. 
 

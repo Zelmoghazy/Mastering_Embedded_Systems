@@ -19,14 +19,14 @@ char **environ = __env;
 
 /**
  *  Initialize semihosting features
- *  to use printf
+ *      to use printf
  */
 void initialise_monitor_handles()
 {
 }
 
 /** Process-ID;
- * Minimal implementation, for a system without processes
+ *      Minimal implementation, for a system without processes
  */
 int _getpid(void)
 {
@@ -34,7 +34,7 @@ int _getpid(void)
 }
 
 /** Send a signal. 
- *  Minimal implementation
+ *      Minimal implementation
  */
 int _kill(int pid, int sig)
 {
@@ -43,7 +43,8 @@ int _kill(int pid, int sig)
 }
 
 /** Exit a program without cleaning up files.
- *  If your system doesn’t provide this, it is best to avoid linking with subroutines that require it 
+ *      If your system doesn’t provide this, it is best to avoid 
+ *      linking with subroutines that require it 
  */
 void _exit (int status)
 {
@@ -53,16 +54,18 @@ void _exit (int status)
 
 
 /** Close a file.
- *  Minimal implementation:
-  */
+ *      Minimal implementation:
+ */
 int _close(int file)
 {
 	return -1;
 }
 
 /** Status of an open file.
- *  For consistency with other minimal implementations, all files are regarded as character special devices. 
- *  The sys/stat.h header file required is distributed in the include subdirectory for this C library.
+ *      - For consistency with other minimal implementations, 
+ *        all files are regarded as character special devices. 
+ *      - The sys/stat.h header file required is distributed in
+ *        the include subdirectory for this C library.
  */
 int _fstat(int file, struct stat *st)
 {
@@ -71,7 +74,8 @@ int _fstat(int file, struct stat *st)
 }
 
 /** Query whether output stream is a terminal.
- *   For consistency with the other minimal implementations, which only support output to stdout
+ *      For consistency with the other minimal implementations,
+ *      which only support output to stdout
  */
 int _isatty(int file)
 {
@@ -79,7 +83,7 @@ int _isatty(int file)
 }
 
 /** Set position in a file.
- *  Minimal implementation 
+ *      Minimal implementation 
  */
 int _lseek(int file, int ptr, int dir)
 {
@@ -87,7 +91,7 @@ int _lseek(int file, int ptr, int dir)
 }
 
 /** Open a file.
- *  Minimal implementation:
+ *      Minimal implementation:
  */
 int _open(char *path, int flags, ...)
 {
@@ -97,7 +101,7 @@ int _open(char *path, int flags, ...)
 
 
 /** Wait for a child process.
- *  Minimal implementation:  
+ *      Minimal implementation:  
  */
 int _wait(int *status)
 {
@@ -106,7 +110,7 @@ int _wait(int *status)
 }
 
 /** Remove a file’s directory entry.
- *  Minimal implementation: 
+ *      Minimal implementation: 
  */
 int _unlink(char *name)
 {
@@ -115,7 +119,7 @@ int _unlink(char *name)
 }
 
 /** Timing information for current process. 
- *  Minimal implementation
+ *      Minimal implementation
  */
 int _times(struct tms *buf)
 {
@@ -123,7 +127,7 @@ int _times(struct tms *buf)
 }
 
 /** Status of a file (by name).
- *  Minimal implementation: 
+ *      Minimal implementation: 
  */
 int _stat(char *file, struct stat *st)
 {
@@ -132,7 +136,7 @@ int _stat(char *file, struct stat *st)
 }
 
 /** Establish a new name for an existing file.
- *   Minimal implementation:
+ *      Minimal implementation:
  */
 int _link(char *old, char *new)
 {
@@ -141,7 +145,8 @@ int _link(char *old, char *new)
 }
 
 /** Create a new process.
- *  Minimal implementation (for a system without processes) */
+ *      Minimal implementation (for a system without processes) 
+ */
 int _fork(void)
 {
 	errno = EAGAIN;
@@ -149,7 +154,8 @@ int _fork(void)
 }
 
 /** Transfer control to a new process.
- *  Minimal implementation (for a system without processes) */
+ *  Minimal implementation (for a system without processes) 
+ */
 int _execve(char *name, char **argv, char **env)
 {
 	errno = ENOMEM;
@@ -158,18 +164,23 @@ int _execve(char *name, char **argv, char **env)
 
 /**
  * Increase program data space. 
- * As malloc and related functions depend on this, it is useful to have a working implementation.
- * The following suffices for a standalone system; it exploits the symbol _end automatically defined by the GNU linker. 
+ *      - As malloc and related functions depend on this, 
+ *        it is useful to have a working implementation.
+ *      - The following suffices for a standalone system; 
+ *        it exploits the symbol _end automatically defined by the GNU linker. 
  */
-
 
 void *_sbrk(int incr)
 {
+    extern uint32 _STACK_TOP;
+
 	extern byte _end;          		/* Defined by the linker */
 	extern byte _estack;       		/* Defined by the linker */
 	extern uint32 _Min_Stack_Size;  /* Defined by the linker */
 
-	const uint32 stack_limit = (uint32)&_estack - (uint32)&_Min_Stack_Size;
+	// const uint32 stack_limit = (uint32)&_estack - (uint32)&_Min_Stack_Size;
+	const uint32 stack_limit = (uint32)&_STACK_TOP - (uint32)&_Min_Stack_Size;  /* for testing now */
+    
 	static byte *brk = NULL;
 	byte *prev_brk;
 

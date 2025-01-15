@@ -1,4 +1,4 @@
-_estack = ORIGIN(SRAM) + LENGTH(SRAM);    /* end of SRAM */
+_estack = ORIGIN(SRAM) + LENGTH(SRAM);    /* end of SRAM - will not use it right now */
 
 _Min_Heap_Size =  0x200;     /* required amount of heap  */
 _Min_Stack_Size = 0x400;     /* required amount of stack */
@@ -62,7 +62,7 @@ SECTIONS
         . = ALIGN(4);
 
         . = . + _Min_Stack_Size;
-        _STACK_TOP = . ;        
+        _STACK_TOP = . ;            /* For testing only */     
         . = ALIGN(8);
     } >SRAM
 }

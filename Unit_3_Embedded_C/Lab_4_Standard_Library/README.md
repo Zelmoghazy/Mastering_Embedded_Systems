@@ -3,6 +3,11 @@
        width="50%"/>
 </p>
 
+<p align="center">
+  <img src="./images/stack_viz.png"
+       width="100%"/>
+</p>
+
 ## Data Section
 
 <p align="center">

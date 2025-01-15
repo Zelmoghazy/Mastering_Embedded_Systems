@@ -20,7 +20,7 @@ void Bus_Fault_Handler(void)                __attribute__ ((weak,alias("Default_
 void Usage_Fault_Handler(void)              __attribute__ ((weak,alias("Default_Handler")));
 
 uint32 vectors[] __attribute__((section(".vectors"))) = {
-    (uint32) &_STACK_TOP,
+    (uint32) &_STACK_TOP,       // for testing only should use _estack
     (uint32) &Reset_Handler,
     (uint32) &NMI_Handler,
     (uint32) &Hard_Fault_Handler,

@@ -6,8 +6,8 @@ typedef void(*const fp_t)(void);
 
 typedef union
 {
-    fp_t handler;
-    uint32_t u32_ptr;
+    fp_t   handler;
+    uint32 u32_ptr;
 }vector_entry;
 
 extern int main(void);
@@ -45,10 +45,11 @@ static uint32 stack[256];
 // Array of function pointers to handles
 const vector_entry vector_table[]  __attribute__((section(".vectors"))) = 
 {
-    {.u32_ptr = (((uint32)stack+(uint32)sizeof(stack)))}, // initial stack pointer
-    &Reset_Handler,
-    &NMI_Handler,
-    &Hard_Fault_Handler
+    {.u32_ptr = (((uint32)stack + (uint32)sizeof(stack)))},   // initial stack pointer
+    // {.u32_ptr = (((uint32)&stack[256]))},                  // same thing (stack top)
+    {.handler = &Reset_Handler},
+    {.handler = &NMI_Handler},
+    {.handler = &Hard_Fault_Handler}
 };
 
 void Mem_Init(void)

@@ -30,7 +30,7 @@ SECTIONS
         _E_BSS = . ;
 
         . = ALIGN(4);
-        . = . + 0x1000 ;
+        . = . + 0x1000 ;   /* allocate 0x1000 bytes for the stack (for testing only) */
         _STACK_TOP = . ;
         
     }>SRAM
