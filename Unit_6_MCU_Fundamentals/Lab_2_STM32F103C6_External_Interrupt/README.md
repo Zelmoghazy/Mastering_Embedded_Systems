@@ -6,6 +6,10 @@
        style="border-radius: 30px;"/>
 </p>
 
+* The external interrupt controller has a voltage monitor module that has a programmable edge detector.
+    *  This hardware monitor module can monitor the voltage signal on GPIO pins. 
+    * Software can select the rising edge, the falling edge, or both edges of the voltage signal to trigger an interrupt request
+
 ## Simulation
 
 <p align="center">
