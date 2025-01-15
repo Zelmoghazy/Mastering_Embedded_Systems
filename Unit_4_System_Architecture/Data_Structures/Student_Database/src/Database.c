@@ -61,7 +61,7 @@ void s_db_format_student(student *s, bool single)
     printf("%-*s ",SPACES/4,TABLE_SYM2);
     printf("%-*s ",SPACES,s->data.name);
     printf("%-*s ",SPACES/4,TABLE_SYM2);
-    printf("%-*f ",SPACES/2,s->data.height);
+    printf("%-*.2f ",SPACES/2,s->data.height);
     printf("%-*s ",SPACES/4,TABLE_SYM2);
 
     printf("\n");

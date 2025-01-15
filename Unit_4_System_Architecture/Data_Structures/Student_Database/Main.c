@@ -2,9 +2,17 @@
 #include "Utilities.h"
 #include "include/Utilities.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
 int main(void)
 {
     char    choice;
+    char    tmp[NAME_SIZE];
+    char    *endptr;
+
     int     id;
     float   height;
     char    name[NAME_SIZE];
@@ -27,13 +35,25 @@ int main(void)
             /* Insert a single student into the database */
             case '1':
                 printf("Enter Student id : ");
-                scanf("%d",&id);
+                GET_STRING(tmp,NAME_SIZE);
+                errno = 0;
+                id = (int)strtol(tmp, &endptr, 10);  // Base 10 integer
+                if (errno != 0 || *endptr != '\0') {
+                    printf("Invalid integer input for ID.\n");
+                    continue;
+                }
                 
                 printf("Enter Student name : ");
                 GET_STRING(name,NAME_SIZE);
 
                 printf("Enter Student height : ");
-                scanf("%f",&height);
+                GET_STRING(tmp, NAME_SIZE);
+                errno = 0;
+                height = strtof(tmp, &endptr);
+                if (errno != 0 || *endptr != '\0') {
+                    printf("Invalid float input for height.\n");
+                    continue;
+                }
 
                 s_db_push_front(db, id, height, name);
                 break;
@@ -46,13 +66,25 @@ int main(void)
                 scanf("%d",&index);
 
                 printf("Enter Student id : ");
-                scanf("%d",&id);
-                
+                GET_STRING(tmp,NAME_SIZE);
+                errno = 0;
+                id = (int)strtol(tmp, &endptr, 10);  // Base 10 integer
+                if (errno != 0 || *endptr != '\0') {
+                    printf("Invalid integer input for ID.\n");
+                    continue;
+                }
+
                 printf("Enter Student name : ");
                 GET_STRING(name,NAME_SIZE);
 
                 printf("Enter Student height : ");
-                scanf("%f",&height);
+                GET_STRING(tmp, NAME_SIZE);
+                errno = 0;
+                height = strtof(tmp, &endptr);
+                if (errno != 0 || *endptr != '\0') {
+                    printf("Invalid float input for height.\n");
+                    continue;
+                }
 
                 s_db_insert_at(db, index, id, height, name);
                 break;
@@ -60,7 +92,13 @@ int main(void)
             /* Remove a student using an id  */    
             case '3':
                 printf("Enter Student id : ");
-                scanf("%d",&id);
+                GET_STRING(tmp,NAME_SIZE);
+                errno = 0;
+                id = (int)strtol(tmp, &endptr, 10);  // Base 10 integer
+                if (errno != 0 || *endptr != '\0') {
+                    printf("Invalid integer input for ID.\n");
+                    continue;
+                }
 
                 student *s1 = s_db_search(db,id);
                 if(s1 == NULL){
@@ -97,8 +135,13 @@ int main(void)
             /* Find a student in the database */
             case '5':
                 printf("Enter Student id : ");
-
-                scanf("%d",&id);
+                GET_STRING(tmp,NAME_SIZE);
+                errno = 0;
+                id = (int)strtol(tmp, &endptr, 10);  // Base 10 integer
+                if (errno != 0 || *endptr != '\0') {
+                    printf("Invalid integer input for ID.\n");
+                    continue;
+                }
 
                 student *s3 = s_db_search(db,id);
                 if(s3 == NULL){
