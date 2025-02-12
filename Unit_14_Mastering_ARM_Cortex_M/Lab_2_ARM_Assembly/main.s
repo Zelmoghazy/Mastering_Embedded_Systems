@@ -1,13 +1,19 @@
 @ assembler directives
-.syntax unified         @UAL instead of ARM
-.cpu cortex-m3          @STM32
-.thumb                  @Thumb instruction set
-.global main
+.syntax unified         @ UAL instead of ARM
+.cpu cortex-m3          @ STM32
+.thumb                  @ Thumb instruction set
+.global main            @ Expose symbol to be linked
 
 .section .data
-    var1:          .space 4
-    signed_char:   .byte -50
-    unsigned_char: .byte 200
+    var1:          
+        .space 4
+
+    signed_char:   
+        .byte -50
+
+    unsigned_char: 
+        .byte 200
+
     big_number: 
         .word 0xABCD1234   @ Lower 32 bits
         .word 0x00112233   @ Upper 32 bits
@@ -20,26 +26,28 @@ main:
     ADD R2, R0, R1     
     SUB R3, R1, R0
 
-    @ MOV example
+    @ copy value to register
     MOV R0, #0x1234         @ R0 = 0x1234
 
-    @ MOVS example
+    @ copy 16-bit constant value to register
     MOVW R1, #0x5678        @ R1 = 0x5678
+
+    @ copy value to register and update flags
     MOVS R1, R1             @ Update flags based on the value in R1
 
-    @ MOVW example
-    MOVW R2, #0x9ABC        @ R2 = 0x00009ABC
 
-    @ MOVT example
+    MOVW R2, #0x9ABC        @ R2 = 0x00009ABC
+    @ copy 16- bit immediate value to the top halfword of its destination register
     MOVT R2, #0xDEF0        @ R2 = 0xDEF09ABC
 
+    @ The MOVW, MOVT instruction pair enables you to generate any 32-bit constant.
     MOVW R0, #0x5678        @ Load 0x5678 into the lower half of R0
     MOVT R0, #0x1234        @ Load 0x1234 into the upper half of R0   
 
-    @ MRS example
+    @ Move from special register to register
     MRS R3, APSR            @ Copy APSR into R3
 
-    @ MSR example
+    @ Move from register to special register
     MOV R4, #0x20000000     @ R4 = 0x20000000
     MSR APSR, R4            @ Copy R4 into APSR
 
